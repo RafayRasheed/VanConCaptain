@@ -23,6 +23,7 @@ import database from '@react-native-firebase/database';
 import { deccodeInfo } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
+import { FirebaseUser } from '../functions/firebase';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -228,7 +229,7 @@ export const HomeScreen = ({ navigation }) => {
     useEffect(() => {
         getTopRatedRes()
 
-        firestore().collection('users').doc(profile.uid).get()
+        FirebaseUser.doc(profile.uid).get()
             .then((data) => {
                 const all = data.data()
                 const favoriteRes = all.favoriteRes

@@ -10,6 +10,7 @@ import { dataFullData, encodeInfo, verificationCode } from "../../functions/func
 import firestore from '@react-native-firebase/firestore';
 import { sendVerficationEmail } from "../../functions/email";
 import { SelectCity } from "../select_city";
+import { FirebaseUser } from "../../functions/firebase";
 
 
 export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityModal }) => {
@@ -98,7 +99,7 @@ export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityM
 
     function onRegister() {
         showLoading(true)
-        firestore().collection('users')
+        FirebaseUser
             .where('email', '==', email).get()
             .then(result => {
                 if (result.empty) {

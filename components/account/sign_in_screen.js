@@ -6,6 +6,7 @@ import { MyError, Spacer, ios, myHeight, myWidth, printWithPlat } from "../commo
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 // import Flag from './account.component/Email_select';
 import firestore from '@react-native-firebase/firestore';
+import { FirebaseUser } from "../functions/firebase"
 
 
 export const SignIn = ({ navigation }) => {
@@ -74,7 +75,7 @@ export const SignIn = ({ navigation }) => {
     TextInput.defaultProps = TextInput.defaultProps || {};
     TextInput.defaultProps.selectionColor = 'red';
     function onLoginFirebase() {
-        firestore().collection('users').doc('ABD').set({
+        FirebaseUser.doc('ABD').set({
             name: 'matg'
         }).then((res) => console.log('y')).catch((err) => console.log(err))
     }
