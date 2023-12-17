@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "890830070498",
-    "project_id": "foodapp-edd7e",
-    "storage_bucket": "foodapp-edd7e.appspot.com"
+    "project_number": "821351298988",
+    "project_id": "vancon-591fb",
+    "storage_bucket": "vancon-591fb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:890830070498:android:628093f0e436bed99474bb",
+        "mobilesdk_app_id": "1:821351298988:android:8f11075ed486a365486c09",
         "android_client_info": {
-          "package_name": "com.myfoodapp"
+          "package_name": "com.vancon"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "890830070498-anr6k9ot21biaqusk2mp9diancoj0bhm.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBJqqXsgun1szmDuue6-vf0-qzI2TgdqkM"
+          "current_key": "AIzaSyBEULzi89zc7L162Px-LRd8J9n1ZkeDCU8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "890830070498-anr6k9ot21biaqusk2mp9diancoj0bhm.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

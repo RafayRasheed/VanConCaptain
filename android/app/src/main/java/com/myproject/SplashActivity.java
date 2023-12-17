@@ -1,4 +1,4 @@
-package com.myfoodapp;
+package com.vancon;
 
 import android.content.Intent;
 import android.os.Bundle;
