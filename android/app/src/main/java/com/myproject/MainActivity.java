@@ -1,4 +1,4 @@
-package com.vancon;
+package com.vanconcaptain;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

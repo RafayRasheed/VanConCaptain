@@ -1,4 +1,4 @@
-package com.vancon;
+package com.vanconcaptain;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

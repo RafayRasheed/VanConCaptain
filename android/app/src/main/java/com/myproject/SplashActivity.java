@@ -1,4 +1,4 @@
-package com.vancon;
+package com.vanconcaptain;
 
 import android.content.Intent;
 import android.os.Bundle;
