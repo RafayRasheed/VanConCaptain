@@ -14,35 +14,6 @@ export const HomeSkeleton = ({ navigation }) => {
 
         <View style={styles.container}>
 
-            <Spacer paddingT={myHeight(1.4)} />
-            <Text style={[styles.textCommon, {
-                fontSize: myFontSize.medium2,
-                fontFamily: myFonts.heading,
-                alignSelf: 'center',
-
-            }]}>Food<Text style={{ color: myColors.primaryT }}>app</Text></Text>
-
-            <Spacer paddingT={myHeight(1.5)} />
-            {/* Search */}
-            <TouchableOpacity activeOpacity={0.8} style={{
-                flexDirection: 'row', alignItems: 'center', width: myWidth(85),
-                backgroundColor: myColors.divider, alignSelf: 'center', paddingVertical: myHeight(1.3),
-                borderRadius: myWidth(2.5)
-
-            }} onPress={null}>
-                <Spacer paddingEnd={myWidth(4)} />
-                <Image style={{
-                    height: myHeight(2.2), width: myHeight(2.2), resizeMode: 'contain', tintColor: myColors.offColor
-                }} source={require('../../assets/home_main/home/search.png')} />
-                <Spacer paddingEnd={myWidth(3)} />
-
-                <Text style={[styles.textCommon, {
-                    fontSize: myFontSize.body,
-                    fontFamily: myFonts.bodyBold,
-                    color: myColors.offColor
-                }]}>Search dishes, restaurants</Text>
-            </TouchableOpacity>
-
             <Spacer paddingT={myHeight(3)} />
 
             {/* Banner */}

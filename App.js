@@ -9,7 +9,7 @@ import { Provider, useDispatch, useStore } from 'react-redux';
 import storeRedux from './redux/store_redux';
 import SplashScreen from 'react-native-splash-screen'
 import { getCartLocal } from './components/functions/storageMMKV';
-import { dataFullData, verificationCode } from './components/functions/functions';
+import { dataFullData, getCurrentLocations, verificationCode } from './components/functions/functions';
 import { notificationListeners, requestUserPermission } from './components/RootNavigation';
 import Geolocation from '@react-native-community/geolocation';
 import { setCurrentLocation } from './redux/location_reducer';
@@ -340,6 +340,8 @@ export default function App() {
     { lat: 24.92543614, long: 67.06112623 },
     { lat: 24.802474, long: 67.030249 }
   ];
+ 
+
   useEffect(() => {
     const api = 'https://fcm.googleapis.com/v1/projects/foodapp-edd7e/messages:send'
     const myToken = 'dph9AvipQKa-rwb7sJG_K7:APA91bEo3djpvpDx9GFN_UEjJ2lMQBfzSe1fEsA5GQccV49_FOTYf_bdyWgl9-dFc3FXCtM3PSbAnmx4a9zLcTUwiHmLxZGFV5xqJVywztCOWyc0KlKN3n_0t60JejK8y1rRBGqUFKV9'
@@ -396,6 +398,10 @@ export default function App() {
     SplashScreen.hide()
     LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
     LogBox.ignoreAllLogs();
+
+    setInterval(()=>{
+      getCurrentLocations()
+    },60000)
     // const allLocations = []
     // sss.map((loc, i) => {
     //   const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${loc.lat}&lon=${loc.long}`;

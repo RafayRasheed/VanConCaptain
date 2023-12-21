@@ -42,118 +42,8 @@ export const HomeScreen = ({ navigation }) => {
 
 
     const dispatch = useDispatch()
-    function getCategories() {
-        let catArray = []
-        firestore().collection('categories').orderBy('count', 'desc').get().then((result) => {
-            if (!result.empty) {
-                result.forEach((cat) => {
-                    catArray.push(cat.data())
-                })
-
-                setCategories(catArray)
-
-            }
-            else {
-
-                setCategories(catArray)
-            }
-        }).catch((er) => {
-            console.log('Error on Get Category', er)
-        })
-    }
-
-    function getTopRatedRes() {
-        firestore().collection('restaurants')
-            .where('update', '==', true)
-            .where('city', '==', profile.city)
-            .orderBy('rating', 'desc').get().then((result) => {
-                if (!result.empty) {
-                    let rest = []
-                    let items = []
-                    const size = result.size
-                    result.forEach((res, i) => {
-                        console.log(i)
-                        const restaurant = res.data()
-                        rest.push(restaurant)
-                        restaurant.foodCategory.map((subCat, ind) => {
-                            subCat.items?.map((item, i) => {
-                                const newItem = {
-                                    ...item,
-                                    homeDelivery: restaurant.homeDelivery,
-                                    takeAway: restaurant.takeAway,
-                                    dineIn: restaurant.dineIn
-                                }
-                                items.push(newItem)
-                            })
-
-                        })
 
 
-                        // console.log(res.data().name)
-                    })
-
-                    setRecommendRestaurant(rest)
-                    dispatch(setRecommend(rest))
-                    dispatch(setAllItems(items))
-                    dispatch(setAllRest(rest))
-                    rest.sort((a, b) => b.dateInt - a.dateInt);
-                    setNearbyRestaurant(rest)
-                    dispatch(setNearby(rest))
-                    setIsLoading(false)
-                }
-                else {
-                    console.log('empty')
-                    setRecommendRestaurant([])
-                    setNearbyRestaurant([])
-
-                    dispatch(setRecommend([]))
-                    dispatch(setAllItems([]))
-                    dispatch(setAllRest([]))
-                    dispatch(setNearby([]))
-                    setIsLoading(false)
-
-                    // setCategories(catArray)
-                }
-            }).catch((er) => {
-                console.log('Error on Get Restaurant', er)
-                setIsLoading(false)
-
-            })
-    }
-    function getNearbyRestuarant() {
-
-        firestore().collection('restaurants')
-            .where('update', '==', true)
-            .where('city', '==', profile.city)
-            .orderBy('dateInt', 'desc').get().then((result) => {
-                if (!result.empty) {
-                    let rest = []
-                    const size = result.size
-                    result.forEach((res, i) => {
-                        rest.push(res.data())
-                        // catArray.push(cat.data())
-                        if (size > 4 && i == 4) {
-                            setNearbyRestaurant(rest)
-                        }
-
-                        // console.log(res.data().name)
-                    })
-                    if (size <= 5) {
-                        setNearbyRestaurant(rest)
-                    }
-                    dispatch(setNearby(rest))
-
-                }
-                else {
-                    console.log('empty')
-                    setNearbyRestaurant([])
-                    dispatch(setNearby([]))
-                    // setCategories(catArray)
-                }
-            }).catch((er) => {
-                console.log('Error on Get top rated Restaurant', er)
-            })
-    }
 
     function getAllRestuarant() {
         firestore().collection('restaurants')
@@ -195,61 +85,7 @@ export const HomeScreen = ({ navigation }) => {
     }
 
 
-    function gettingOrders() {
-        // -1=rejected
-        // -2=cancelled
-        // 100= completed
-        // 0 = pending 
-        // 1 = inProgress
-        firestore().collection('orders').doc(profile.uid).collection('orders')
-            .onSnapshot(documentSnapshot => {
-                let pending = []
-                let progress = []
-                let history = []
-                documentSnapshot.forEach(documentSnapshot1 => {
-
-                    const order = documentSnapshot1.data()
-                    if (order.status == -1 || order.status == 100 || order.status == -2) {
-                        history.push(order)
-                    }
-                    else if (order.status == 0) {
-                        pending.push(order)
-                    }
-                    else {
-                        progress.push(order)
-                    }
-                });
-                dispatch(setPendingOrderse(pending))
-                dispatch(setHistoryOrderse(history))
-                dispatch(setProgressOrderse(progress))
-            });
-
-    }
-    // re.turn (<Test />)
-    useEffect(() => {
-        getTopRatedRes()
-
-        FirebaseUser.doc(profile.uid).get()
-            .then((data) => {
-                const all = data.data()
-                const favoriteRes = all.favoriteRes
-                const favoriteItem = all.favoriteItem
-
-                if (favoriteRes && favoriteRes.length) {
-                    dispatch(setFavoriteRest(favoriteRes))
-                }
-                if (favoriteItem && favoriteItem.length) {
-                    dispatch(setFavoriteItem(favoriteItem))
-                }
-            }).catch((er) => {
-                console.log('Error on Get Users for fav', er)
-            })
-        getCategories()
-        dispatch(setCart(getCartLocal()))
-        // gettingOrders()
-        getToken()
-
-    }, [profile.city])
+  
 
     useEffect(() => {
 
@@ -293,42 +129,16 @@ export const HomeScreen = ({ navigation }) => {
 
     }
 
+    // Realtime
     useEffect(() => {
-        database()
-            .ref(`/orders/${profile.uid}`)
-            .on('value', snapshot => {
-                let pending = []
-                let progress = []
-                let history = []
-                snapshot.forEach(documentSnapshot1 => {
-                    const order = documentSnapshot1.val()
-                    if (order.status == -1 || order.status == 100 || order.status == -2) {
-                        history.push(order)
-                    }
-                    else if (order.status == 0) {
-                        pending.push(order)
-                    }
-                    else {
-                        progress.push(order)
-                    }
-
-                });
-                pending.sort((a, b) => b.dateInt - a.dateInt);
-                progress.sort((a, b) => b.dateInt - a.dateInt);
-                history.sort((a, b) => b.dateInt - a.dateInt);
-                dispatch(setPendingOrderse(pending))
-                dispatch(setHistoryOrderse(history))
-                dispatch(setProgressOrderse(progress))
-
-                console.log('User data: ', pending.length, progress.length, history.length);
-            });
-        // const subscriber = firestore().collection('orders').doc(profile.uid).collection('orders')
-        //     .onSnapshot(documentSnapshot => {
+        // database()
+        //     .ref(`/orders/${profile.uid}`)
+        //     .on('value', snapshot => {
         //         let pending = []
         //         let progress = []
         //         let history = []
-        //         documentSnapshot.forEach(documentSnapshot1 => {
-        //             const order = documentSnapshot1.data()
+        //         snapshot.forEach(documentSnapshot1 => {
+        //             const order = documentSnapshot1.val()
         //             if (order.status == -1 || order.status == 100 || order.status == -2) {
         //                 history.push(order)
         //             }
@@ -346,16 +156,13 @@ export const HomeScreen = ({ navigation }) => {
         //         dispatch(setPendingOrderse(pending))
         //         dispatch(setHistoryOrderse(history))
         //         dispatch(setProgressOrderse(progress))
+
+        //         console.log('User data: ', pending.length, progress.length, history.length);
         //     });
 
-        // // Stop listening for updates when no longer required
-        // return () => subscriber();
     }, []);
 
-    useEffect(() => {
-        if (categories) {
-        }
-    }, [categories])
+ 
     return (
 
         <SafeAreaView style={styles.container}>
