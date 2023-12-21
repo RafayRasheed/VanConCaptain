@@ -33,7 +33,7 @@ export function dataFullData() {
     const minutes = adjustSting(date.getUTCMinutes().toString(), 2)
     const seconds = adjustSting(date.getUTCSeconds().toString(), 2)
     const mili = adjustSting(date.getUTCMilliseconds().toString(), 3)
-    const extra = verificationCode().toString().slice(0, 3)
+    const extra = verificationCode().toString().slice(0, 1)
     const code = year + month + day + hours + minutes + seconds + mili + extra
 
 

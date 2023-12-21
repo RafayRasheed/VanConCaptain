@@ -14,6 +14,7 @@ import { notificationListeners, requestUserPermission } from './components/RootN
 import Geolocation from '@react-native-community/geolocation';
 import { setCurrentLocation } from './redux/location_reducer';
 import { all } from 'axios';
+import { FirebaseLocation } from './components/functions/firebase';
 // import { enableLatestRenderer } from 'react-native-maps';
 
 // enableLatestRenderer();
@@ -395,39 +396,90 @@ export default function App() {
     SplashScreen.hide()
     LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
     LogBox.ignoreAllLogs();
-    Geolocation.getCurrentPosition(info => {
-      if (info) {
-        const { coords } = info
-        const { latitude, longitude } = coords
-        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${24.8168778}&lon=${67.0345444}`;
+    const allLocations = []
+    // sss.map((loc, i) => {
+    //   const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${loc.lat}&lon=${loc.long}`;
+    //   console.log(apiUrl)
+    //   fetch(apiUrl, {
+    //     headers: {
+    //       'Accept-Language': 'en',
+    //     },
+    //   })
+    //     .then(response => response.json())
+    //     .then(data => {
 
-        fetch(apiUrl, {
-          headers: {
-            'Accept-Language': 'en',
-          },
-        })
-          .then(response => response.json())
-          .then(data => {
+    //       // Handle the response data
+    //       const { display_name, address } = data
+    //       const { road, neighbourhood } = address
+    //       let shortName = null
+    //       if (road) {
+    //         shortName = road
+    //       }
+    //       if (neighbourhood) {
+    //         shortName = shortName ? `${shortName}, ${neighbourhood}` : neighbourhood
+    //       }
+    //       if (allLocations.findIndex(it => shortName != null && it.shortName == shortName) == -1) {
 
-            // Handle the response data
-            const { display_name, address } = data
-            const { road, neighbourhood } = address
-            const detail = ({ fullName: display_name, shortName: `${road}, ${neighbourhood}`, latitude, longitude });
-            storeRedux.dispatch(setCurrentLocation(detail))
+    //         const detail = ({ fullName: display_name, shortName, latitude: loc.lat, longitude: loc.long });
+    //         allLocations.push(detail)
+    //       }
+    //       console.log(i + 1)
+    //       if (i + 1 == sss.length) {
+    //         FirebaseLocation.doc('locations').set({ Karachi: allLocations })
+    //           .then(success => {
+    //             console.log('success', success)
+    //           })
+    //           .catch(err => {
+    //             showError('Something wrong', err)
+    //           })
 
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      } else {
+    //       }
 
-      }
-    });
 
-    // const dispatch = useDispatch()
-    // dispatch(setCart(getCartLocal()))
-    // console.log(typeof getCartLocal())
-    // printWithPlat("Is MMKV store successful? " + storage.contains('mberr'))
+    //     })
+    //     .catch(error => {
+    //       console.error('Error:', error);
+    //     });
+    // })
+    // console.log('allLocations', allLocations)
+    // FirebaseLocation.doc('locations').set({ Karachi: [{ lat: 10000, lng: 10000 }] })
+    //   .then(success => {
+    //     console.log('success', success)
+    //   })
+    //   .catch(err => {
+    //     showError('Something wrong', err)
+    //   })
+
+    // Geolocation.getCurrentPosition(info => {
+    //   if (info) {
+    //     const { coords } = info
+    //     const { latitude, longitude } = coords
+    //     const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${24.8168778}&lon=${67.0345444}`;
+
+    //     fetch(apiUrl, {
+    //       headers: {
+    //         'Accept-Language': 'en',
+    //       },
+    //     })
+    //       .then(response => response.json())
+    //       .then(data => {
+
+    //         // Handle the response data
+    //         const { display_name, address } = data
+    //         const { road, neighbourhood } = address
+    //         const detail = ({ fullName: display_name, shortName: `${road}, ${neighbourhood}`, latitude, longitude });
+    //         storeRedux.dispatch(setCurrentLocation(detail))
+
+    //       })
+    //       .catch(error => {
+    //         console.error('Error:', error);
+    //       });
+    //   } else {
+
+    //   }
+    // });
+
+
   }, [])
   const isAndroid = Platform.OS == 'android'
   // const OsVer = Platform.constants['Release']; Android Version like 9,10, 11
