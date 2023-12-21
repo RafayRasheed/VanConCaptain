@@ -396,7 +396,7 @@ export default function App() {
     SplashScreen.hide()
     LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
     LogBox.ignoreAllLogs();
-    const allLocations = []
+    // const allLocations = []
     // sss.map((loc, i) => {
     //   const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${loc.lat}&lon=${loc.long}`;
     //   console.log(apiUrl)
