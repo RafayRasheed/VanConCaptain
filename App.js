@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react';
-import { View, Text, SafeAreaView, StatusBar, Platform, TouchableOpacity, StyleSheet, PermissionsAndroid } from 'react-native';
+import { View, Text, SafeAreaView, StatusBar, Platform, TouchableOpacity, StyleSheet, PermissionsAndroid, LogBox } from 'react-native';
 // import { MMKV } from 'react-native-mmkv';
 import { myColors } from './ultils/myColors';
 import { myHeight, printWithPlat } from './components/common';
 import { AppNavigator } from './components/app_navigator';
 import { enableScreens } from 'react-native-screens';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useStore } from 'react-redux';
 import storeRedux from './redux/store_redux';
 import SplashScreen from 'react-native-splash-screen'
 import { getCartLocal } from './components/functions/storageMMKV';
 import { dataFullData, verificationCode } from './components/functions/functions';
 import { notificationListeners, requestUserPermission } from './components/RootNavigation';
+import Geolocation from '@react-native-community/geolocation';
+import { setCurrentLocation } from './redux/location_reducer';
 // import { enableLatestRenderer } from 'react-native-maps';
 
 // enableLatestRenderer();
@@ -215,6 +217,8 @@ const citiesPakistan = [
   'Tump',
 ];
 export default function App() {
+  // const dispatch = useDispatch()
+  // const store = useStore()
   useEffect(() => {
     const api = 'https://fcm.googleapis.com/v1/projects/foodapp-edd7e/messages:send'
     const myToken = 'dph9AvipQKa-rwb7sJG_K7:APA91bEo3djpvpDx9GFN_UEjJ2lMQBfzSe1fEsA5GQccV49_FOTYf_bdyWgl9-dFc3FXCtM3PSbAnmx4a9zLcTUwiHmLxZGFV5xqJVywztCOWyc0KlKN3n_0t60JejK8y1rRBGqUFKV9'
@@ -270,6 +274,18 @@ export default function App() {
   useEffect(() => {
     printWithPlat('Started Successfully')
     SplashScreen.hide()
+    LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+    LogBox.ignoreAllLogs();
+    Geolocation.getCurrentPosition(info => {
+      if (info) {
+
+        console.log(info)
+        storeRedux.dispatch(setCurrentLocation('yes'))
+      } else {
+
+      }
+    });
+
     // const dispatch = useDispatch()
     // dispatch(setCart(getCartLocal()))
     // console.log(typeof getCartLocal())
