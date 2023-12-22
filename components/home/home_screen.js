@@ -20,7 +20,7 @@ import storage from '@react-native-firebase/storage';
 import { setAllItems, setAllRest, setNearby, setRecommend } from '../../redux/data_reducer';
 import { setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
 import database from '@react-native-firebase/database';
-import { deccodeInfo } from '../functions/functions';
+import { deccodeInfo, getCurrentLocations } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import { FirebaseUser } from '../functions/firebase';
@@ -32,7 +32,7 @@ export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
     const { profile } = useSelector(state => state.profile)
 
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [categories, setCategories] = useState([])
     const [nearbyRestaurant, setNearbyRestaurant] = useState([])
     const [RecommendRestaurant, setRecommendRestaurant] = useState([])
@@ -85,7 +85,7 @@ export const HomeScreen = ({ navigation }) => {
     }
 
 
-  
+
 
     useEffect(() => {
 
@@ -128,9 +128,19 @@ export const HomeScreen = ({ navigation }) => {
         // console.log(token)
 
     }
+    useEffect(() => {
+        console.log(profile.ready)
+        // const interval = setInterval(() => {
+        //     getCurrentLocations()
+
+        // }, 120000);
+        // return () => clearInterval(interval);
+
+    }, [])
 
     // Realtime
     useEffect(() => {
+
         // database()
         //     .ref(`/orders/${profile.uid}`)
         //     .on('value', snapshot => {
@@ -162,7 +172,7 @@ export const HomeScreen = ({ navigation }) => {
 
     }, []);
 
- 
+
     return (
 
         <SafeAreaView style={styles.container}>
@@ -178,118 +188,58 @@ export const HomeScreen = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             alignSelf: 'center',
 
-                        }]}>Food<Text style={{ color: myColors.primaryT }}>app</Text></Text>
+                        }]}>VanCon<Text style={{ color: myColors.primaryT }}> Captain</Text></Text>
 
-                        <Spacer paddingT={myHeight(1.5)} />
-                        {/* Search */}
-                        <TouchableOpacity activeOpacity={0.8} style={{
-                            flexDirection: 'row', alignItems: 'center', width: myWidth(85),
-                            backgroundColor: myColors.divider, alignSelf: 'center', paddingVertical: myHeight(1.3),
-                            borderRadius: myWidth(2.5)
 
-                        }} onPress={() => navigation.navigate('Search')}>
-                            <Spacer paddingEnd={myWidth(4)} />
-                            <Image style={{
-                                height: myHeight(2.2), width: myHeight(2.2), resizeMode: 'contain', tintColor: myColors.offColor
-                            }} source={require('../assets/home_main/home/search.png')} />
-                            <Spacer paddingEnd={myWidth(3)} />
-
-                            <Text style={[styles.textCommon, {
-                                fontSize: myFontSize.body,
-                                fontFamily: myFonts.bodyBold,
-                                color: myColors.offColor
-                            }]}>Search dishes, restaurants</Text>
-                        </TouchableOpacity>
 
                         <Spacer paddingT={myHeight(3)} />
 
                         {/* Banner */}
                         <Banners />
 
-                        <Spacer paddingT={myHeight(2.5)} />
-                        {/* CAtegories*/}
-                        <View>
-                            {/* Categories & see all*/}
-                            <View style={{
-                                paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row',
-                                justifyContent: 'space-between'
-                            }}>
-                                <Text style={[styles.textCommon, {
-                                    fontSize: myFontSize.xxBody,
-                                    fontFamily: myFonts.bodyBold,
-                                }]}>Categories</Text>
 
-                                {/* See all */}
-                                {/* <TouchableOpacity style={{
-                                    flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
-                                    paddingStart: myWidth(2)
-                                }} activeOpacity={0.6} onPress={() => navigation.navigate('CategoryFull', { categories })}>
-
-                                    <Text
-                                        style={[styles.textCommon, {
-                                            fontSize: myFontSize.body2,
-                                            fontFamily: myFonts.bodyBold,
-                                            color: myColors.primaryT
-                                        }]}>See All</Text>
-                                    <Image style={{
-                                        height: myHeight(1.5), width: myHeight(1.5), marginStart: myWidth(1),
-                                        resizeMode: 'contain', tintColor: myColors.primaryT
-                                    }} source={require('../assets/home_main/home/go.png')} />
-                                </TouchableOpacity> */}
-                            </View>
-
-                            <Spacer paddingT={myHeight(0.3)} />
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: myWidth(1) }}>
-
-                                {categories.map((item, i) =>
-
-                                    <View key={i} style={{ padding: myHeight(1.4), paddingEnd: myWidth(2) }}>
-                                        <TouchableOpacity activeOpacity={0.8} style={{
-                                            flexDirection: 'row', alignItems: 'center', borderRadius: myHeight(15),
-                                            backgroundColor: myColors.background,
-                                            // backgroundColor:myColors.primaryL,  
-                                            padding: myHeight(0.8), elevation: 8
-                                        }} onPress={() => navigation.navigate('RestaurantAll', { name: item.name, restaurants: Restaurants })}>
-                                            <View style={{
-                                                height: myHeight(5), width: myHeight(5), borderRadius: myHeight(5),
-                                                backgroundColor: '#00000008',
-                                                alignItems: 'center', justifyContent: 'center'
-                                            }} >
-                                                <ImageUri width={myHeight(4.2)} height={myHeight(4.2)} resizeMode='contain' uri={item.image} borderRadius={5000} />
-                                                {/* <Image style={{
-                                                    height: myHeight(4.2), width: myHeight(4.2),
-                                                    resizeMode: 'contain',
-                                                }} source={{ uri: item.image }} /> */}
-
-                                            </View>
-
-                                            <Spacer paddingEnd={myWidth(2)} />
-                                            <Text
-                                                style={[styles.textCommon, {
-                                                    fontSize: myFontSize.body2,
-                                                    fontFamily: myFonts.heading,
-                                                }]}>{item.name}</Text>
-                                            <Spacer paddingEnd={myWidth(2.7)} />
-
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </ScrollView>
-
-                        </View>
 
                         <Spacer paddingT={myHeight(3)} />
+
+                        {
+                            profile.ready ? <View style={{ height: myHeight(20), width: myWidth(80), backgroundColor: myColors.primary }}>
+
+                            </View> :
+                                <View style={{ width: '100%', alignItems: 'center' }}>
+
+                                    <Text style={[styles.textCommon,
+                                    {
+                                        color: myColors.text, fontSize: myFontSize.body,
+                                        fontFamily: myFonts.bodyBold
+                                    }]
+                                    }>Please click on Apply & fill the form to get rides</Text>
+                                    <Spacer paddingT={myHeight(1.5)} />
+
+                                    <TouchableOpacity onPress={null}
+                                        activeOpacity={0.8}
+                                        style={{
+                                            width: myWidth(50), alignSelf: 'center', paddingVertical: myHeight(1.2),
+                                            borderRadius: myHeight(0.8), alignItems: 'center', justifyContent: 'center',
+                                            flexDirection: 'row', backgroundColor: myColors.primary,
+                                            // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
+                                        }}>
+                                        <Text style={[styles.textCommon, {
+                                            fontFamily: myFonts.heading,
+                                            fontSize: myFontSize.body,
+                                            color: myColors.background
+                                        }]}>Apply</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                        }
                         {/* New Arrival  Complete*/}
-                        <View>
-                            {/* New Arrivals*/}
+                        {/* <View>
                             <View style={{ paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={[styles.textCommon, {
                                     fontSize: myFontSize.xxBody,
                                     fontFamily: myFonts.bodyBold,
                                 }]}>New Arrivals</Text>
 
-                                {/* See all */}
                                 <TouchableOpacity style={{
                                     flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
                                     paddingStart: myWidth(2)
@@ -309,7 +259,6 @@ export const HomeScreen = ({ navigation }) => {
                             </View>
 
                             <Spacer paddingT={myHeight(1.3)} />
-                            {/* Restuarant */}
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}
                                 contentContainerStyle={{ paddingHorizontal: myWidth(4) }}>
                                 <View style={{
@@ -324,56 +273,10 @@ export const HomeScreen = ({ navigation }) => {
                                 </View>
 
                             </ScrollView>
-                        </View>
-
-                        <Spacer paddingT={myHeight(3)} />
-                        {/*Nearby Restaurants  Complete*/}
-                        <View>
-                            {/* Nearby Restaurants*/}
-                            <View style={{ paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={[styles.textCommon, {
-                                    fontSize: myFontSize.xxBody,
-                                    fontFamily: myFonts.bodyBold,
-                                }]}>Recommended</Text>
-
-                                <TouchableOpacity style={{
-                                    flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
-                                    paddingStart: myWidth(2)
-                                }} activeOpacity={0.6} onPress={() => navigation.navigate('RestaurantAll', { name: 'Recommended', restaurants: Restaurants })}>
-
-                                    <Text
-                                        style={[styles.textCommon, {
-                                            fontSize: myFontSize.body2,
-                                            fontFamily: myFonts.bodyBold,
-                                            color: myColors.primaryT
-                                        }]}>See All</Text>
-                                    <Image style={{
-                                        height: myHeight(1.5), width: myHeight(1.5), marginStart: myWidth(1),
-                                        resizeMode: 'contain', tintColor: myColors.primaryT
-                                    }} source={require('../assets/home_main/home/go.png')} />
-                                </TouchableOpacity>
-                            </View>
-
-                            <Spacer paddingT={myHeight(1.3)} />
-                            {/* Restuarant */}
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: myWidth(4) }}>
-                                <View style={{
-                                    flexDirection: 'row',
-                                }}>
-                                    {RecommendRestaurant.slice(0, 3).map((item, i) =>
-                                        <TouchableOpacity key={i} activeOpacity={0.95}
-                                            onPress={() => navigation.navigate('RestaurantDetail', { item })} >
-                                            <RestaurantInfo restaurant={item} />
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-
-                            </ScrollView>
-                        </View>
+                        </View> */}
 
 
-                        <Spacer paddingT={myHeight(4)} />
+                        {/* <Spacer paddingT={myHeight(3)} /> */}
                     </ScrollView>
             }
 

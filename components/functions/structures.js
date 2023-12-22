@@ -1,5 +1,5 @@
 
-export function Person(uid, name, email, city, password, date, dateInt,) {
+export function Person(uid, name, email, city, password, date, dateInt) {
     this.uid = uid;
     this.name = name;
     this.email = email;
@@ -7,4 +7,5 @@ export function Person(uid, name, email, city, password, date, dateInt,) {
     this.password = password;
     this.date = date;
     this.dateInt = dateInt;
+    this.ready = false;
 } 

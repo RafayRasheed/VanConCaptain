@@ -27,7 +27,7 @@ export const OrderScreen = ({ navigation }) => {
             <View style={styles.containerTop}>
                 {/* containerActivity_Ic */}
                 <View style={styles.containerActivity_Ic}>
-                    <Text style={styles.textActivity}>Orders</Text>
+                    <Text style={styles.textActivity}>Rides</Text>
                 </View>
 
                 <Spacer paddingT={myHeight(1.5)} />

@@ -340,7 +340,7 @@ export default function App() {
     { lat: 24.92543614, long: 67.06112623 },
     { lat: 24.802474, long: 67.030249 }
   ];
- 
+
 
   useEffect(() => {
     const api = 'https://fcm.googleapis.com/v1/projects/foodapp-edd7e/messages:send'
@@ -399,9 +399,7 @@ export default function App() {
     LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
     LogBox.ignoreAllLogs();
 
-    setInterval(()=>{
-      getCurrentLocations()
-    },60000)
+
     // const allLocations = []
     // sss.map((loc, i) => {
     //   const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${loc.lat}&lon=${loc.long}`;
