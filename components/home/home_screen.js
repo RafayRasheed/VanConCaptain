@@ -194,7 +194,7 @@ export const HomeScreen = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             alignSelf: 'center',
 
-                        }]}>Van<Text style={{ color: myColors.primaryT }}>Con</Text></Text>
+                        }]}>VanCon<Text style={{ color: myColors.primaryT }}> Captain</Text></Text>
 
 
 

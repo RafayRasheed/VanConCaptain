@@ -3,7 +3,7 @@ import RNSmtpMailer from "react-native-smtp-mailer";
 export function sendVerficationEmail(profile, code) {
     const username = 'foodapphelpcustomer@gmail.com'
     const password = "louajmoowfxcdmgn"
-    const from = 'VanCon'
+    const from = 'VanCon Captain'
     const heading = `Hi ${profile.name} Welcome To ${from}!`
     const to = profile.email
     const subject = 'Verification'
