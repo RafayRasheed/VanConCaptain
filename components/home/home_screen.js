@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Alert, ScrollView, StyleSheet, TouchableOpacity, Image, View, Text, FlatList, Modal, UIManager, LayoutAnimation } from 'react-native'
-import { MyError, Spacer, StatusbarH, ios, myHeight, myWidth } from '../common';
+import { MyError, NotiAlertNew, Spacer, StatusbarH, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import { Categories, Restaurants, } from './home_data'
@@ -20,10 +20,12 @@ import storage from '@react-native-firebase/storage';
 import { setAllItems, setAllRest, setNearby, setRecommend } from '../../redux/data_reducer';
 import { setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
 import database from '@react-native-firebase/database';
-import { deccodeInfo, getCurrentLocations } from '../functions/functions';
+import { SetErrorAlertToFunction, deccodeInfo, getCurrentLocations } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
-import { FirebaseUser } from '../functions/firebase';
+import { FirebaseUser, getDeviceToken, sendPushNotification, updateDeviceTokenToFireBase } from '../functions/firebase';
+import { NotiAlert } from '../common/noti_Alert';
+import Animated, { SlideInUp } from 'react-native-reanimated';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -88,13 +90,18 @@ export const HomeScreen = ({ navigation }) => {
 
 
     useEffect(() => {
+        const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+            console.log('Message handled in the foreground:', remoteMessage);
+            SetErrorAlertToFunction({
+                Title: remoteMessage.notification.title,
+                Body: remoteMessage.notification.body,
+                Status: remoteMessage.data.status
+            })
+        });
 
-        // const unsubscribe = messaging().onMessage(async remoteMessage => {
-        //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-        // });
-
-        // return unsubscribe;
-
+        return () => {
+            unsubscribeOnMessage();
+        };
     }, []);
 
     async function onDisplayNotification(remoteMessage) {
@@ -123,13 +130,12 @@ export const HomeScreen = ({ navigation }) => {
         });
     }
 
-    async function getToken() {
-        // const token = await messaging().getToken();
-        // console.log(token)
 
-    }
     useEffect(() => {
-        console.log(profile.ready)
+        updateDeviceTokenToFireBase(profile.uid)
+        // sendPushNotification('hi', 'bye',2 )
+
+        // getCurrentLocations()
         // const interval = setInterval(() => {
         //     getCurrentLocations()
 
@@ -188,7 +194,7 @@ export const HomeScreen = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             alignSelf: 'center',
 
-                        }]}>VanCon<Text style={{ color: myColors.primaryT }}> Captain</Text></Text>
+                        }]}>Van<Text style={{ color: myColors.primaryT }}>Con</Text></Text>
 
 
 
