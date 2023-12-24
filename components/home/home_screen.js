@@ -92,7 +92,7 @@ export const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
-            console.log('Message handled in the foreground:', remoteMessage);
+            console.log('Message handled in the foreground:');
             SetErrorAlertToFunction({
                 Title: remoteMessage.notification.title,
                 Body: remoteMessage.notification.body,
