@@ -88,7 +88,38 @@ export const HomeScreen = ({ navigation }) => {
     }
 
 
+    function sendNotificationToAll() {
+        firestore().collection('users').get()
+            .then((result) => {
+                if (!result.empty) {
 
+                    const tks = []
+                    result.forEach((res, i) => {
+                        const user = res.data()
+                        // sendPushNotification('Enjoy the discount', 'Get Rs 150 discount on first ride', 0, user.deviceToken)
+
+                        tks.push(user.deviceToken)
+                        // catArray.push(cat.data())
+
+                    })
+                    sendPushNotification('Enjoy the discount', 'Get Rs 150 discount on first ride', generateRandomIntegerInRange(0, 2), tks)
+
+
+
+                }
+                else {
+
+                    console.log('empty')
+
+
+                    // setCategories(catArray)
+                }
+            }).catch((er) => {
+                // Alert.alert(er.toString())
+
+                console.log('Error on Get all Restaurant', er)
+            })
+    }
 
     useEffect(() => {
         const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
@@ -130,7 +161,9 @@ export const HomeScreen = ({ navigation }) => {
             },
         });
     }
-
+    function generateRandomIntegerInRange(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
     function getProfileFromFirebase() {
         FirebaseUser.doc(profile.uid).get().then((documentSnapshot) => {
             const prf = documentSnapshot.data()
@@ -138,7 +171,7 @@ export const HomeScreen = ({ navigation }) => {
 
 
         }).catch(err => {
-            console.log('Internal error while  getProfileFrom')
+            console.log('Internal error while  getProfileFrom', err)
         });
     }
     useEffect(() => {
@@ -212,7 +245,7 @@ export const HomeScreen = ({ navigation }) => {
                         <Spacer paddingT={myHeight(3)} />
 
                         {/* Banner */}
-                        <Banners />
+                        {/* <Banners /> */}
 
 
 
@@ -249,6 +282,33 @@ export const HomeScreen = ({ navigation }) => {
                                 </View>
 
                         }
+                        <Spacer paddingT={myHeight(20)} />
+
+                        <View style={{ width: '100%', alignItems: 'center' }}>
+
+                            <Text style={[styles.textCommon,
+                            {
+                                color: myColors.text, fontSize: myFontSize.body,
+                                fontFamily: myFonts.bodyBold
+                            }]
+                            }>Test Notification</Text>
+                            <Spacer paddingT={myHeight(1.5)} />
+
+                            <TouchableOpacity onPress={sendNotificationToAll}
+                                activeOpacity={0.8}
+                                style={{
+                                    width: myWidth(50), alignSelf: 'center', paddingVertical: myHeight(1.2),
+                                    borderRadius: myHeight(0.8), alignItems: 'center', justifyContent: 'center',
+                                    flexDirection: 'row', backgroundColor: myColors.primary,
+                                    // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
+                                }}>
+                                <Text style={[styles.textCommon, {
+                                    fontFamily: myFonts.heading,
+                                    fontSize: myFontSize.body,
+                                    color: myColors.background
+                                }]}>Send</Text>
+                            </TouchableOpacity>
+                        </View>
                         {/* New Arrival  Complete*/}
                         {/* <View>
                             <View style={{ paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
