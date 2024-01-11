@@ -9,7 +9,7 @@ import { setLogin } from "../../functions/storageMMKV";
 import { useDispatch } from "react-redux";
 import { setProfile } from "../../../redux/profile_reducer";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { FirebaseUser } from "../../functions/firebase";
+import { FirebaseUser, updateDeviceTokenToFireBase } from "../../functions/firebase";
 
 export const Login = ({ navigation, showError, showLoading }) => {
 
@@ -54,9 +54,11 @@ export const Login = ({ navigation, showError, showLoading }) => {
         const decodePass = deccodeInfo(myUser.password.toString())
         if (decodePass == password) {
             dispatch(setProfile(myUser))
+            updateDeviceTokenToFireBase(myUser.uid)
+
             // setLogin(myUser)
             showLoading(false)
-            navigation.replace("HomeBottomNavigator")
+            navigation.replace("HomeBottomNavigator", { isFirst: true })
         }
         else {
             showError('Incorrect email or password')

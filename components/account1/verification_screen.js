@@ -9,7 +9,7 @@ import { sendVerficationEmail } from "../functions/email";
 import { verificationCode } from "../functions/functions";
 import { useDispatch } from "react-redux";
 import { setProfile } from "../../redux/profile_reducer";
-import { FirebaseUser } from "../functions/firebase";
+import { FirebaseUser, updateDeviceTokenToFireBase } from "../functions/firebase";
 
 export const Verification = ({ navigation, route }) => {
     const { code, profile, reset } = route.params
@@ -87,9 +87,10 @@ export const Verification = ({ navigation, route }) => {
 
     function goToLogin() {
         dispatch(setProfile(profile))
+        updateDeviceTokenToFireBase(profile.uid)
         // setLogin(profile)
         setIsLoading(false)
-        navigation.replace("HomeBottomNavigator")
+        navigation.replace("HomeBottomNavigator", { isFirst: true })
     }
 
     function goToNewPass() {
@@ -102,6 +103,7 @@ export const Verification = ({ navigation, route }) => {
         FirebaseUser.doc(profile.uid).set(profile)
             .then(success => {
                 goToLogin()
+
             })
             .catch(err => {
                 showError('Something wrong')

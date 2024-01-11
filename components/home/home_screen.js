@@ -97,8 +97,10 @@ export const HomeScreen = ({ navigation }) => {
                     result.forEach((res, i) => {
                         const user = res.data()
                         // sendPushNotification('Enjoy the discount', 'Get Rs 150 discount on first ride', 0, user.deviceToken)
+                        if (user.deviceToken) {
 
-                        tks.push(user.deviceToken)
+                            tks.push(user.deviceToken)
+                        }
                         // catArray.push(cat.data())
 
                     })
@@ -176,7 +178,7 @@ export const HomeScreen = ({ navigation }) => {
     }
     useEffect(() => {
         getProfileFromFirebase()
-        updateDeviceTokenToFireBase(profile.uid)
+        // updateDeviceTokenToFireBase(profile.uid)
         // sendPushNotification('hi', 'bye',2 )
 
         // getCurrentLocations()
