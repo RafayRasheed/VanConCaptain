@@ -105,7 +105,6 @@ export const getAreasLocations = (city) => {
         const cities = currentAllCities[city]
         storeRedux.dispatch(setAreasLocation(cities ? cities : []))
 
-
         return
     }
     FirebaseLocation.doc('locations').get().then((result) => {
