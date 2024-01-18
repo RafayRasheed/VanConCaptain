@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     ScrollView, StyleSheet, TouchableOpacity, Image,
     View, Text, StatusBar, TextInput,
-    Linking, Platform, ImageBackground, SafeAreaView,
+    Linking, Platform, ImageBackground, SafeAreaView, Alert,
 } from 'react-native';
 import { MyError, Spacer, StatusbarH, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
@@ -14,6 +14,7 @@ import { Filter } from './home.component/filter';
 import { useSelector } from 'react-redux';
 import { ItemInfo } from './home.component/item_info';
 import { FlashList } from '@shopify/flash-list';
+import { fromBase64 } from 'js-base64';
 const CommonFaci = ({ name, fac, setFAc }) => (
     <TouchableOpacity activeOpacity={0.75}
         onPress={() => {
@@ -50,16 +51,35 @@ const CommonFaci = ({ name, fac, setFAc }) => (
 function containString(contain, thiss) {
     return (contain.toLowerCase().includes(thiss.toLowerCase()))
 }
+
 export const Search = ({ navigation }) => {
     // const { location } = useSelector(state => state.location)
-    console.log(useSelector(state => state.locations))
-    const location = []
+    const location = useSelector(state => state.areas.areas)
     const [search, setSearch] = useState(null)
-    const [load, setLoad] = useState(null)
+    const [longEnable, setLongEnable] = useState(false)
     const [filterItems, setFilterItems] = useState([])
-    const [first, setFirst] = useState(true)
+    const [selectedItem, setSelectedItems] = useState([])
     // const [fullRest, setFullRest] = useState([])
+    function onLongPress(item) {
 
+        if (!longEnable) {
+            console.log(longEnable, item,)
+
+            setLongEnable(true)
+            onSinglePress(item, true)
+
+        }
+    }
+    function onSinglePress(item, fromLong) {
+        if (longEnable || fromLong) {
+            const isOnArra = selectedItem.findIndex(it => it.fullName == item.fullName)
+            if (isOnArra == -1) {
+                setSelectedItems([...selectedItem, item])
+            } else {
+                setSelectedItems(selectedItem.filter(it => it.fullName != item.fullName))
+            }
+        }
+    }
     const Loader = () => (
         <View style={{ flex: 1, justifyContent: 'center' }}>
             <View style={{
@@ -89,16 +109,21 @@ export const Search = ({ navigation }) => {
 
         if (search) {
             const newR = location.filter(item => (containString(item.fullName, search)))
+            console.log(1, newR.length)
             setFilterItems(newR)
         }
-        else if (!first) {
-            setFilterItems([])
-        } else {
+
+        else {
+            console.log(2, location.length)
+
             setFilterItems(location)
-            setFirst(false)
 
         }
-    }, [search])
+
+
+
+
+    }, [search, location])
 
 
     // useEffect(() => {
@@ -183,26 +208,34 @@ export const Search = ({ navigation }) => {
 
 
 
-                <View style={{ flex: 1, paddingHorizontal: myWidth(4.5) }}>
+                <View style={{ flex: 1, }}>
                     {
                         filterItems.length ?
 
                             <FlashList
+                                extraData={[longEnable, selectedItem]}
                                 data={filterItems}
+                                contentContainerStyle={{ paddingHorizontal: myWidth(4.5) }}
                                 keyExtractor={(item, index) => index.toString()}
                                 estimatedItemSize={87}
                                 ItemSeparatorComponent={() => (
                                     <View style={{ height: myHeight(0.3), backgroundColor: myColors.divider }} />
                                 )}
-                                renderItem={({ item }) => (
+                                renderItem={({ item }) => {
+                                    const selItisSlected = selectedItem.findIndex(it => it.fullName == item.fullName) != -1
+                                    return (
 
-                                    <TouchableOpacity activeOpacity={0.75} style={{ paddingVertical: myHeight(1) }} onPress={() => null}>
-                                        <Text style={[styles.textCommon, {
-                                            fontFamily: myFonts.bodyBold,
-                                            fontSize: myFontSize.xBody,
-                                        }]}>{item}</Text>
-                                    </TouchableOpacity>
-                                )} />
+                                        <TouchableOpacity activeOpacity={0.75} style={{ paddingVertical: myHeight(1), backgroundColor: selItisSlected ? 'red' : myColors.background }} onLongPress={() => { onLongPress(item) }}
+                                            onPress={() => onSinglePress(item)}>
+                                            <Text style={[styles.textCommon, {
+                                                fontFamily: myFonts.bodyBold,
+                                                fontSize: myFontSize.xBody,
+                                            }]}>{item.fullName}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
+
+                                } />
                             :
                             <View>
                                 <Text style={[styles.textCommon, {
