@@ -71,7 +71,6 @@ export const Login = ({ navigation, showError, showLoading }) => {
         FirebaseUser
             .where('email', '==', email).get()
             .then(result => {
-                console.log(result)
 
                 if (result.empty) {
                     showError('Incorrect email or password')

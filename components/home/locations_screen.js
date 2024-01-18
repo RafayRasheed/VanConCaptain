@@ -13,6 +13,7 @@ import Lottie from 'lottie-react-native';
 import { Filter } from './home.component/filter';
 import { useSelector } from 'react-redux';
 import { ItemInfo } from './home.component/item_info';
+import { FlashList } from '@shopify/flash-list';
 const CommonFaci = ({ name, fac, setFAc }) => (
     <TouchableOpacity activeOpacity={0.75}
         onPress={() => {
@@ -50,15 +51,13 @@ function containString(contain, thiss) {
     return (contain.toLowerCase().includes(thiss.toLowerCase()))
 }
 export const Search = ({ navigation }) => {
-    const { AllItems, AllRest } = useSelector(State => State.data)
-
+    // const { location } = useSelector(state => state.location)
+    console.log(useSelector(state => state.locations))
+    const location = []
     const [search, setSearch] = useState(null)
     const [load, setLoad] = useState(null)
-    const [filterModal, setFilterModal] = useState(null)
-    const [DineIn, setDineIn] = useState(false)
-    const [Delivery, setDelivery] = useState(false)
-    const [TakeAway, setTakeAway] = useState(false)
     const [filterItems, setFilterItems] = useState([])
+    const [first, setFirst] = useState(true)
     // const [fullRest, setFullRest] = useState([])
 
     const Loader = () => (
@@ -85,21 +84,21 @@ export const Search = ({ navigation }) => {
             </View>
         </View>
     )
-    function onGoToItem(item) {
-        const restaurant = AllRest.filter(res => res.uid == item.resId)[0]
-        console.log(restaurant)
-        navigation.navigate('ItemDetails', { item, restaurant })
-    }
+
     useEffect(() => {
 
         if (search) {
-            const newR = AllItems?.filter(item => (Delivery ? item.homeDelivery == true : true) && (TakeAway ? item.takeAway == true : true) && (DineIn ? item.dineIn == true : true) && (containString(item.name, search) || containString(item.subCatName, search) || containString(item.catName, search)))
+            const newR = location.filter(item => (containString(item.fullName, search)))
             setFilterItems(newR)
         }
-        else {
+        else if (!first) {
             setFilterItems([])
+        } else {
+            setFilterItems(location)
+            setFirst(false)
+
         }
-    }, [search, DineIn, TakeAway, Delivery])
+    }, [search])
 
 
     // useEffect(() => {
@@ -109,12 +108,13 @@ export const Search = ({ navigation }) => {
     //             , 3000)
     //     }
     // }, [DineIn, TakeAway, Delivery])
+
     return (
 
         <>
-
             <SafeAreaView style={{
-                flex: 1, backgroundColor: myColors.background,
+                position: 'absolute', height: '100%', width: '100%',
+                backgroundColor: myColors.background,
             }}>
                 <StatusbarH />
                 <Spacer paddingT={myHeight(1)} />
@@ -128,6 +128,7 @@ export const Search = ({ navigation }) => {
                         flexDirection: 'row',
                         alignItems: 'center',
                         paddingHorizontal: myWidth(4),
+                        paddingVertical: myHeight(0.5),
                         borderRadius: myWidth(2.5),
                         backgroundColor: myColors.offColor7,
                         // marginHorizontal: myWidth(4)
@@ -142,7 +143,7 @@ export const Search = ({ navigation }) => {
                             }} source={require('../assets/home_main/home/back.png')} />
                         </TouchableOpacity>
                         <Spacer paddingEnd={myWidth(2.5)} />
-                        <TextInput placeholder=" Search Any Item"
+                        <TextInput placeholder=" Search location"
                             placeholderTextColor={myColors.textL5}
                             autoCorrect={false}
                             selectionColor={myColors.primaryT}
@@ -172,46 +173,52 @@ export const Search = ({ navigation }) => {
                 </View>
                 <Spacer paddingT={myHeight(1.5)} />
 
-                <View style={{ marginHorizontal: myWidth(5), flexDirection: 'row', justifyContent: 'space-between' }}>
+                {/* <View style={{ marginHorizontal: myWidth(5), flexDirection: 'row', justifyContent: 'space-between' }}>
 
                     <CommonFaci name={'Dine In'} fac={DineIn} setFAc={setDineIn} />
                     <CommonFaci name={'Delivery'} fac={Delivery} setFAc={setDelivery} />
                     <CommonFaci name={'Take Away'} fac={TakeAway} setFAc={setTakeAway} />
-                </View>
+                </View> */}
                 {/* Icon Empty Or Content */}
 
-                {
 
-                    (search) ?
-                        <View style={{ flex: 1 }}>
-                            <ScrollView contentContainerStyle={{ paddingHorizontal: myWidth(4.1) }} showsVerticalScrollIndicator={false}>
-                                <Spacer paddingT={myHeight(1.3)} />
 
-                                {filterItems.map((item, i) =>
-                                    <TouchableOpacity key={i} activeOpacity={0.85} onPress={() => onGoToItem(item)}>
-                                        <ItemInfo item={item} />
-                                    </TouchableOpacity>
+                <View style={{ flex: 1, paddingHorizontal: myWidth(4.5) }}>
+                    {
+                        filterItems.length ?
+
+                            <FlashList
+                                data={filterItems}
+                                keyExtractor={(item, index) => index.toString()}
+                                estimatedItemSize={87}
+                                ItemSeparatorComponent={() => (
+                                    <View style={{ height: myHeight(0.3), backgroundColor: myColors.divider }} />
                                 )}
-                            </ScrollView>
-                        </View>
-                        :
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <Lottie
-                                autoPlay={true}
-                                loop={true}
-                                source={require('../assets/lottie/food.json')}
-                                style={{ height: myHeight(27), width: myHeight(27), marginTop: -myHeight(3) }}
+                                renderItem={({ item }) => (
 
-                            />
-                        </View>
-                }
+                                    <TouchableOpacity activeOpacity={0.75} style={{ paddingVertical: myHeight(1) }} onPress={() => null}>
+                                        <Text style={[styles.textCommon, {
+                                            fontFamily: myFonts.bodyBold,
+                                            fontSize: myFontSize.xBody,
+                                        }]}>{item}</Text>
+                                    </TouchableOpacity>
+                                )} />
+                            :
+                            <View>
+                                <Text style={[styles.textCommon, {
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.xBody,
+                                }]}></Text>
+                            </View>
+                    }
+
+                </View>
+
+
 
             </SafeAreaView>
 
-            {
-                filterModal &&
-                <Filter setModal={setFilterModal} />
-            }
+
         </>
     )
 }

@@ -11,7 +11,7 @@ import { RestaurantMoreDetails } from './rest_more_info_screen';
 import { RestaurantAll } from './res_all_screen';
 import { ItemDetails } from './item_detail_screen';
 import { bottomTab } from '../common';
-import { Search } from './search_screen';
+import { Search } from './locations_screen';
 import { ItemSearch } from './item_search_screen';
 
 

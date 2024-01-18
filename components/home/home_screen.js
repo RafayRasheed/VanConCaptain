@@ -23,10 +23,11 @@ import database from '@react-native-firebase/database';
 import { SetErrorAlertToFunction, deccodeInfo, getCurrentLocations } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
-import { FirebaseUser, getDeviceToken, sendPushNotification, updateDeviceTokenToFireBase } from '../functions/firebase';
+import { FirebaseUser, getAreasLocations, getDeviceToken, sendPushNotification, updateDeviceTokenToFireBase } from '../functions/firebase';
 import { NotiAlert } from '../common/noti_Alert';
 import Animated, { SlideInUp } from 'react-native-reanimated';
 import { setProfile } from '../../redux/profile_reducer';
+import { Search } from './locations_screen';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -189,6 +190,21 @@ export const HomeScreen = ({ navigation }) => {
         // return () => clearInterval(interval);
 
     }, [])
+    useEffect(() => {
+        if (profile.city) {
+            getAreasLocations(profile.city)
+        }
+        // updateDeviceTokenToFireBase(profile.uid)
+        // sendPushNotification('hi', 'bye',2 )
+
+        // getCurrentLocations()
+        // const interval = setInterval(() => {
+        //     getCurrentLocations()
+
+        // }, 120000);
+        // return () => clearInterval(interval);
+
+    }, [profile.city])
 
     // Realtime
     useEffect(() => {
@@ -247,7 +263,7 @@ export const HomeScreen = ({ navigation }) => {
                         <Spacer paddingT={myHeight(3)} />
 
                         {/* Banner */}
-                        {/* <Banners /> */}
+                        <Banners />
 
 
 
@@ -357,7 +373,9 @@ export const HomeScreen = ({ navigation }) => {
 
                         {/* <Spacer paddingT={myHeight(3)} /> */}
                     </ScrollView>
+
             }
+            <Search />
 
         </SafeAreaView>
     )

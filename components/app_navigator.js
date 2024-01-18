@@ -9,7 +9,7 @@ import { storage } from "./common"
 import { createStackNavigator } from "@react-navigation/stack"
 import { containFirstTime, containLogin, getLogin } from "./functions/storageMMKV"
 import { ItemDetails } from "./home/item_detail_screen"
-import { Search } from "./home/search_screen"
+import { Search } from "./home/locations_screen"
 import { ItemSearch } from "./home/item_search_screen"
 import { RestaurantMoreDetails } from "./home/rest_more_info_screen"
 import { ProfileInfo } from "./profile/profile_info"
@@ -50,7 +50,6 @@ export const AppNavigator = () => {
                 {/* Home */}
                 <AppTAB.Screen component={RestaurantMoreDetails} name="RestaurantMoreDetails" />
                 <AppTAB.Screen component={ItemDetails} name="ItemDetails" />
-                <AppTAB.Screen component={Search} name="Search" />
                 <AppTAB.Screen component={ItemSearch} name="ItemSearch" />
 
 
