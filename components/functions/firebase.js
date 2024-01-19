@@ -4,7 +4,7 @@ import { getLogin } from "./storageMMKV";
 import messaging from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 import storeRedux from '../../redux/store_redux';
-import { setAllCitiesAreasLocation, setAreasLocation } from '../../redux/areas_reducer';
+import { setAreasLocation } from '../../redux/areas_reducer';
 
 export const FirebaseUser = firestore().collection('drivers')
 export const FirebaseLocation = firestore().collection('locations')
@@ -100,37 +100,35 @@ export const getDeviceToken = async () => {
 };
 
 export const getAreasLocations = (city) => {
-    const currentAllCities = storeRedux.getState().areas.allCitiesAreas
-    if (Object.keys(currentAllCities).length) {
-        const cities = currentAllCities[city]
-        storeRedux.dispatch(setAreasLocation(cities ? cities : []))
+    FirebaseLocation.doc(city).get().then((result) => {
+        if (result.exists) {
 
-        return
-    }
-    FirebaseLocation.doc('locations').get().then((result) => {
-
-        const AllCitiesArea = result.data()
-        // storeRedux.dispatch({})
-        storeRedux.dispatch(setAllCitiesAreasLocation(AllCitiesArea ? AllCitiesArea : {}))
-        if (AllCitiesArea) {
-            const cities = AllCitiesArea[city]
-            storeRedux.dispatch(setAreasLocation(cities ? cities : []))
-
+            const areas = result.data().areas
+            storeRedux.dispatch(setAreasLocation(areas ? areas : []))
         }
 
-
-        // if (!result.empty) {
-        //     // const tks = []
-        //     result.forEach((res, i) => {
-        //         const user = res.data()
-        //         console.log('saf', user)
-
-        //     })
-
-
-        //     // 
-        // }
     }).catch((ERR) => {
         console.log('ERROR ON getAreasLocations', ERR)
     })
+
+    // const currentAllCities = storeRedux.getState().areas.allCitiesAreas
+    // if (Object.keys(currentAllCities).length) {
+    //     const cities = currentAllCities[city]
+    //     storeRedux.dispatch(setAreasLocation(cities ? cities : []))
+
+    //     return
+    // }
+    // FirebaseLocation.doc('locations').get().then((result) => {
+
+    //     const AllCitiesArea = result.data()
+    //     // storeRedux.dispatch({})
+    //     storeRedux.dispatch(setAllCitiesAreasLocation(AllCitiesArea ? AllCitiesArea : {}))
+    //     if (AllCitiesArea) {
+    //         const cities = AllCitiesArea[city]
+    //         storeRedux.dispatch(setAreasLocation(cities ? cities : []))
+
+    //     }
+    // }).catch((ERR) => {
+    //     console.log('ERROR ON getAreasLocations', ERR)
+    // })
 }

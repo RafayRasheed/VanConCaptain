@@ -5,7 +5,6 @@ const AreasReducer = createSlice({
     name: "areas",
     initialState: {
         areas: [],
-        allCitiesAreas: {}
     },
     reducers: {
 
@@ -13,14 +12,11 @@ const AreasReducer = createSlice({
             state.areas = action.payload
 
         },
-        setAllCitiesAreasLocation(state, action) {
-            state.allCitiesAreas = []
 
-        },
 
 
     },
 });
 
-export const { setAreasLocation, setAllCitiesAreasLocation } = AreasReducer.actions;
+export const { setAreasLocation, } = AreasReducer.actions;
 export default AreasReducer.reducer;

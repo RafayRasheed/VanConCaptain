@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { ItemInfo } from './home.component/item_info';
 import { FlashList } from '@shopify/flash-list';
 import { fromBase64 } from 'js-base64';
+import { FirebaseLocation } from '../functions/firebase';
 const CommonFaci = ({ name, fac, setFAc }) => (
     <TouchableOpacity activeOpacity={0.75}
         onPress={() => {
@@ -59,6 +60,8 @@ export const Search = ({ navigation }) => {
     const [longEnable, setLongEnable] = useState(false)
     const [filterItems, setFilterItems] = useState([])
     const [selectedItem, setSelectedItems] = useState([])
+
+
     // const [fullRest, setFullRest] = useState([])
     function onLongPress(item) {
 
@@ -72,11 +75,14 @@ export const Search = ({ navigation }) => {
     }
     function onSinglePress(item, fromLong) {
         if (longEnable || fromLong) {
-            const isOnArra = selectedItem.findIndex(it => it.fullName == item.fullName)
+            const isOnArra = selectedItem.findIndex(it => it.id == item.id)
             if (isOnArra == -1) {
                 setSelectedItems([...selectedItem, item])
             } else {
-                setSelectedItems(selectedItem.filter(it => it.fullName != item.fullName))
+                if (selectedItem.length == 1) {
+                    clearLongPress()
+                }
+                setSelectedItems(selectedItem.filter(it => it.id != item.id))
             }
         }
     }
@@ -104,11 +110,36 @@ export const Search = ({ navigation }) => {
             </View>
         </View>
     )
+    // useEffect(() => {
+
+    //     const s = "Service Road, North Nazimabad Town, Karachi Central District, North Nazimabad Town, Sindh, 74700, Pakistan"
+    //     const myArray = s.split(',')
+    //     const modifiedArray = myArray.slice(0, myArray.length - 3);
+    //     const resultString = modifiedArray.join(',');
+
+    //     if (location.length) {
+    //         const newLoc = []
+    //         location.map((it, i) => {
+    //             const { fullName, latitude, longitude } = it
+    //             const myArray = fullName.split(',')
+    //             const modifiedArray = myArray.slice(0, myArray.length - 3);
+    //             const resultString = modifiedArray.join(',');
+    //             newLoc.push({ id: i + 1, name: resultString, latitude, longitude })
+    //         })
+    //         FirebaseLocation.doc('Karachi').set({ areas: newLoc })
+    //         console.log(newLoc.length)
+    //     }
+
+
+
+
+
+    // }, [location])
 
     useEffect(() => {
 
         if (search) {
-            const newR = location.filter(item => (containString(item.fullName, search)))
+            const newR = location.filter(item => (containString(item.name, search)))
             console.log(1, newR.length)
             setFilterItems(newR)
         }
@@ -124,7 +155,10 @@ export const Search = ({ navigation }) => {
 
 
     }, [search, location])
-
+    function clearLongPress() {
+        setLongEnable(false)
+        setSelectedItems([])
+    }
 
     // useEffect(() => {
     //     if (load) {
@@ -142,61 +176,93 @@ export const Search = ({ navigation }) => {
                 backgroundColor: myColors.background,
             }}>
                 <StatusbarH />
-                <Spacer paddingT={myHeight(1)} />
+                <Spacer paddingT={myHeight(1.5)} />
                 {/* Top */}
                 {/* Search */}
-                <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row', alignItems: 'center', }}>
 
                     {/* Search */}
                     <View style={{
                         flex: 1,
+
                         flexDirection: 'row',
                         alignItems: 'center',
-                        paddingHorizontal: myWidth(4),
-                        paddingVertical: myHeight(0.5),
+                        paddingHorizontal: myWidth(longEnable ? 0 : 4),
+                        // paddingVertical: myHeight(0.5),
+                        height: myHeight(5),
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         borderRadius: myWidth(2.5),
-                        backgroundColor: myColors.offColor7,
+                        backgroundColor: longEnable ? myColors.background : myColors.offColor7,
+
                         // marginHorizontal: myWidth(4)
                     }}>
-                        {/* Arrow */}
-                        <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.goBack()} style={{}}>
-                            <Image style={{
-                                height: myHeight(2.3),
-                                width: myHeight(2.3),
-                                resizeMode: 'contain',
-                                tintColor: myColors.textL0
-                            }} source={require('../assets/home_main/home/back.png')} />
-                        </TouchableOpacity>
-                        <Spacer paddingEnd={myWidth(2.5)} />
-                        <TextInput placeholder=" Search location"
-                            placeholderTextColor={myColors.textL5}
-                            autoCorrect={false}
-                            selectionColor={myColors.primaryT}
-                            style={{
-                                flex: 1,
-                                textAlignVertical: 'center',
-                                paddingVertical: ios ? myHeight(0.6) : myHeight(100) > 600 ? myHeight(0.5) : myHeight(0.1),
-                                fontSize: myFontSize.xxSmall,
-                                color: myColors.text,
-                                includeFontPadding: false,
-                                fontFamily: myFonts.bodyBold,
-                            }}
-                            cursorColor={myColors.primaryT}
-                            value={search} onChangeText={setSearch}
-                        // value={search} onChangeText={(val) => null}
-                        />
+
+                        {
+                            longEnable ?
+                                <>
+                                    <TouchableOpacity activeOpacity={0.7} onPress={clearLongPress} style={{}}>
+                                        <Image style={{
+                                            height: myHeight(2.3),
+                                            width: myHeight(2.3),
+                                            resizeMode: 'contain',
+                                            tintColor: myColors.textL0
+                                        }} source={require('../assets/home_main/home/back.png')} />
+                                    </TouchableOpacity>
+                                    <Spacer paddingEnd={myWidth(3.5)} />
+                                    <Text style={[styles.textCommon, {
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.xBody2,
+                                        flex: 1
+                                    }]}>Select {selectedItem.length}</Text>
+
+                                    <TouchableOpacity activeOpacity={0.7} onPress={() => {
+
+                                    }} style={{}}>
+                                        <Text style={[styles.textCommon, {
+                                            fontFamily: myFonts.bodyBold,
+                                            fontSize: myFontSize.body4,
+                                            color: myColors.primaryT,
+                                        }]}>Done</Text>
+                                    </TouchableOpacity>
+                                </>
+                                :
+                                <>
+
+                                    {/* Arrow */}
+                                    <TouchableOpacity activeOpacity={0.7} onPress={() => null} style={{}}>
+                                        <Image style={{
+                                            height: myHeight(2.3),
+                                            width: myHeight(2.3),
+                                            resizeMode: 'contain',
+                                            tintColor: myColors.textL0
+                                        }} source={require('../assets/home_main/home/back.png')} />
+                                    </TouchableOpacity>
+                                    <Spacer paddingEnd={myWidth(2.5)} />
+                                    <TextInput placeholder=" Search location"
+                                        placeholderTextColor={myColors.textL5}
+                                        autoCorrect={false}
+                                        selectionColor={myColors.primaryT}
+                                        style={{
+                                            flex: 1,
+                                            textAlignVertical: 'center',
+                                            paddingVertical: ios ? myHeight(0.6) : myHeight(100) > 600 ? myHeight(0.5) : myHeight(0.1),
+                                            fontSize: myFontSize.body,
+                                            color: myColors.text,
+                                            includeFontPadding: false,
+                                            fontFamily: myFonts.bodyBold,
+                                        }}
+                                        cursorColor={myColors.primaryT}
+                                        value={search} onChangeText={setSearch}
+                                    // value={search} onChangeText={(val) => null}
+                                    />
+
+                                </>
+                        }
                     </View>
-                    {/* <Spacer paddingEnd={myWidth(3)} />
-                    <TouchableOpacity activeOpacity={0.8} onPress={() => setFilterModal(true)} style={{}}>
-                        <Image style={{
-                            height: myHeight(4.2),
-                            width: myHeight(4.2),
-                            resizeMode: 'contain',
-                            tintColor: myColors.textL0
-                        }} source={require('../assets/home_main/home/filter.png')} />
-                    </TouchableOpacity> */}
                 </View>
-                <Spacer paddingT={myHeight(1.5)} />
+                <Spacer paddingT={myHeight(1)} />
+                <View style={{ width: '100%', height: 1, backgroundColor: myColors.divider }} />
 
                 {/* <View style={{ marginHorizontal: myWidth(5), flexDirection: 'row', justifyContent: 'space-between' }}>
 
@@ -215,33 +281,33 @@ export const Search = ({ navigation }) => {
                             <FlashList
                                 extraData={[longEnable, selectedItem]}
                                 data={filterItems}
-                                contentContainerStyle={{ paddingHorizontal: myWidth(4.5) }}
+                                contentContainerStyle={{}}
                                 keyExtractor={(item, index) => index.toString()}
                                 estimatedItemSize={87}
                                 ItemSeparatorComponent={() => (
-                                    <View style={{ height: myHeight(0.3), backgroundColor: myColors.divider }} />
+                                    <View style={{ height: myHeight(0.35), backgroundColor: myColors.divider, marginHorizontal: myWidth(4.5) }} />
                                 )}
                                 renderItem={({ item }) => {
-                                    const selItisSlected = selectedItem.findIndex(it => it.fullName == item.fullName) != -1
+                                    const selItisSlected = selectedItem.findIndex(it => it.id == item.id) != -1
                                     return (
 
-                                        <TouchableOpacity activeOpacity={0.75} style={{ paddingVertical: myHeight(1), backgroundColor: selItisSlected ? 'red' : myColors.background }} onLongPress={() => { onLongPress(item) }}
+                                        <TouchableOpacity activeOpacity={0.75} style={{ paddingVertical: myHeight(1), paddingHorizontal: myWidth(4.5), backgroundColor: selItisSlected ? myColors.dot : myColors.background }} onLongPress={() => { onLongPress(item) }}
                                             onPress={() => onSinglePress(item)}>
                                             <Text style={[styles.textCommon, {
                                                 fontFamily: myFonts.bodyBold,
                                                 fontSize: myFontSize.xBody,
-                                            }]}>{item.fullName}</Text>
+                                            }]}>{item.name}</Text>
                                         </TouchableOpacity>
                                     )
                                 }
 
                                 } />
                             :
-                            <View>
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={[styles.textCommon, {
                                     fontFamily: myFonts.bodyBold,
                                     fontSize: myFontSize.xBody,
-                                }]}></Text>
+                                }]}>No location Found</Text>
                             </View>
                     }
 
