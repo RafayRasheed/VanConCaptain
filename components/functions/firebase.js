@@ -111,24 +111,5 @@ export const getAreasLocations = (city) => {
         console.log('ERROR ON getAreasLocations', ERR)
     })
 
-    // const currentAllCities = storeRedux.getState().areas.allCitiesAreas
-    // if (Object.keys(currentAllCities).length) {
-    //     const cities = currentAllCities[city]
-    //     storeRedux.dispatch(setAreasLocation(cities ? cities : []))
 
-    //     return
-    // }
-    // FirebaseLocation.doc('locations').get().then((result) => {
-
-    //     const AllCitiesArea = result.data()
-    //     // storeRedux.dispatch({})
-    //     storeRedux.dispatch(setAllCitiesAreasLocation(AllCitiesArea ? AllCitiesArea : {}))
-    //     if (AllCitiesArea) {
-    //         const cities = AllCitiesArea[city]
-    //         storeRedux.dispatch(setAreasLocation(cities ? cities : []))
-
-    //     }
-    // }).catch((ERR) => {
-    //     console.log('ERROR ON getAreasLocations', ERR)
-    // })
 }
