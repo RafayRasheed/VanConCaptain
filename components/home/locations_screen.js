@@ -55,12 +55,13 @@ function containString(contain, thiss) {
 
 export const Search = ({ navigation }) => {
     // const { location } = useSelector(state => state.location)
-    const location = useSelector(state => state.areas.areas)
+    const { areas, profile } = useSelector(state => state)
+    const location = areas.areas
+
     const [search, setSearch] = useState(null)
     const [longEnable, setLongEnable] = useState(false)
     const [filterItems, setFilterItems] = useState([])
     const [selectedItem, setSelectedItems] = useState([])
-
 
     // const [fullRest, setFullRest] = useState([])
     function onLongPress(item) {
@@ -256,7 +257,6 @@ export const Search = ({ navigation }) => {
                                         value={search} onChangeText={setSearch}
                                     // value={search} onChangeText={(val) => null}
                                     />
-
                                 </>
                         }
                     </View>
@@ -272,8 +272,17 @@ export const Search = ({ navigation }) => {
                 </View> */}
                 {/* Icon Empty Or Content */}
 
+                {/* 
+                <TouchableOpacity activeOpacity={0.75} style={{ paddingVertical: myHeight(1), paddingHorizontal: myWidth(4.5), backgroundColor: myColors.background }}
+                    onPress={() => null}>
+                    <Text style={[styles.textCommon, {
+                        fontFamily: myFonts.bodyBold,
+                        fontSize: myFontSize.xBody,
+                        paddingVertical: myHeight(0.8)
+                    }]}>All of {profile.profile.city}</Text>
 
-
+                </TouchableOpacity>
+                <View style={{ height: myHeight(0.25), backgroundColor: myColors.divider, }} /> */}
                 <View style={{ flex: 1, }}>
                     {
                         filterItems.length ?
@@ -285,7 +294,7 @@ export const Search = ({ navigation }) => {
                                 keyExtractor={(item, index) => index.toString()}
                                 estimatedItemSize={87}
                                 ItemSeparatorComponent={() => (
-                                    <View style={{ height: myHeight(0.35), backgroundColor: myColors.divider, marginHorizontal: myWidth(4.5) }} />
+                                    <View style={{ height: myHeight(0.35), backgroundColor: myColors.divider, marginHorizontal: myWidth(0) }} />
                                 )}
                                 renderItem={({ item }) => {
                                     const selItisSlected = selectedItem.findIndex(it => it.id == item.id) != -1
