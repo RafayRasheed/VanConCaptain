@@ -21,6 +21,7 @@ import { Checkout } from "./cart/checkout"
 import { OrderDetails } from "./orders/order_detail_screen"
 import { navigationRef } from "./RootNavigation"
 import NavigationService from "./NavigationService"
+import { Chat } from "./home/chat_screen"
 
 const AppTAB = createStackNavigator()
 
@@ -51,6 +52,7 @@ export const AppNavigator = () => {
                 <AppTAB.Screen component={RestaurantMoreDetails} name="RestaurantMoreDetails" />
                 <AppTAB.Screen component={ItemDetails} name="ItemDetails" />
                 <AppTAB.Screen component={ItemSearch} name="ItemSearch" />
+                <AppTAB.Screen component={Chat} name="Chat" />
 
 
                 {/* PROFILE */}

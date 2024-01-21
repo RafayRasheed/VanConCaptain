@@ -50,7 +50,6 @@ export const sendPushNotification = async (title, body, status, tokens) => {
 
         }
     };
-    console.log(data)
     try {
         const response = await fetch(fcmEndpoint, {
             method: 'POST',

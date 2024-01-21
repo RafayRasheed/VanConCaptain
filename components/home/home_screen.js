@@ -19,8 +19,7 @@ import { ImageUri } from '../common/image_uri';
 import storage from '@react-native-firebase/storage';
 import { setAllItems, setAllRest, setNearby, setRecommend } from '../../redux/data_reducer';
 import { setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
-import database from '@react-native-firebase/database';
-import { SetErrorAlertToFunction, deccodeInfo, getCurrentLocations } from '../functions/functions';
+import { SetErrorAlertToFunction, deccodeInfo, getCurrentLocations, statusDate } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import { FirebaseUser, getAreasLocations, getDeviceToken, sendPushNotification, updateDeviceTokenToFireBase } from '../functions/firebase';
@@ -28,6 +27,8 @@ import { NotiAlert } from '../common/noti_Alert';
 import Animated, { SlideInUp } from 'react-native-reanimated';
 import { setProfile } from '../../redux/profile_reducer';
 import { Search } from './locations_screen';
+import database from '@react-native-firebase/database';
+import { setChats } from '../../redux/chat_reducer';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -41,7 +42,6 @@ export const HomeScreen = ({ navigation }) => {
     const [nearbyRestaurant, setNearbyRestaurant] = useState([])
     const [RecommendRestaurant, setRecommendRestaurant] = useState([])
     const [startPro, setStartPro] = useState({})
-
 
 
 
@@ -208,36 +208,44 @@ export const HomeScreen = ({ navigation }) => {
 
     // Realtime
     useEffect(() => {
+        const onValueChange = database()
+            .ref(`/chats`)
+            .on('value', snapshot => {
+                if (snapshot.exists()) {
+                    let Chats = []
+                    snapshot.forEach((documentSnapshot1, i) => {
+                        const key = documentSnapshot1.key.toString()
+                        if (key.includes(profile.uid)) {
+                            const val = documentSnapshot1.val()
+                            if (val.captain && val.user) {
 
-        // database()
-        //     .ref(`/orders/${profile.uid}`)
-        //     .on('value', snapshot => {
-        //         let pending = []
-        //         let progress = []
-        //         let history = []
-        //         snapshot.forEach(documentSnapshot1 => {
-        //             const order = documentSnapshot1.val()
-        //             if (order.status == -1 || order.status == 100 || order.status == -2) {
-        //                 history.push(order)
-        //             }
-        //             else if (order.status == 0) {
-        //                 pending.push(order)
-        //             }
-        //             else {
-        //                 progress.push(order)
-        //             }
+                                let messages = { ...val.messages }
+                                let latest = null
+                                let unreadmasseges = 0
+                                // messages = Object.keys(messages).sort(function (a, b) { return messages[a].dateInt - messages[b].dateInt })
+                                Object.keys(messages).map((it, i) => {
+                                    const mm = messages[it]
+                                    if (latest == null || mm.dateInt > latest.dateInt) {
+                                        latest = mm
+                                    }
+                                    if (mm.senderId != profile.uid && mm.read == false) {
+                                        unreadmasseges += 1
+                                    }
+                                })
+                                const chat = { ...latest, unreadmasseges, chatId: key, user2: val.user, statusTime: statusDate(latest.date, latest.time) }
+                                Chats.push(chat)
+                            }
+                        }
 
-        //         });
-        //         pending.sort((a, b) => b.dateInt - a.dateInt);
-        //         progress.sort((a, b) => b.dateInt - a.dateInt);
-        //         history.sort((a, b) => b.dateInt - a.dateInt);
-        //         dispatch(setPendingOrderse(pending))
-        //         dispatch(setHistoryOrderse(history))
-        //         dispatch(setProgressOrderse(progress))
+                    });
+                    dispatch(setChats(Chats.sort(function (a, b) { return b.dateInt - a.dateInt })))
+                } else {
+                    dispatch(setChats([]))
+                }
+            });
 
-        //         console.log('User data: ', pending.length, progress.length, history.length);
-        //     });
-
+        // Stop listening for updates when no longer required
+        return () => database().ref(`/chats`).off('value', onValueChange);
     }, []);
 
 
@@ -283,7 +291,10 @@ export const HomeScreen = ({ navigation }) => {
                                     }>Click on Apply & fill the form to get rides</Text>
                                     <Spacer paddingT={myHeight(1.5)} />
 
-                                    <TouchableOpacity onPress={null}
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('Chat',
+                                            { user2: { uid: '96af925c-795c-42c4-a2b2-a2648162fea6' } }
+                                        )}
                                         activeOpacity={0.8}
                                         style={{
                                             width: myWidth(50), alignSelf: 'center', paddingVertical: myHeight(1.2),
@@ -375,7 +386,7 @@ export const HomeScreen = ({ navigation }) => {
                     </ScrollView>
 
             }
-            <Search />
+
 
         </SafeAreaView>
     )
