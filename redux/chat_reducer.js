@@ -4,6 +4,7 @@ const ChatReducer = createSlice({
     name: "chats",
     initialState: {
         chats: [],
+        totalUnread: 0
     },
     reducers: {
 
@@ -11,11 +12,14 @@ const ChatReducer = createSlice({
             state.chats = action.payload
 
         },
+        setTotalUnread(state, action) {
+            state.totalUnread = action.payload
 
+        },
 
 
     },
 });
 
-export const { setChats, } = ChatReducer.actions;
+export const { setChats, setTotalUnread } = ChatReducer.actions;
 export default ChatReducer.reducer;

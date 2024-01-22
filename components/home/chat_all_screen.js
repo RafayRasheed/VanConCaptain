@@ -22,7 +22,8 @@ export const ChatList = ({ navigation, route }) => {
     const [first, setFirst] = useState(true)
     const [unreadCount, setUnreadCount] = useState(0)
     const [showScrollToLast, setShowScrollToLast] = useState(false)
-    const { chats } = useSelector(state => state.chats)
+    const { chats, totalUnread } = useSelector(state => state.chats)
+    const { profile } = useSelector(state => state.profile)
     const dispatch = useDispatch()
 
 
@@ -50,7 +51,7 @@ export const ChatList = ({ navigation, route }) => {
                             <Text style={[styles.textCommon, {
                                 fontSize: myFontSize.medium0,
                                 fontFamily: myFonts.heading,
-                            }]}>{'Chats'}</Text>
+                            }]}>{'Chats'} {totalUnread ? `(${totalUnread})` : ''}</Text>
                             {/* <Text style={[styles.textCommon, {
                                 fontSize: myFontSize.body,
                                 fontFamily: myFonts.body,
@@ -103,8 +104,8 @@ export const ChatList = ({ navigation, route }) => {
                                     <Text numberOfLines={1} style={[styles.textCommon, {
                                         flex: 1,
                                         fontSize: myFontSize.body2,
-                                        fontFamily: item.unreadmasseges ? myFonts.bodyBold : myFonts.body,
-                                    }]}>{!item.unreadmasseges ? 'You: ' : ''}{item.message}</Text>
+                                        fontFamily: (item.senderId != profile.uid && item.unreadmasseges) ? myFonts.bodyBold : myFonts.body,
+                                    }]}>{item.senderId == profile.uid ? 'You: ' : ''}{item.message}</Text>
                                     {
                                         item.unreadmasseges ?
 

@@ -28,7 +28,7 @@ import Animated, { SlideInUp } from 'react-native-reanimated';
 import { setProfile } from '../../redux/profile_reducer';
 import { Search } from './locations_screen';
 import database from '@react-native-firebase/database';
-import { setChats } from '../../redux/chat_reducer';
+import { setChats, setTotalUnread } from '../../redux/chat_reducer';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -213,6 +213,7 @@ export const HomeScreen = ({ navigation }) => {
             .on('value', snapshot => {
                 if (snapshot.exists()) {
                     let Chats = []
+                    let totalUnread = 0
                     snapshot.forEach((documentSnapshot1, i) => {
                         const key = documentSnapshot1.key.toString()
                         if (key.includes(profile.uid)) {
@@ -222,25 +223,39 @@ export const HomeScreen = ({ navigation }) => {
                                 let messages = { ...val.messages }
                                 let latest = null
                                 let unreadmasseges = 0
+                                let allMessages = []
+                                let allUnreadMessagesToRead = {}
                                 // messages = Object.keys(messages).sort(function (a, b) { return messages[a].dateInt - messages[b].dateInt })
                                 Object.keys(messages).map((it, i) => {
                                     const mm = messages[it]
+                                    allMessages.push(mm)
                                     if (latest == null || mm.dateInt > latest.dateInt) {
                                         latest = mm
                                     }
                                     if (mm.senderId != profile.uid && mm.read == false) {
                                         unreadmasseges += 1
+                                        const s = {}
+                                        allUnreadMessagesToRead[it] = { ...mm, read: true }
+
                                     }
                                 })
-                                const chat = { ...latest, unreadmasseges, chatId: key, user2: val.user, statusTime: statusDate(latest.date, latest.time) }
+                                totalUnread += unreadmasseges
+                                const chat = {
+                                    ...latest, unreadmasseges, chatId: key,
+                                    user2: val.user,
+                                    statusTime: statusDate(latest.date, latest.time),
+                                    allMessages, allUnreadMessagesToRead
+                                }
                                 Chats.push(chat)
                             }
                         }
 
                     });
                     dispatch(setChats(Chats.sort(function (a, b) { return b.dateInt - a.dateInt })))
+                    dispatch(setTotalUnread(totalUnread))
                 } else {
                     dispatch(setChats([]))
+                    dispatch(setTotalUnread(0))
                 }
             });
 

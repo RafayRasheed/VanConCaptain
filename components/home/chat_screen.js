@@ -1,4 +1,4 @@
-import { Image, Keyboard, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, Keyboard, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -80,13 +80,16 @@ export const Chat = ({ navigation, route }) => {
 
     const [focus, setFocus] = useState(false)
     const [fromTouch, setFromTouch] = useState(false)
-    const [first, setFirst] = useState(true)
+    const [firstTime, setFirstTime] = useState(true)
+    const [showUnread, setShowUnread] = useState(0)
+    const [loader, setLoader] = useState(true)
     const [unreadCount, setUnreadCount] = useState(0)
     const [showScrollToLast, setShowScrollToLast] = useState(false)
-    const [chatss, setChatss] = useState([])
-    const { profile } = useSelector(state => state.profile)
     const { user2 } = route.params
+    const { profile } = useSelector(state => state.profile)
+    const { chats } = useSelector(state => state.chats)
     const chatId = user2.uid + profile.uid
+    const [chatss, setChatss] = useState([])
     const dispatch = useDispatch()
     function scrollToBottom() {
         setFromTouch(false)
@@ -96,6 +99,12 @@ export const Chat = ({ navigation, route }) => {
         //     animated: true,
         //     index: 0,
         // });
+    }
+    function scrollToIndex(i) {
+        scrollRef?.current?.scrollToIndex({
+            animated: false,
+            index: i,
+        });
     }
     function handleScrollView(event) {
         const posY = event.nativeEvent.contentOffset.y
@@ -107,54 +116,113 @@ export const Chat = ({ navigation, route }) => {
 
     }
     useEffect(() => {
-        if (!first) {
-
-            // setTimeout(() => {
-            //     scrollToBottom()
-
-            // }, 5000)
-            return
+        if (!showScrollToLast) {
+            setUnreadCount(0)
         }
-        setFirst(false)
-    }, [chatss.length])
-
+    }, [showScrollToLast])
     useEffect(() => {
-        const onValueChange = database()
-            .ref(`/chats/${chatId}`).child('messages').orderByChild('dateInt')
-            .on('value', snapshot => {
+        const myChat = chats.filter(it => it.chatId == chatId)
+        if (myChat.length) {
 
-                if (snapshot.exists()) {
+            //     setChatss()
+            let lastDate = null
+            const data = []
+            let allMsg = [...myChat[0].allMessages]
+            allMsg = allMsg.sort(function (a, b) { return a.dateInt - b.dateInt })
 
-                    let lastDate = null
-                    const data = []
-                    snapshot.forEach((documentSnapshot1, i) => {
-                        const msg = documentSnapshot1.val()
-                        if (msg.date != lastDate) {
-                            lastDate = msg.date
-                            data.push(statusDate(msg.date))
+            // return
+            let alreadyUnread = false
+            let initaiIndex = 0
+            allMsg.map((msg, i) => {
+                if (msg.date != lastDate) {
+                    lastDate = msg.date
+                    data.push(statusDate(msg.date))
 
-                        }
-                        data.push(msg)
-                        if (i == snapshot.numChildren() - 1) {
-                            // console.log(chatss.length != 0, chatss.length, data.length)
-                            // if (chatss.length != 0) {
-                            //     console.log(unreadCount)
-                            //     const s = unreadCount + 1
-                            //     setUnreadCount(s)
-                            // }
-                            setChatss(data.reverse())
-
-                        }
-
-                    });
-                } else {
-                    setChatss([])
                 }
-            });
 
-        // Stop listening for updates when no longer required
-        return () => database().ref(`/chats/${chatId}`).off('value', onValueChange);
-    }, []);
+
+                if ((msg.senderId != profile.uid && msg.read == false && !alreadyUnread)) {
+
+
+                    console.log('AAAHIUAHSUI')
+                    setShowUnread(data.length)
+                    data.push('new messages')
+                    alreadyUnread = true
+
+
+                } else if (showUnread != 0 && !alreadyUnread && showUnread == data.length) {
+                    setShowUnread(data.length)
+                    data.push('new messages')
+                    alreadyUnread = true
+                }
+                data.push(msg)
+
+                // if (i == snapshot.numChildren() - 1) {
+                // console.log(chatss.length != 0, chatss.length, data.length)
+                // if (chatss.length != 0) {
+                //     console.log(unreadCount)
+                //     const s = unreadCount + 1
+                //     setUnreadCount(s)
+                // }
+
+                // }
+
+            });
+            setChatss(data.reverse())
+            const allUnread = myChat[0].allUnreadMessagesToRead
+            const unreadleangth = Object.keys(allUnread).length
+            setTimeout(() => {
+                setLoader(false)
+            }, 400)
+            if (data.length != chatss.length && unreadleangth) {
+                console.log('unread to read work')
+                database()
+                    .ref(`/chats/${chatId}/messages`).update(allUnread).then(() => { })
+                    .catch((er) => { console.log('error on send message444', er) })
+
+            }
+        }
+
+    }, [chats])
+
+
+    // useEffect(() => {
+    //     const onValueChange = database()
+    //         .ref(`/chats/${chatId}`).child('messages').orderByChild('dateInt')
+    //         .on('value', snapshot => {
+
+    //             if (snapshot.exists()) {
+
+    //                 let lastDate = null
+    //                 const data = []
+    //                 snapshot.forEach((documentSnapshot1, i) => {
+    //                     const msg = documentSnapshot1.val()
+    //                     if (msg.date != lastDate) {
+    //                         lastDate = msg.date
+    //                         data.push(statusDate(msg.date))
+
+    //                     }
+    //                     data.push(msg)
+    //                     if (i == snapshot.numChildren() - 1) {
+    //                         // console.log(chatss.length != 0, chatss.length, data.length)
+    //                         // if (chatss.length != 0) {
+    //                         //     console.log(unreadCount)
+    //                         //     const s = unreadCount + 1
+    //                         //     setUnreadCount(s)
+    //                         // }
+    //                         setChatss(data.reverse())
+
+    //                     }
+
+    //                 });
+    //             } else {
+    //                 setChatss([])
+    //             }
+    //         });
+
+    //     // Stop listening for updates when no longer required
+    //     return () => database().ref(`/chats/${chatId}`).off('value', onValueChange);
+    // }, []);
     function onSendMsg() {
 
         if (message === null) {
@@ -168,7 +236,6 @@ export const Chat = ({ navigation, route }) => {
         const fSpace = dddT.split(' ')
         const fDot = fSpace[0].split(':')
         const timeFor = `${fDot[0]}:${fDot[1]} ${fSpace[1]}`
-        console.log(timeFor)
         const mssss = {
 
             date: actualDate.toLocaleDateString(),
@@ -206,7 +273,7 @@ export const Chat = ({ navigation, route }) => {
                             uid: profile.uid, name: profile.name,
                         }
                     }
-                    if (true) {
+                    if (isNew) {
                         database()
                             .ref(`/chats/${chatId}`).update(otherUpdates).then(() => { })
                             .catch((er) => { console.log('error on send message333', er) })
@@ -280,13 +347,13 @@ export const Chat = ({ navigation, route }) => {
                     showsVerticalScrollIndicator={false} contentContainerStyle={{ flex: 1 }}>
 
                     {/* Chats */}
-
                     <FlashList
 
                         ref={scrollRef}
                         onScrollBeginDrag={() => {
                             setFromTouch(true)
                         }}
+                        showsVerticalScrollIndicator={false}
                         onScrollEndDrag={() => {
                         }}
                         onScroll={handleScrollView}
@@ -331,33 +398,42 @@ export const Chat = ({ navigation, route }) => {
                         }
 
                         } />
+                    {
+                        loader ?
+                            <View style={{ height: '100%', width: '100%', position: 'absolute', backgroundColor: myColors.background, justifyContent: 'center', alignItems: 'center' }}>
+
+                                <ActivityIndicator size={myHeight(10)} />
+                            </View>
+                            : null
+                    }
+
                     {/* Bottom */}
 
                     <View style={{ height: myHeight(0.2), backgroundColor: myColors.divider, marginHorizontal: myWidth(0) }} />
 
                     <View style={{ backgroundColor: myColors.background, paddingHorizontal: myWidth(4) }}>
                         {
-                            unreadCount ?
+                            (unreadCount && showScrollToLast) ?
                                 <View style={{
                                     width: myHeight(5.2),
                                     height: myHeight(5.2),
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     position: 'absolute', zIndex: 100,
-                                    right: myWidth(5), top: - myHeight(12.2)
+                                    right: myWidth(5), top: - myHeight(12)
                                 }}>
                                     <Text style={[styles.textCommon, {
                                         fontSize: myFontSize.small3,
                                         fontFamily: myFonts.body,
                                         color: myColors.background,
                                         // padding: myHeight(0.5),
-                                        minWidth: RFValue(25),
-                                        minHeight: RFValue(25),
+                                        width: RFValue(15),
+                                        height: RFValue(15),
                                         textAlign: 'center',
                                         textAlignVertical: 'center',
                                         borderRadius: 5000,
                                         backgroundColor: myColors.primaryT
-                                    }]}>{unreadCount}</Text>
+                                    }]}>{''}</Text>
                                 </View>
                                 : null
                         }
