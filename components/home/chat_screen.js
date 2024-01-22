@@ -171,6 +171,10 @@ export const Chat = ({ navigation, route }) => {
             setChatss(data.reverse())
             const allUnread = myChat[0].allUnreadMessagesToRead
             const unreadleangth = Object.keys(allUnread).length
+            if (showScrollToLast && unreadCount == 0 && unreadleangth) {
+                setUnreadCount(1)
+            }
+
             setTimeout(() => {
                 setLoader(false)
             }, 400)
