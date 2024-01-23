@@ -34,7 +34,6 @@ const MyMessage = ({ item }) => {
 
             <Spacer paddingT={myHeight(0.2)} />
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-
                 <Image style={{
                     height: myHeight(1.5),
                     tintColor: item.read ? myColors.background : myColors.offColor2,
