@@ -143,7 +143,7 @@ export const Chat = ({ navigation, route }) => {
 
                 if ((msg.senderId != profile.uid && msg.read == false && !alreadyUnread)) {
 
-                    if (firstTime || showScrollToLast) {
+                    if (firstTime || showScrollToLast || showUnread) {
 
                         console.log('AAAHIUAHSUI')
                         setShowUnread(data.length)
@@ -153,7 +153,7 @@ export const Chat = ({ navigation, route }) => {
 
 
                 } else if (showUnread != 0 && !alreadyUnread && showUnread == data.length) {
-                    if (firstTime || showScrollToLast) {
+                    if (firstTime || showScrollToLast || showUnread) {
                         console.log('BBBBBBBBBBB')
 
                         setShowUnread(data.length)
@@ -194,7 +194,10 @@ export const Chat = ({ navigation, route }) => {
                     .catch((er) => { console.log('error on send message444', er) })
 
             }
+        } else {
+            setLoader(false)
         }
+
 
     }, [chats])
 
@@ -256,10 +259,10 @@ export const Chat = ({ navigation, route }) => {
             time: timeFor,
             msgId,
             read: false,
-            senderId: user2.uid,
-            recieverId: profile.uid,
-            // senderId: profile.uid,
-            // recieverId: user2.uid,
+            // senderId: user2.uid,
+            // recieverId: profile.uid,
+            senderId: profile.uid,
+            recieverId: user2.uid,
             message: message,
 
         }
@@ -273,12 +276,7 @@ export const Chat = ({ navigation, route }) => {
                     const captain = data.data()
                     const token = captain.deviceToken
                     const otherUpdates = {
-                        // user: {
-                        //     uid: profile.uid, name: profile.name,
-                        // },
-                        // captain: {
-                        //     uid: captain.uid, name: captain.name,
-                        // }
+
                         user: {
                             uid: captain.uid, name: captain.name,
                         },
