@@ -239,7 +239,10 @@ export const HomeScreen = ({ navigation }) => {
 
                                     }
                                 })
-                                totalUnread += unreadmasseges
+                                if (unreadmasseges) {
+
+                                    totalUnread += 1
+                                }
                                 const chat = {
                                     ...latest, unreadmasseges, chatId: key,
                                     user2: val.user,
