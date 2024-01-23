@@ -143,17 +143,25 @@ export const Chat = ({ navigation, route }) => {
 
                 if ((msg.senderId != profile.uid && msg.read == false && !alreadyUnread)) {
 
+                    if (firstTime || showScrollToLast) {
 
-                    console.log('AAAHIUAHSUI')
-                    setShowUnread(data.length)
-                    data.push('new messages')
-                    alreadyUnread = true
+                        console.log('AAAHIUAHSUI')
+                        setShowUnread(data.length)
+                        data.push('new messages')
+                        alreadyUnread = true
+                    }
 
 
                 } else if (showUnread != 0 && !alreadyUnread && showUnread == data.length) {
-                    setShowUnread(data.length)
-                    data.push('new messages')
-                    alreadyUnread = true
+                    if (firstTime || showScrollToLast) {
+                        console.log('BBBBBBBBBBB')
+
+                        setShowUnread(data.length)
+                        data.push('new messages')
+                        alreadyUnread = true
+                    }
+                } else {
+
                 }
                 data.push(msg)
 
@@ -169,6 +177,7 @@ export const Chat = ({ navigation, route }) => {
 
             });
             setChatss(data.reverse())
+            setFirstTime(false)
             const allUnread = myChat[0].allUnreadMessagesToRead
             const unreadleangth = Object.keys(allUnread).length
             if (showScrollToLast && unreadCount == 0 && unreadleangth) {
@@ -177,7 +186,7 @@ export const Chat = ({ navigation, route }) => {
 
             setTimeout(() => {
                 setLoader(false)
-            }, 400)
+            }, 250)
             if (data.length != chatss.length && unreadleangth) {
                 console.log('unread to read work')
                 database()
