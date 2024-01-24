@@ -3,6 +3,7 @@ import storeRedux from '../../redux/store_redux';
 import { setCurrentLocation } from '../../redux/location_reducer';
 import Geolocation from '@react-native-community/geolocation';
 import { setErrorAlert } from '../../redux/error_reducer';
+import { getDistance } from 'geolib';
 
 export function verificationCode() {
   return Math.floor(Math.random() * 899999 + 100000);
@@ -69,14 +70,39 @@ export function statusDate(YDate, time) {
     return (YDate)
   }
 }
+
+export function getDistanceFromRes(from, to) {
+  try {
+    const dis = getDistance(from, to, 1)
+    let d = dis
+    // alert(d)
+    // alert(typeof d == 'NaN')
+    if (d >= 1000) {
+      d = Math.round(d / 1000) + ' KM'
+
+    }
+    else if (d < 1000) {
+      d = d + ' M'
+    }
+    else {
+      d = 0 + ' KM'
+    }
+    // alert(d)
+    return ({ distance: dis, string: d })
+  }
+  catch (error) {
+  }
+}
 export function getCurrentLocations() {
   Geolocation.getCurrentPosition(info => {
     if (info) {
+      console.log('info', 1)
       const { coords } = info
       const { latitude, longitude } = coords
       const detail = ({ latitude, longitude });
       storeRedux.dispatch(setCurrentLocation(detail))
-      const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${24.8168778}&lon=${67.0345444}`;
+      console.log(detail)
+      const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
 
       fetch(apiUrl, {
         headers: {
@@ -97,9 +123,10 @@ export function getCurrentLocations() {
           console.error('Error:', error);
         });
     } else {
+      console.log('info', 2)
 
     }
-  });
+  }, (err) => { console.log(err) });
 }
 export const SetErrorAlertToFunction = ({ Title, Body, Status }) => {
   storeRedux.dispatch(setErrorAlert({ Title, Body, Status }))

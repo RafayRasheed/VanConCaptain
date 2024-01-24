@@ -186,7 +186,7 @@ export const HomeScreen = ({ navigation }) => {
         // const interval = setInterval(() => {
         //     getCurrentLocations()
 
-        // }, 120000);
+        // }, 10000);
         // return () => clearInterval(interval);
 
     }, [])
@@ -194,6 +194,7 @@ export const HomeScreen = ({ navigation }) => {
         if (profile.city) {
             getAreasLocations(profile.city)
         }
+
         // updateDeviceTokenToFireBase(profile.uid)
         // sendPushNotification('hi', 'bye',2 )
 
