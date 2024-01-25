@@ -22,6 +22,7 @@ import { OrderDetails } from "./orders/order_detail_screen"
 import { navigationRef } from "./RootNavigation"
 import NavigationService from "./NavigationService"
 import { Chat } from "./home/chat_screen"
+import { DriverDetailEdit } from "./profile/driver_details_edit"
 
 const AppTAB = createStackNavigator()
 
@@ -60,6 +61,7 @@ export const AppNavigator = () => {
                 <AppTAB.Screen component={Favourite} name="Favourite" />
                 <AppTAB.Screen component={Checkout} name="Checkout" />
                 <AppTAB.Screen component={OrderDetails} name="OrderDetails" />
+                <AppTAB.Screen component={DriverDetailEdit} name="DriverDetailEdit" />
 
 
             </AppTAB.Navigator>

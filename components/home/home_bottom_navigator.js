@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { ProfileNavigator } from "../profile/profile_navigator";
 import { OrderScreen } from "../orders/orders_screen";
 import { ChatList } from "./chat_all_screen";
+import { RFValue } from "react-native-responsive-fontsize";
 
 const Tab = createBottomTabNavigator()
 

@@ -303,8 +303,8 @@ export const HomeScreen = ({ navigation }) => {
                                     <Spacer paddingT={myHeight(1.5)} />
 
                                     <TouchableOpacity
-                                        onPress={() => navigation.navigate('Chat',
-                                            { user2: { uid: '96af925c-795c-42c4-a2b2-a2648162fea6' } }
+                                        onPress={() => navigation.navigate('DriverDetailEdit',
+
                                         )}
                                         activeOpacity={0.8}
                                         style={{

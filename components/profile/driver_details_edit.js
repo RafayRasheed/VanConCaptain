@@ -10,14 +10,11 @@ import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { getLogin } from '../functions/storageMMKV';
 
 import storage from '@react-native-firebase/storage';
 import { ImageUri } from '../common/image_uri';
 import { ChangeImageView } from './profile_component/change_image_modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import Clipboard from '@react-native-clipboard/clipboard'
-import { isValid } from 'js-base64';
 import { CalenderDate } from './profile_component/calender';
 import Collapsible from 'react-native-collapsible';
 import firestore from '@react-native-firebase/firestore';
@@ -252,9 +249,9 @@ export const DriverDetailEdit = ({ navigation }) => {
                 console.log(sizeKB)
                 const source = asset.uri
                 if (sizeKB <= 1) {
-                    setImageLoading('background')
+                    setImageLoading('vehicle')
                     // setImage(source);
-                    uploadImage(source, 'background')
+                    uploadImage(source, 'vehicle')
 
                 }
                 else {
@@ -334,17 +331,17 @@ export const DriverDetailEdit = ({ navigation }) => {
     };
 
     const uploadImage = async (uri, name, i) => {
-        const path = `images/restaurants/${profile.uid}/${name}`
+        const path = `images/drivers/${profile.uid}/${name}`
         storage()
             .ref(path)
             .putFile(uri)
             .then((s) => {
                 storage().ref(path).getDownloadURL().then((uri) => {
-                    if (name == 'background') {
+                    if (name == 'vehicle') {
 
                         setImage(uri)
                         setImageLoading(null)
-                        console.log('uri recieved background')
+                        console.log('uri recieved background', uri)
 
                     } else {
                         // MenuImagesURI.push(uri)
@@ -415,7 +412,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                             resizeMode: 'contain',
                             tintColor: myColors.primaryT,
                             marginTop: -myHeight(3.3)
-                        }} source={require('../assets/profile/check2.png')} />
+                        }} source={require('../assets/profile/bellF.png')} />
                     }
                 </View>
                 <Spacer paddingEnd={myWidth(1)} />
@@ -430,7 +427,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     )
 
     const verifyLink = async () => {
-        const text = await Clipboard.getString();
+        const text = '2'
         const isValid = text.toString().includes(('https' || 'http') && 'maps')
         //    (https|http)maps
         if (isValid) {
@@ -656,7 +653,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                     <Spacer paddingT={myHeight(1.5)} />
                     {/* Background Image */}
-                    <TouchableOpacity disable={imageLoading == 'background'}
+                    <TouchableOpacity disable={imageLoading == 'vehicle'}
                         activeOpacity={0.75} onPress={() => {
                             // if (image) {
                             //     setShowChangeModal(true)
@@ -674,7 +671,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                             borderRadius: myWidth(4), backgroundColor: myColors.offColor7
                         }}>
                         {
-                            imageLoading == 'background' ?
+                            imageLoading == 'vehicle' ?
                                 <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: myColors.offColor7 }} >
                                     <Text style={[styles.textCommon,
                                     {
@@ -698,7 +695,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                             fontSize: myFontSize.body4,
 
                                         }]}>
-                                            Upload Background Image *
+                                            Upload vehicle Image *
                                         </Text>
                                         <Text style={[styles.textCommon,
                                         {
