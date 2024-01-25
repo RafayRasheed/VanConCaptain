@@ -21,7 +21,7 @@ const MyMessage = ({ item }) => {
             paddingStart: myWidth(2.5),
             paddingEnd: myWidth(3),
             paddingTop: myHeight(0.7),
-            backgroundColor: myColors.primary, maxWidth: myWidth(70),
+            backgroundColor: myColors.primary, maxWidth: myWidth(80),
             alignSelf: 'flex-end', marginVertical: myHeight(0.7),
             // borderWidth: myHeight(0.1),
             // borderColor: myColors.primaryT,
@@ -58,7 +58,7 @@ const OtherMessage = ({ item }) => {
     return (
         <View style={{ flexDirection: 'row', marginVertical: myHeight(0.7) }}>
             <View style={{
-                maxWidth: myWidth(70),
+                maxWidth: myWidth(80),
                 borderRadius: myWidth(2.5), borderBottomLeftRadius: 0,
                 paddingStart: myWidth(2.5),
                 paddingEnd: myWidth(2),
@@ -315,7 +315,6 @@ export const Chat = ({ navigation, route }) => {
 
     return (
         <>
-
             <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background, }}>
                 <StatusbarH />
 
@@ -351,9 +350,9 @@ export const Chat = ({ navigation, route }) => {
                                 fontFamily: myFonts.heading,
                             }]}>{user2.name ? user2.name : 'Someone'}</Text>
                             {/* <Text style={[styles.textCommon, {
-                                fontSize: myFontSize.body,
-                                fontFamily: myFonts.body,
-                            }]}>Last seen {'12:09'}</Text> */}
+                            fontSize: myFontSize.body,
+                            fontFamily: myFonts.body,
+                        }]}>Last seen {'12:09'}</Text> */}
                         </View>
                     </View>
 
@@ -437,7 +436,7 @@ export const Chat = ({ navigation, route }) => {
 
                         {/* <View style={{ height: myHeight(0.2), backgroundColor: myColors.offColor5, marginHorizontal: myWidth(0) }} /> */}
 
-                        <View style={{ backgroundColor: 'transparent', paddingHorizontal: myWidth(4) }}>
+                        <View style={{ backgroundColor: 'transparent', paddingHorizontal: myWidth(3) }}>
 
                             {
                                 showScrollToLast ?
@@ -500,8 +499,8 @@ export const Chat = ({ navigation, route }) => {
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     flex: 1,
-                                    borderRadius: myHeight(2),
-                                    paddingHorizontal: myWidth(3.5),
+                                    borderRadius: myHeight(1.3),
+                                    paddingHorizontal: myWidth(1.5),
                                     borderWidth: myHeight(0.1),
                                     borderColor: focus ? myColors.primaryT : myColors.text,
                                     backgroundColor: myColors.background,
@@ -519,7 +518,7 @@ export const Chat = ({ navigation, route }) => {
                                         style={{
                                             flex: 1,
                                             textAlignVertical: 'center',
-                                            paddingVertical: ios ? myHeight(1.4) : myHeight(100) > 600 ? myHeight(1) : myHeight(0.2),
+                                            paddingVertical: myHeight(100) > 600 ? myHeight(0.8) : myHeight(0),
                                             fontSize: myFontSize.body,
                                             color: myColors.text,
                                             includeFontPadding: false,
@@ -528,12 +527,12 @@ export const Chat = ({ navigation, route }) => {
                                     />
                                 </View>
 
-                                <Spacer paddingEnd={myWidth(4)} />
+                                <Spacer paddingEnd={myWidth(2)} />
                                 {/* Send Button */}
                                 <View>
                                     <TouchableOpacity style={{
                                         paddingVertical: myHeight(1.4),
-                                        paddingHorizontal: myWidth(6.5),
+                                        paddingHorizontal: myWidth(6),
                                         backgroundColor: myColors.primaryT,
                                         borderRadius: myWidth(2)
                                     }}

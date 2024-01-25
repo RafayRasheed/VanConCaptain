@@ -179,15 +179,7 @@ export const HomeScreen = ({ navigation }) => {
     }
     useEffect(() => {
         getProfileFromFirebase()
-        // updateDeviceTokenToFireBase(profile.uid)
-        // sendPushNotification('hi', 'bye',2 )
 
-        // getCurrentLocations()
-        // const interval = setInterval(() => {
-        //     getCurrentLocations()
-
-        // }, 10000);
-        // return () => clearInterval(interval);
 
     }, [])
     useEffect(() => {
