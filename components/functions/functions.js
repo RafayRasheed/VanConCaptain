@@ -97,7 +97,7 @@ export function getDistanceFromRes(from, to) {
 }
 
 export function updateAndNewLocation(coords) {
-  coords = { latitude: 24.7691021, longitude: 67.072842 }
+  // coords = { latitude: 24.7691021, longitude: 67.072842 }
 
   const { areas } = storeRedux.getState().areas
   const { profile } = storeRedux.getState().profile
@@ -114,7 +114,7 @@ export function updateAndNewLocation(coords) {
     }
   })
   console.log('minDistance: ', minArea)
-  if (profile.city && minArea && minArea.distance > 2000) {
+  if (profile.city && minArea && minArea.distance > 1300) {
     // if (true) {
 
 
