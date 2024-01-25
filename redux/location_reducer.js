@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { deleteLogin, getLogin, setLogin } from "../components/functions/storageMMKV";
+import { Alert } from "react-native";
 
 const locationReducer = createSlice({
     name: "location",
@@ -16,7 +17,7 @@ const locationReducer = createSlice({
                 state.history.push(state.current)
             }
             state.current = action.payload
-            console.log(state.current)
+
 
 
         },

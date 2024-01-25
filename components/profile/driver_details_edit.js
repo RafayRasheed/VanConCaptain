@@ -771,7 +771,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                     </View>
 
                     {/* Delivery Charges & Time */}
-                    {/* <Collapsible collapsed={!Delivery}>
+                    <Collapsible collapsed={!Delivery}>
                         <Spacer paddingT={myHeight(2.7)} />
 
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -845,13 +845,14 @@ export const DriverDetailEdit = ({ navigation }) => {
                                     }}
                                 />
 
-                               
+
                             </View>
-                          
+
                         </View>
 
                         <Spacer paddingT={myHeight(2.7)} />
 
+                        {/* Delivery  Time */}
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={[styles.textCommon,
                             {
@@ -923,10 +924,16 @@ export const DriverDetailEdit = ({ navigation }) => {
                                     }}
                                 />
 
-                          
+                                {/* <Text style={[styles.textCommon,
+                                    {
+                                        flex: 1,
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body2,
+
+                                    }]}>Min</Text> */}
                             </View>
                         </View>
-                    </Collapsible> */}
+                    </Collapsible>
 
 
                     <Spacer paddingT={myHeight(2.7)} />

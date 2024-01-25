@@ -4,6 +4,8 @@ import { setCurrentLocation } from '../../redux/location_reducer';
 import Geolocation from '@react-native-community/geolocation';
 import { setErrorAlert } from '../../redux/error_reducer';
 import { getDistance } from 'geolib';
+import { FirebaseLocation } from './firebase';
+import { setAreasLocation } from '../../redux/areas_reducer';
 
 export function verificationCode() {
   return Math.floor(Math.random() * 899999 + 100000);
@@ -93,35 +95,77 @@ export function getDistanceFromRes(from, to) {
   catch (error) {
   }
 }
+
+export function updateAndNewLocation(coords) {
+  coords = { latitude: 24.7691021, longitude: 67.072842 }
+
+  const { areas } = storeRedux.getState().areas
+  const { profile } = storeRedux.getState().profile
+
+  let minArea = null
+  areas.map((it, i) => {
+    const { latitude, longitude } = it
+    const from = coords
+    const to = { latitude, longitude }
+    const { distance } = getDistanceFromRes(from, to)
+
+    if (minArea == null || distance < minArea.distance) {
+      minArea = { ...it, distance }
+    }
+  })
+  console.log('minDistance: ', minArea)
+  if (profile.city && minArea && minArea.distance > 2000) {
+    // if (true) {
+
+
+    const { latitude, longitude } = coords
+    const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+
+    fetch(apiUrl, {
+      headers: {
+        'Accept-Language': 'en',
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+
+        // Handle the response data
+        const { display_name } = data
+        const myArray = display_name.split(',')
+        const modifiedArray = myArray.slice(0, myArray.length - 3);
+        const name = modifiedArray.join(',');
+
+        if (!display_name.includes(profile.city)) {
+
+          return
+        }
+        const { dateInt } = dataFullData()
+        const id = dateInt.toString() + verificationCode().toString()
+        const detail = {}
+        detail[id] = ({ id, name, latitude, longitude });
+
+        storeRedux.dispatch(setCurrentLocation({ id, name, latitude, longitude }))
+        FirebaseLocation.doc(profile.city).update(detail)
+          .then(() => {
+            getAreasLocations()
+            console.log('New Location Update', detail)
+          }).catch(err => { console.log('update location error', err) })
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+}
 export function getCurrentLocations() {
   Geolocation.getCurrentPosition(info => {
     if (info) {
-      console.log('info', 1)
       const { coords } = info
       const { latitude, longitude } = coords
-      const detail = ({ latitude, longitude });
+      const detail = { latitude, longitude };
       storeRedux.dispatch(setCurrentLocation(detail))
-      console.log(detail)
-      const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+      updateAndNewLocation(detail)
 
-      fetch(apiUrl, {
-        headers: {
-          'Accept-Language': 'en',
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-
-          // Handle the response data
-          const { display_name, address } = data
-          const { road, neighbourhood } = address
-          const detail = ({ fullName: display_name, shortName: `${road}, ${neighbourhood}`, latitude, longitude });
-          storeRedux.dispatch(setCurrentLocation(detail))
-
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
     } else {
       console.log('info', 2)
 
@@ -130,5 +174,29 @@ export function getCurrentLocations() {
 }
 export const SetErrorAlertToFunction = ({ Title, Body, Status }) => {
   storeRedux.dispatch(setErrorAlert({ Title, Body, Status }))
+
+}
+
+export const getAreasLocations = () => {
+  const { profile } = storeRedux.getState().profile
+
+  FirebaseLocation.doc(profile.city).get().then((result) => {
+    if (result.exists) {
+
+      const areas = result.data()
+      let AllAreas = []
+      for (const [key, value] of Object.entries(areas)) {
+        AllAreas.push(value)
+      }
+
+      storeRedux.dispatch(setAreasLocation(AllAreas))
+      getCurrentLocations()
+
+    }
+
+  }).catch((ERR) => {
+    console.log('ERROR ON getAreasLocations', ERR)
+  })
+
 
 }

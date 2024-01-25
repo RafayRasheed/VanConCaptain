@@ -5,6 +5,7 @@ import messaging from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 import storeRedux from '../../redux/store_redux';
 import { setAreasLocation } from '../../redux/areas_reducer';
+import { dataFullData, verificationCode } from './functions';
 
 export const FirebaseUser = firestore().collection('drivers')
 export const FirebaseLocation = firestore().collection('locations')
@@ -98,17 +99,3 @@ export const getDeviceToken = async () => {
     }
 };
 
-export const getAreasLocations = (city) => {
-    FirebaseLocation.doc(city).get().then((result) => {
-        if (result.exists) {
-
-            const areas = result.data().areas
-            storeRedux.dispatch(setAreasLocation(areas ? areas : []))
-        }
-
-    }).catch((ERR) => {
-        console.log('ERROR ON getAreasLocations', ERR)
-    })
-
-
-}
