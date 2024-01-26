@@ -4,12 +4,13 @@ import {
     View, Text, StatusBar, TextInput, Alert,
     Linking, Platform, ImageBackground, SafeAreaView, FlatList,
 } from 'react-native';
-import { Loader, MyError, Spacer, StatusbarH, errorTime, ios, myHeight, myWidth } from '../common';
+import { Loader, MyError, NotiAlertNew, Spacer, StatusbarH, errorTime, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import storage from '@react-native-firebase/storage';
 import { ImageUri } from '../common/image_uri';
@@ -19,6 +20,8 @@ import { CalenderDate } from './profile_component/calender';
 import Collapsible from 'react-native-collapsible';
 import firestore from '@react-native-firebase/firestore';
 import { setProfile } from '../../redux/profile_reducer';
+import { FirebaseUser } from '../functions/firebase';
+import { setErrorAlert } from '../../redux/error_reducer';
 
 export const DriverDetailEdit = ({ navigation }) => {
     const disptach = useDispatch()
@@ -56,16 +59,19 @@ export const DriverDetailEdit = ({ navigation }) => {
     const { profile } = useSelector(state => state.profile)
 
     const [isLoading, setIsLoading] = useState(false)
-    const [DineIn, setDineIn] = useState(profile.dineIn)
-    const [Delivery, setDelivery] = useState(profile.homeDelivery)
-    const [TakeAway, setTakeAway] = useState(profile.takeAway)
+
+
+    const [vehicleName, setVehicleName] = useState(profile.vehicleName ? profile.vehicleName : null)
+    const [vehicleModal, setVehicleModal] = useState(profile.vehicleModal ? profile.vehicleModal : null)
+    const [description, SetDescription] = useState(profile.description)
+    const [vehicleImage, setVehicleImage] = useState(profile.vehicleImage ? profile.vehicleImage : null);
+
+    const [packages, setPackages] = useState(profile.packages ? [...profile.packages] : [])
 
     const [offer, Setoffer] = useState(profile.deal)
     const [DeliveryFee, SetDeliveryFee] = useState(profile.deliveryCharges ? profile.deliveryCharges.toString() : null)
     const [DeliveryTime, SetDeliveryTime] = useState(profile.delivery)
-    const [Description, SetDescription] = useState(profile.description)
     const [address, setAddress] = useState(profile.location)
-    const [image, setImage] = useState(profile.images ? profile.images[0] : null);
     const [locLink, setLocLink] = useState(profile.locationLink);
     const [MenuImages, setMenuImages] = useState(profile.menu ? profile.menu : [])
     const [timmings, setTimmings] = useState(profile.timmings ? profile.timmings : temp)
@@ -79,43 +85,43 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [showChangeModal, setShowChangeModal] = useState(false)
 
 
-    function checkFacilities() {
-        if (DineIn || Delivery || TakeAway) {
-            if (Delivery) {
-                if (DeliveryFee) {
-                    if (isNaN(DeliveryFee) || DeliveryFee < 0) {
-                        setErrorMsg('Invalid Delivery Charges')
-                        return false
-                    }
-                }
-                else {
+    function checkPackages() {
+        if (packages.length) {
+            // if (Delivery) {
+            //     if (DeliveryFee) {
+            //         if (isNaN(DeliveryFee) || DeliveryFee < 0) {
+            //             setErrorMsg('Invalid Delivery Charges')
+            //             return false
+            //         }
+            //     }
+            //     else {
 
-                    setErrorMsg('Please Enter Delivery Charges')
-                    return false
-                }
-                if (DeliveryTime) {
-                    if (isNaN(DeliveryTime) || DeliveryTime < 0) {
-                        setErrorMsg('Invalid DeliveryTime')
-                        return false
-                    }
-                }
-                else {
+            //         setErrorMsg('Please Enter Delivery Charges')
+            //         return false
+            //     }
+            //     if (DeliveryTime) {
+            //         if (isNaN(DeliveryTime) || DeliveryTime < 0) {
+            //             setErrorMsg('Invalid DeliveryTime')
+            //             return false
+            //         }
+            //     }
+            //     else {
 
-                    setErrorMsg('Please Enter Delivery Time in Minutes')
-                    return false
-                }
-            }
+            //         setErrorMsg('Please Enter Delivery Time in Minutes')
+            //         return false
+            //     }
+            // }
 
 
             return true
         } else {
-            setErrorMsg('Please Select Facilities')
+            setErrorMsg('Please Select Customer Packages')
             return false
         }
     }
     function checkDescription() {
-        if (Description) {
-            if (Description.length < 20) {
+        if (description) {
+            if (description.length < 20) {
                 setErrorMsg('Enter Description Minimum 20 Characters')
                 return false
             }
@@ -124,7 +130,25 @@ export const DriverDetailEdit = ({ navigation }) => {
         setErrorMsg('Please Add Description')
         return false
     }
+    function checkNameAndModal() {
+        if (vehicleName) {
 
+            if (vehicleModal) {
+                const date = new Date()
+
+                if (!isNaN(vehicleModal) && vehicleModal.length == 4 && (parseInt(vehicleModal) <= parseInt(date.getFullYear()))) {
+                    return true
+                }
+                setErrorMsg('Incorrect Vehicle Modal')
+                return false
+            }
+            setErrorMsg('Please Enter Vehicle Modal')
+            return false
+
+        }
+        setErrorMsg('Please Add Vehicle Name')
+        return false
+    }
     function checkTimmings() {
         let s = true
         timmings.map(time => {
@@ -136,25 +160,29 @@ export const DriverDetailEdit = ({ navigation }) => {
     }
     function checkData() {
 
-        if (!image) {
-            setErrorMsg('Please Upload Background Image')
+        if (!vehicleImage) {
+            setErrorMsg('Please Upload Car Image')
+            return false
+        }
+
+        if (!checkNameAndModal()) {
             return false
         }
         if (!checkDescription()) {
             return false
         }
-        if (!checkFacilities()) {
+        if (!checkPackages()) {
             return false
         }
-        if (!address) {
+        // if (!address) {
 
-            setErrorMsg('Please Enter Resturant Address')
-            return true
-        }
-        if (!checkTimmings()) {
-            setErrorMsg('Select Times Of All Day If Open')
-            return false
-        }
+        //     setErrorMsg('Please Enter Resturant Address')
+        //     return true
+        // }
+        // if (!checkTimmings()) {
+        //     setErrorMsg('Select Times Of All Day If Open')
+        //     return false
+        // }
 
         return true
     }
@@ -165,38 +193,37 @@ export const DriverDetailEdit = ({ navigation }) => {
             setIsLoading(true)
             const newProfile = {
                 ...profile,
-                description: Description ? Description : null,
-                dineIn: DineIn ? DineIn : null,
-                takeAway: TakeAway ? TakeAway : null,
-                homeDelivery: Delivery ? Delivery : null,
-                images: [image ? image : null],
-                menu: MenuImages ? MenuImages : [],
-                location: address ? address : null,
-                locationLink: locLink ? locLink : null,
-                delivery: DeliveryTime ? DeliveryTime : null,
-                deliveryCharges: DeliveryFee ? parseFloat(DeliveryFee) : null,
-                deal: offer ? offer : null,
-                timmings: timmings,
-                rating: profile.rating ? profile.rating : 0,
-                noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
-                reviews: profile.reviews ? [...profile.reviews] : [],
-                ratingTotal: profile.ratingTotal ? profile.ratingTotal : 0,
-                update: true,
-                foodCategory: profile.foodCategory ? profile.foodCategory : [],
-                categories: profile.categories ? profile.categories : [],
-                subCategories: profile.subCategories ? profile.subCategories : [],
-                icon: profile.icon ? profile.icon : 'https://firebasestorage.googleapis.com/v0/b/foodapp-edd7e.appspot.com/o/default%2Ficon.png?alt=media&token=575dea1f-76be-4585-8866-963f20ede519',
+                description,
+                packages,
+                vehicleImage,
+                vehicleName,
+                vehicleModal,
+                // menu: MenuImages ? MenuImages : [],
+                // location: address ? address : null,
+                // locationLink: locLink ? locLink : null,
+                // delivery: DeliveryTime ? DeliveryTime : null,
+                // deliveryCharges: DeliveryFee ? parseFloat(DeliveryFee) : null,
+                // deal: offer ? offer : null,
+                // timmings: timmings,
+                // rating: profile.rating ? profile.rating : 0,
+                // noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
+                // reviews: profile.reviews ? [...profile.reviews] : [],
+                // ratingTotal: profile.ratingTotal ? profile.ratingTotal : 0,
+                // update: true,
+                // foodCategory: profile.foodCategory ? profile.foodCategory : [],
+                // categories: profile.categories ? profile.categories : [],
+                // subCategories: profile.subCategories ? profile.subCategories : [],
+                // icon: profile.icon ? profile.icon : 'https://firebasestorage.googleapis.com/v0/b/foodapp-edd7e.appspot.com/o/default%2Ficon.png?alt=media&token=575dea1f-76be-4585-8866-963f20ede519',
 
             }
 
             // setAddress(JSON.stringify(newProfile))
-            firestore().collection('restaurants').doc(profile.uid)
+            FirebaseUser.doc(profile.uid)
                 .update(newProfile)
                 .then(() => {
-                    disptach(setProfile(newProfile))
                     setIsLoading(false)
-                    // setIsEditMode(false)
-                    const msg = profile.update ? 'Updated Successfully' : 'Add Successfully'
+                    disptach(setErrorAlert({ Title: "Profile Updated Successfully", Status: 2 }))
+                    disptach(setProfile(newProfile))
                     navigation.goBack()
 
 
@@ -250,7 +277,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                 const source = asset.uri
                 if (sizeKB <= 1) {
                     setImageLoading('vehicle')
-                    // setImage(source);
+                    // setVehicleImage(source);
                     uploadImage(source, 'vehicle')
 
                 }
@@ -339,7 +366,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                 storage().ref(path).getDownloadURL().then((uri) => {
                     if (name == 'vehicle') {
 
-                        setImage(uri)
+                        setVehicleImage(uri)
                         setImageLoading(null)
                         console.log('uri recieved background', uri)
 
@@ -392,6 +419,47 @@ export const DriverDetailEdit = ({ navigation }) => {
 
     };
 
+    // For Packages
+    const CommonFaciPackage = ({ name }) => {
+        const fac = packages.findIndex(it => it == name) != -1
+        return (
+            <TouchableOpacity activeOpacity={0.75}
+                onPress={() => {
+                    if (fac) {
+                        setPackages(packages.filter(it => it != name))
+                    } else {
+                        setPackages([name, ...packages])
+                    }
+                }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    <View style={{
+                        height: myHeight(3.5),
+                        width: myHeight(3.5),
+                        paddingTop: myHeight(0.75)
+                    }}>
+                        <View style={{ width: myHeight(2.2), height: myHeight(2.2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
+                        {
+                            fac &&
+                            <Image style={{
+                                height: myHeight(3.3),
+                                width: myHeight(3.3),
+                                resizeMode: 'contain',
+                                tintColor: myColors.primaryT,
+                                marginTop: -myHeight(3.1)
+                            }} source={require('../assets/profile/check.png')} />
+                        }
+                    </View>
+                    {/* <Spacer paddingEnd={myWidth(0.3)} /> */}
+                    <Text style={[styles.textCommon,
+                    {
+                        fontFamily: myFonts.bodyBold,
+                        fontSize: myFontSize.xBody,
+
+                    }]}>{name}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
     const CommonFaci = ({ name, fac, setFAc }) => (
         <TouchableOpacity activeOpacity={0.75}
             onPress={() => {
@@ -407,19 +475,19 @@ export const DriverDetailEdit = ({ navigation }) => {
                     {
                         fac &&
                         <Image style={{
-                            height: myHeight(3.5),
-                            width: myHeight(3.5),
+                            height: myHeight(3.3),
+                            width: myHeight(3.3),
                             resizeMode: 'contain',
                             tintColor: myColors.primaryT,
-                            marginTop: -myHeight(3.3)
-                        }} source={require('../assets/profile/bellF.png')} />
+                            marginTop: -myHeight(3.1)
+                        }} source={require('../assets/profile/check.png')} />
                     }
                 </View>
-                <Spacer paddingEnd={myWidth(1)} />
+                {/* <Spacer paddingEnd={myWidth(0.3)} /> */}
                 <Text style={[styles.textCommon,
                 {
                     fontFamily: myFonts.bodyBold,
-                    fontSize: myFontSize.xBody,
+                    fontSize: myFontSize.body3,
 
                 }]}>{name}</Text>
             </View>
@@ -444,7 +512,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         chooseFileMenu(param)
     }
     function onViewImage() {
-        navigation.navigate("ImageViewer", { images: [{ uri: image }], i: 0 })
+        navigation.navigate("ImageViewer", { images: [{ uri: vehicleImage }], i: 0 })
     }
 
 
@@ -639,7 +707,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             fontSize: myFontSize.xBody2
                         }]}>
-                            Restautant Details
+                            Driver Details
                         </Text>
                     </View>
                     <Spacer paddingT={myHeight(1.5)} />
@@ -655,11 +723,11 @@ export const DriverDetailEdit = ({ navigation }) => {
                     {/* Background Image */}
                     <TouchableOpacity disable={imageLoading == 'vehicle'}
                         activeOpacity={0.75} onPress={() => {
-                            // if (image) {
+                            // if (vehicleImage) {
                             //     setShowChangeModal(true)
                             // }
                             // else {
-                            //     onChangeImage()
+                            //     chooseFile()
                             // }
                             chooseFile()
 
@@ -684,8 +752,8 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                 :
 
-                                image ?
-                                    <ImageUri width={'100%'} height={'100%'} resizeMode='cover' borderRadius={0} uri={image} />
+                                vehicleImage ?
+                                    <ImageUri width={'100%'} height={'100%'} resizeMode='cover' borderRadius={0} uri={vehicleImage} />
                                     :
                                     <View>
 
@@ -695,7 +763,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                             fontSize: myFontSize.body4,
 
                                         }]}>
-                                            Upload vehicle Image *
+                                            Upload Vehicle Image *
                                         </Text>
                                         <Text style={[styles.textCommon,
                                         {
@@ -713,6 +781,80 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                     <Spacer paddingT={myHeight(2.7)} />
+                    {/* Vehicle Details */}
+                    <View>
+                        <Text style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.xBody2,
+
+                        }]}>Vehicle Details *</Text>
+                        <Spacer paddingT={myHeight(1)} />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+                                flex: 1,
+                                paddingVertical: myHeight(0.5),
+                                paddingHorizontal: myWidth(3),
+                                color: myColors.text,
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Vehicle Name Ex HiRoof"
+                                    autoCorrect={false}
+                                    maxLength={35}
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={vehicleName} onChangeText={setVehicleName}
+                                    style={{
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+                            </View>
+                            <Spacer paddingEnd={myWidth(2)} />
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+                                width: myWidth(20),
+                                paddingVertical: myHeight(0.5),
+                                paddingHorizontal: myWidth(3),
+                                color: myColors.text,
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Ex 2020"
+                                    autoCorrect={false} maxLength={4}
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={vehicleModal} onChangeText={setVehicleModal}
+                                    keyboardType='numeric'
+                                    style={{
+
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+
+                            </View>
+
+
+
+                        </View>
+                    </View>
+                    <Spacer paddingT={myWidth(2.5)} />
+
                     {/* Description */}
                     <View>
                         <Text style={[styles.textCommon,
@@ -722,7 +864,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                         }]}>Description *</Text>
                         <Spacer paddingT={myHeight(1)} />
-                        <TextInput placeholder="About Your Restaurant"
+                        <TextInput placeholder="About yourself & services"
                             multiline={true}
                             autoCorrect={false}
                             maxLength={100}
@@ -730,9 +872,9 @@ export const DriverDetailEdit = ({ navigation }) => {
                             placeholderTextColor={myColors.offColor}
                             selectionColor={myColors.primary}
                             cursorColor={myColors.primaryT}
-                            value={Description} onChangeText={SetDescription}
+                            value={description} onChangeText={SetDescription}
                             style={{
-                                height: myFontSize.body * 2 + myHeight(4.5),
+                                height: myFontSize.body * 2 + myHeight(6),
                                 textAlignVertical: 'top',
                                 borderRadius: myWidth(2),
                                 width: '100%',
@@ -748,7 +890,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                         />
                     </View>
 
-                    <Spacer paddingT={myHeight(2.5)} />
+                    <Spacer paddingT={myHeight(2)} />
                     {/* FAcilities */}
                     <View>
                         <Text style={[styles.textCommon,
@@ -756,19 +898,20 @@ export const DriverDetailEdit = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             fontSize: myFontSize.xBody2,
 
-                        }]}>Select Facilities *</Text>
-                        <Spacer paddingT={myHeight(1.3)} />
+                        }]}>Customer Packages *</Text>
+                        <Spacer paddingT={myHeight(0.8)} />
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 
-                            <CommonFaci name={'Dine In'} fac={DineIn} setFAc={setDineIn} />
-                            <CommonFaci name={'Delivery'} fac={Delivery} setFAc={setDelivery} />
-                            <CommonFaci name={'Take Away'} fac={TakeAway} setFAc={setTakeAway} />
+                            <CommonFaciPackage name={'Weekly'} />
+                            <CommonFaciPackage name={'Monthly'} />
+                            <CommonFaciPackage name={'Yearly'} />
                         </View>
                     </View>
 
+
                     {/* Delivery Charges & Time */}
-                    <Collapsible collapsed={!Delivery}>
+                    <Collapsible collapsed={true}>
                         <Spacer paddingT={myHeight(2.7)} />
 
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -933,7 +1076,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                     </Collapsible>
 
 
-                    <Spacer paddingT={myHeight(2.7)} />
+                    <Spacer paddingT={myHeight(2)} />
                     {/* Location */}
                     <View>
                         <Text style={[styles.textCommon,
@@ -1076,7 +1219,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                     <Spacer paddingT={myHeight(2.5)} />
 
                     {/* Menu Images */}
-                    <View>
+                    {/* <View>
                         <Text style={[styles.textCommon,
                         {
                             fontFamily: myFonts.heading,
@@ -1135,7 +1278,6 @@ export const DriverDetailEdit = ({ navigation }) => {
                                         borderRadius: myWidth(4), backgroundColor: myColors.offColor7,
                                     }}>
 
-                                    {/* <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={image} /> */}
 
 
                                     <View style={{ justifyContent: 'center', alignItems: 'center', }}>
@@ -1172,7 +1314,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                         </View>
-                    </View>
+                    </View> */}
 
                     <Spacer paddingT={myHeight(3)} />
 
