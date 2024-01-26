@@ -300,7 +300,7 @@ export const Chat = ({ navigation, route }) => {
                             .ref(`/chats/${chatId}`).update(otherUpdates).then(() => { })
                             .catch((er) => { console.log('error on send message333', er) })
                     }
-                    sendPushNotification(profile.name, message, 0, [token])
+                    sendPushNotification(profile.name, message, 2, [token])
                 })
 
                 // database().ref(`/chats/${chatId}`).child('lastUpdate')
