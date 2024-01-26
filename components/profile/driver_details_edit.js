@@ -830,7 +830,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                 // borderColor: myColors.primaryT
                             }}>
 
-                                <TextInput placeholder="Ex 2020"
+                                <TextInput placeholder="Year"
                                     autoCorrect={false} maxLength={4}
                                     placeholderTextColor={myColors.offColor}
                                     selectionColor={myColors.primary}
