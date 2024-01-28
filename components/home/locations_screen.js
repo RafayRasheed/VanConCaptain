@@ -53,7 +53,7 @@ function containString(contain, thiss) {
     return (contain.toLowerCase().includes(thiss.toLowerCase()))
 }
 
-export const Search = ({ navigation }) => {
+export const Search = ({ selectedItem, setSelectedItems, setShowLoc }) => {
     // const { location } = useSelector(state => state.location)
     const { areas, profile } = useSelector(state => state)
     const location = areas.areas
@@ -61,7 +61,7 @@ export const Search = ({ navigation }) => {
     const [search, setSearch] = useState(null)
     const [longEnable, setLongEnable] = useState(false)
     const [filterItems, setFilterItems] = useState([])
-    const [selectedItem, setSelectedItems] = useState([])
+    // const [selectedItem, setSelectedItems] = useState([])
 
     // const [fullRest, setFullRest] = useState([])
     function onLongPress(item) {
@@ -74,6 +74,11 @@ export const Search = ({ navigation }) => {
 
         }
     }
+    function onDone() {
+
+        setShowLoc(false)
+
+    }
     function onSinglePress(item, fromLong) {
         if (longEnable || fromLong) {
             const isOnArra = selectedItem.findIndex(it => it.id == item.id)
@@ -85,6 +90,9 @@ export const Search = ({ navigation }) => {
                 }
                 setSelectedItems(selectedItem.filter(it => it.id != item.id))
             }
+        } else {
+            setSelectedItems([item])
+            onDone()
         }
     }
     const Loader = () => (
@@ -182,26 +190,26 @@ export const Search = ({ navigation }) => {
                 {/* Search */}
                 <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row', alignItems: 'center', }}>
 
-                    {/* Search */}
-                    <View style={{
-                        flex: 1,
+                    {
+                        longEnable ?
+                            <>
+                                <View style={{
+                                    flex: 1,
 
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        paddingHorizontal: myWidth(longEnable ? 0 : 4),
-                        // paddingVertical: myHeight(0.5),
-                        height: myHeight(5),
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: myWidth(2.5),
-                        backgroundColor: longEnable ? myColors.background : myColors.offColor7,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    paddingHorizontal: myWidth(longEnable ? 0 : 4),
+                                    // paddingVertical: myHeight(0.5),
+                                    height: myHeight(5),
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    borderRadius: myWidth(2.5),
+                                    backgroundColor: longEnable ? myColors.background : myColors.offColor7,
 
-                        // marginHorizontal: myWidth(4)
-                    }}>
+                                    // marginHorizontal: myWidth(4)
+                                }}>
 
-                        {
-                            longEnable ?
-                                <>
+
                                     <TouchableOpacity activeOpacity={0.7} onPress={clearLongPress} style={{}}>
                                         <Image style={{
                                             height: myHeight(2.3),
@@ -217,48 +225,73 @@ export const Search = ({ navigation }) => {
                                         flex: 1
                                     }]}>Select {selectedItem.length}</Text>
 
-                                    <TouchableOpacity activeOpacity={0.7} onPress={() => {
-
-                                    }} style={{}}>
+                                    <TouchableOpacity activeOpacity={0.7} onPress={onDone} style={{}}>
                                         <Text style={[styles.textCommon, {
                                             fontFamily: myFonts.bodyBold,
                                             fontSize: myFontSize.body4,
                                             color: myColors.primaryT,
                                         }]}>Done</Text>
                                     </TouchableOpacity>
-                                </>
-                                :
-                                <>
+                                </View>
+                            </>
+                            :
+                            null
+                    }
+                </View>
 
-                                    {/* Arrow */}
-                                    <TouchableOpacity activeOpacity={0.7} onPress={() => null} style={{}}>
-                                        <Image style={{
-                                            height: myHeight(2.3),
-                                            width: myHeight(2.3),
-                                            resizeMode: 'contain',
-                                            tintColor: myColors.textL0
-                                        }} source={require('../assets/home_main/home/back.png')} />
-                                    </TouchableOpacity>
-                                    <Spacer paddingEnd={myWidth(2.5)} />
-                                    <TextInput placeholder=" Search location"
-                                        placeholderTextColor={myColors.textL5}
-                                        autoCorrect={false}
-                                        selectionColor={myColors.primaryT}
-                                        style={{
-                                            flex: 1,
-                                            textAlignVertical: 'center',
-                                            paddingVertical: ios ? myHeight(0.6) : myHeight(100) > 600 ? myHeight(0.5) : myHeight(0.1),
-                                            fontSize: myFontSize.body,
-                                            color: myColors.text,
-                                            includeFontPadding: false,
-                                            fontFamily: myFonts.bodyBold,
-                                        }}
-                                        cursorColor={myColors.primaryT}
-                                        value={search} onChangeText={setSearch}
-                                    // value={search} onChangeText={(val) => null}
-                                    />
-                                </>
+                <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row', alignItems: 'center', }}>
+
+                    {/* Search */}
+                    <View style={{
+                        flex: 1,
+
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingHorizontal: myWidth(4),
+                        // paddingVertical: myHeight(0.5),
+                        height: myHeight(5),
+                        alignItems: 'center',
+                        borderRadius: myWidth(2.5),
+                        backgroundColor: myColors.offColor7,
+
+                        // marginHorizontal: myWidth(4)
+                    }}>
+
+                        {/* Arrow */}
+                        {
+                            !longEnable &&
+
+                            <>
+                                <TouchableOpacity activeOpacity={0.7} onPress={onDone} style={{}}>
+                                    <Image style={{
+                                        height: myHeight(2.3),
+                                        width: myHeight(2.3),
+                                        resizeMode: 'contain',
+                                        tintColor: myColors.textL0
+                                    }} source={require('../assets/home_main/home/back.png')} />
+                                </TouchableOpacity>
+                                <Spacer paddingEnd={myWidth(2.5)} />
+                            </>
+
                         }
+                        <TextInput placeholder=" Search location"
+                            placeholderTextColor={myColors.textL5}
+                            autoCorrect={false}
+                            selectionColor={myColors.primaryT}
+                            style={{
+                                flex: 1,
+                                textAlignVertical: 'center',
+                                paddingVertical: ios ? myHeight(0.6) : myHeight(100) > 600 ? myHeight(0.5) : myHeight(0.1),
+                                fontSize: myFontSize.body,
+                                color: myColors.text,
+                                includeFontPadding: false,
+                                fontFamily: myFonts.bodyBold,
+                            }}
+                            cursorColor={myColors.primaryT}
+                            value={search} onChangeText={setSearch}
+                        // value={search} onChangeText={(val) => null}
+                        />
+
                     </View>
                 </View>
                 <Spacer paddingT={myHeight(1)} />

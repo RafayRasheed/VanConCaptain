@@ -22,6 +22,7 @@ import firestore from '@react-native-firebase/firestore';
 import { setProfile } from '../../redux/profile_reducer';
 import { FirebaseUser } from '../functions/firebase';
 import { setErrorAlert } from '../../redux/error_reducer';
+import { Search } from '../home/locations_screen';
 const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 export const DriverDetailEdit = ({ navigation }) => {
     const disptach = useDispatch()
@@ -65,6 +66,11 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [vehicleModal, setVehicleModal] = useState(profile.vehicleModal ? profile.vehicleModal : null)
     const [description, SetDescription] = useState(profile.description)
     const [vehicleImage, setVehicleImage] = useState(profile.vehicleImage ? profile.vehicleImage : null);
+    const [vehicleNum, setVehicleNum] = useState(profile.vehicleNum)
+    const [vehicleSeats, setVehicleSeats] = useState(profile.vehicleSeats)
+
+    const [contact, setContact] = useState(profile.contact)
+    const [licence, setLicence] = useState(profile.licence)
 
     const [packages, setPackages] = useState(profile.packages ? [...profile.packages] : [])
     const [dailyDays, setDailyDays] = useState(profile.dailyDays ? [...profile.dailyDays] : allDays)
@@ -84,7 +90,8 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [errorMsg, setErrorMsg] = useState(null)
     const [change, setChange] = useState(null)
     const [showChangeModal, setShowChangeModal] = useState(false)
-
+    const [selectedItem, setSelectedItems] = useState([])
+    const [showLoc, setShowLoc] = useState(true)
 
     function checkPackages() {
         if (packages.length) {
@@ -150,6 +157,41 @@ export const DriverDetailEdit = ({ navigation }) => {
         setErrorMsg('Please Add Vehicle Name')
         return false
     }
+    function checkNumAndModal() {
+        if (vehicleNum) {
+
+            if (vehicleSeats) {
+
+                return true
+
+            }
+            setErrorMsg('Please Enter Vehicle Capacity')
+            return false
+
+        }
+        setErrorMsg('Please Add Vehicle Number')
+        return false
+    }
+    function checkNumber() {
+        if (contact) {
+            if (contact.length == 11) {
+                if (licence) {
+                    if (licence.length == 15) {
+
+                        return true
+                    }
+                    setErrorMsg('Invalid Licence Number')
+                    return false
+                }
+                setErrorMsg('Invalid Licence Number')
+                return false
+            }
+            setErrorMsg('Invalid Contact Number')
+            return false
+        }
+        setErrorMsg('Please Add Contact Number')
+        return false
+    }
     function checkTimmings() {
         let s = true
         timmings.map(time => {
@@ -169,7 +211,13 @@ export const DriverDetailEdit = ({ navigation }) => {
         if (!checkNameAndModal()) {
             return false
         }
+        if (!checkNumAndModal()) {
+            return false
+        }
         if (!checkDescription()) {
+            return false
+        }
+        if (!checkNumber()) {
             return false
         }
         if (!checkPackages()) {
@@ -199,6 +247,10 @@ export const DriverDetailEdit = ({ navigation }) => {
                 vehicleImage,
                 vehicleName,
                 vehicleModal,
+                vehicleNum,
+                vehicleSeats,
+                licence,
+                contact
                 // menu: MenuImages ? MenuImages : [],
                 // location: address ? address : null,
                 // locationLink: locLink ? locLink : null,
@@ -476,7 +528,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                         setDailyDays(fac ? dailyDays.filter(it => it != name) : [name, ...dailyDays])
                     }
                 }}>
-                <View style={{ flexDirection: 'row', width: myWidth(23.2), alignItems: 'center', }}>
+                <View style={{ flexDirection: 'row', width: myWidth(23), alignItems: 'center', }}>
                     <View style={{
                         height: myHeight(3.5),
                         width: myHeight(3.5),
@@ -836,6 +888,8 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                         }]}>Vehicle Details *</Text>
                         <Spacer paddingT={myHeight(1)} />
+                        {/*Vehicle Name & Modal Year*/}
+
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{
                                 borderRadius: myWidth(1.5),
@@ -870,7 +924,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                             <Spacer paddingEnd={myWidth(2)} />
                             <View style={{
                                 borderRadius: myWidth(1.5),
-                                width: myWidth(20),
+                                width: myWidth(30),
                                 paddingVertical: myHeight(0.5),
                                 paddingHorizontal: myWidth(3),
                                 color: myColors.text,
@@ -879,7 +933,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                 // borderColor: myColors.primaryT
                             }}>
 
-                                <TextInput placeholder="Year"
+                                <TextInput placeholder="Modal Year"
                                     autoCorrect={false} maxLength={4}
                                     placeholderTextColor={myColors.offColor}
                                     selectionColor={myColors.primary}
@@ -903,6 +957,152 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                         </View>
+                        <Spacer paddingT={myHeight(1)} />
+                        {/* Number Plate &  Capacity*/}
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+                                flex: 1,
+                                paddingVertical: myHeight(0.5),
+                                paddingHorizontal: myWidth(3),
+                                color: myColors.text,
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Vehicle Number Ex MKV-150"
+                                    autoCorrect={false}
+                                    maxLength={35}
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={vehicleNum} onChangeText={setVehicleNum}
+                                    style={{
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body
+
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+                            </View>
+
+                            <Spacer paddingEnd={myWidth(2)} />
+
+
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+                                width: myWidth(25),
+                                paddingVertical: myHeight(0.5),
+                                paddingHorizontal: myWidth(3),
+                                color: myColors.text,
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Capacity"
+                                    autoCorrect={false} maxLength={4}
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={vehicleSeats} onChangeText={setVehicleSeats}
+                                    keyboardType='numeric'
+                                    style={{
+
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+
+                            </View>
+
+
+
+                        </View>
+                        <Spacer paddingT={myHeight(1)} />
+                        {/* Licence & Contact */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+                                flex: 1,
+                                paddingVertical: myHeight(0.5),
+                                paddingHorizontal: myWidth(3),
+                                color: myColors.text,
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Driving Licence No"
+                                    autoCorrect={false}
+                                    keyboardType='numeric'
+                                    maxLength={15}
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={licence} onChangeText={setLicence}
+                                    style={{
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body
+
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+
+                            </View>
+                            <Spacer paddingEnd={myWidth(2)} />
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+                                width: myWidth(28),
+                                flex: 0.7,
+                                paddingVertical: myHeight(0.5),
+                                paddingHorizontal: myWidth(3),
+                                color: myColors.text,
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Contact No Ex 03"
+                                    autoCorrect={false}
+                                    maxLength={11}
+                                    keyboardType='numeric'
+
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={contact} onChangeText={setContact}
+                                    style={{
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body
+
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+                            </View>
+
+
+
+                        </View>
+
                     </View>
                     <Spacer paddingT={myWidth(2.5)} />
 
@@ -941,6 +1141,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                         />
                     </View>
 
+
                     <Spacer paddingT={myHeight(2)} />
                     {/*Customer Pakages */}
                     <View>
@@ -971,22 +1172,26 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                         }]}>Ride Informatons *</Text>
-                        <Spacer paddingT={myHeight(0.8)} />
+                        <Spacer paddingT={myHeight(0.1)} />
+                        <Text style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.bodyBold,
+                            fontSize: myFontSize.body3,
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 
+                        }]}>Select Days</Text>
+                        <Spacer paddingT={myHeight(0.2)} />
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
                             <CommonFaciDays name={'All'} />
-                            <CommonFaciDays name={'Mon'} />
-                            <CommonFaciDays name={'Tue'} />
-                            <CommonFaciDays name={'Wed'} />
+
+                            {
+
+                                allDays.map(it => <CommonFaciDays name={it} />)
+                            }
+
                         </View>
-                        <Spacer paddingT={myHeight(0.5)} />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <CommonFaciDays name={'Thu'} />
-                            <CommonFaciDays name={'Fri'} />
-                            <CommonFaciDays name={'Sat'} />
-                            <CommonFaciDays name={'Sun'} />
-                        </View>
+
                     </View>
                     {/* Delivery Charges & Time */}
                     <Collapsible collapsed={true}>
@@ -1451,7 +1656,10 @@ export const DriverDetailEdit = ({ navigation }) => {
 
             </SafeAreaView>
 
-
+            {
+                showLoc &&
+                <Search selectedItem={selectedItem} setShowLoc={setShowLoc} setSelectedItems={setSelectedItems} />
+            }
         </>
     )
 }
