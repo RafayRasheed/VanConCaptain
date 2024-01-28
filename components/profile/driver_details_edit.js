@@ -22,7 +22,7 @@ import firestore from '@react-native-firebase/firestore';
 import { setProfile } from '../../redux/profile_reducer';
 import { FirebaseUser } from '../functions/firebase';
 import { setErrorAlert } from '../../redux/error_reducer';
-
+const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 export const DriverDetailEdit = ({ navigation }) => {
     const disptach = useDispatch()
     const temp = [
@@ -67,6 +67,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [vehicleImage, setVehicleImage] = useState(profile.vehicleImage ? profile.vehicleImage : null);
 
     const [packages, setPackages] = useState(profile.packages ? [...profile.packages] : [])
+    const [dailyDays, setDailyDays] = useState(profile.dailyDays ? [...profile.dailyDays] : allDays)
 
     const [offer, Setoffer] = useState(profile.deal)
     const [DeliveryFee, SetDeliveryFee] = useState(profile.deliveryCharges ? profile.deliveryCharges.toString() : null)
@@ -460,6 +461,51 @@ export const DriverDetailEdit = ({ navigation }) => {
             </TouchableOpacity>
         )
     }
+    // For Days
+
+    const CommonFaciDays = ({ name }) => {
+        const isAll = dailyDays.length == 7
+        const fac = (name == 'All' && isAll) ? true : (dailyDays.findIndex(it => it == name) != -1 && !isAll)
+        return (
+            <TouchableOpacity disabled={isAll && name != 'All'} activeOpacity={0.75}
+                onPress={() => {
+                    if (name == 'All') {
+                        setDailyDays(isAll ? [] : allDays)
+                    }
+                    else {
+                        setDailyDays(fac ? dailyDays.filter(it => it != name) : [name, ...dailyDays])
+                    }
+                }}>
+                <View style={{ flexDirection: 'row', width: myWidth(23.2), alignItems: 'center', }}>
+                    <View style={{
+                        height: myHeight(3.5),
+                        width: myHeight(3.5),
+                        paddingTop: myHeight(0.75)
+                    }}>
+                        <View style={{ width: myHeight(2.2), height: myHeight(2.2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
+                        {
+                            fac &&
+                            <Image style={{
+                                height: myHeight(3.3),
+                                width: myHeight(3.3),
+                                resizeMode: 'contain',
+                                tintColor: myColors.primaryT,
+                                marginTop: -myHeight(3.1)
+                            }} source={require('../assets/profile/check.png')} />
+                        }
+                    </View>
+                    {/* <Spacer paddingEnd={myWidth(0.3)} /> */}
+                    <Text style={[styles.textCommon,
+                    {
+                        fontFamily: myFonts.bodyBold,
+                        fontSize: myFontSize.xBody,
+                        color: isAll && name != 'All' ? myColors.offColor : myColors.text
+
+                    }]}>{name}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
     const CommonFaci = ({ name, fac, setFAc }) => (
         <TouchableOpacity activeOpacity={0.75}
             onPress={() => {
@@ -812,6 +858,9 @@ export const DriverDetailEdit = ({ navigation }) => {
                                     style={{
                                         padding: 0,
                                         backgroundColor: myColors.offColor7,
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body
+
 
                                         // textAlign: 'center'
                                     }}
@@ -841,6 +890,8 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                         padding: 0,
                                         backgroundColor: myColors.offColor7,
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body
 
                                         // textAlign: 'center'
                                     }}
@@ -891,7 +942,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                     </View>
 
                     <Spacer paddingT={myHeight(2)} />
-                    {/* FAcilities */}
+                    {/*Customer Pakages */}
                     <View>
                         <Text style={[styles.textCommon,
                         {
@@ -909,7 +960,34 @@ export const DriverDetailEdit = ({ navigation }) => {
                         </View>
                     </View>
 
+                    <Spacer paddingT={myHeight(1.5)} />
 
+                    {/*Ride Informatons */}
+                    <View>
+                        <Text style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.xBody2,
+
+
+                        }]}>Ride Informatons *</Text>
+                        <Spacer paddingT={myHeight(0.8)} />
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+
+                            <CommonFaciDays name={'All'} />
+                            <CommonFaciDays name={'Mon'} />
+                            <CommonFaciDays name={'Tue'} />
+                            <CommonFaciDays name={'Wed'} />
+                        </View>
+                        <Spacer paddingT={myHeight(0.5)} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <CommonFaciDays name={'Thu'} />
+                            <CommonFaciDays name={'Fri'} />
+                            <CommonFaciDays name={'Sat'} />
+                            <CommonFaciDays name={'Sun'} />
+                        </View>
+                    </View>
                     {/* Delivery Charges & Time */}
                     <Collapsible collapsed={true}>
                         <Spacer paddingT={myHeight(2.7)} />
@@ -946,7 +1024,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                                         width: 0,
                                         padding: 0,
                                         textAlignVertical: 'center',
-
+                                        fontFamily: myFonts.body,
+                                        fontSize: myFontSize.body,
                                         backgroundColor: myColors.offColor7,
 
                                         // textAlign: 'center'
@@ -960,6 +1039,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                                     value={DeliveryFee} onChangeText={SetDeliveryFee}
                                     keyboardType='numeric'
                                     style={{
+                                        fontFamily: myFonts.body,
+                                        fontSize: myFontSize.body,
                                         flex: 1,
                                         padding: 0,
                                         backgroundColor: myColors.offColor7,
@@ -978,7 +1059,8 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                         padding: 0,
                                         textAlignVertical: 'center',
-
+                                        fontFamily: myFonts.body,
+                                        fontSize: myFontSize.body,
                                         backgroundColor: myColors.offColor7,
 
                                         // textAlign: 'center'
@@ -1025,7 +1107,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                                         width: 0,
                                         padding: 0,
                                         textAlignVertical: 'center',
-
+                                        fontFamily: myFonts.body,
+                                        fontSize: myFontSize.body,
                                         backgroundColor: myColors.offColor7,
 
                                         // textAlign: 'center'
@@ -1042,6 +1125,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                                         flex: 1,
                                         padding: 0,
                                         backgroundColor: myColors.offColor7,
+                                        fontFamily: myFonts.body,
+                                        fontSize: myFontSize.body,
 
                                         // textAlign: 'center'
                                     }}
@@ -1057,7 +1142,8 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                         padding: 0,
                                         textAlignVertical: 'center',
-
+                                        fontFamily: myFonts.body,
+                                        fontSize: myFontSize.body,
                                         backgroundColor: myColors.offColor7,
 
                                         // textAlign: 'center'
@@ -1207,7 +1293,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                                     flex: 1,
                                     padding: 0,
                                     backgroundColor: myColors.offColor7,
-
+                                    fontFamily: myFonts.body,
+                                    fontSize: myFontSize.body,
                                     // textAlign: 'center'
                                 }}
                             />
