@@ -53,7 +53,7 @@ function containString(contain, thiss) {
     return (contain.toLowerCase().includes(thiss.toLowerCase()))
 }
 
-export const Search = ({ selectedItem, setSelectedItems, setShowLoc }) => {
+export const Search = ({ selectedItem, setSelectedItems, setShowLoc, showLoc }) => {
     // const { location } = useSelector(state => state.location)
     const { areas, profile } = useSelector(state => state)
     const location = areas.areas
@@ -61,16 +61,16 @@ export const Search = ({ selectedItem, setSelectedItems, setShowLoc }) => {
     const [search, setSearch] = useState(null)
     const [longEnable, setLongEnable] = useState(false)
     const [filterItems, setFilterItems] = useState([])
+    const [item2, setItem] = useState(showLoc)
     // const [selectedItem, setSelectedItems] = useState([])
 
     // const [fullRest, setFullRest] = useState([])
-    function onLongPress(item) {
+    function onLongPress(loc) {
 
         if (!longEnable) {
-            console.log(longEnable, item,)
 
             setLongEnable(true)
-            onSinglePress(item, true)
+            onSinglePress(loc, true)
 
         }
     }
@@ -79,20 +79,70 @@ export const Search = ({ selectedItem, setSelectedItems, setShowLoc }) => {
         setShowLoc(false)
 
     }
-    function onSinglePress(item, fromLong) {
+    function onSinglePress(loc, fromLong) {
+        const index = selectedItem.findIndex(it => it.time == item2.time)
+        console.log(index)
         if (longEnable || fromLong) {
-            const isOnArra = selectedItem.findIndex(it => it.id == item.id)
+            console.log(item2)
+
+            // const isOnArra = item2.locations.findIndex(it => it.id == loc.id)
+            const isOnArra = -1
+            console.log(item2)
+
             if (isOnArra == -1) {
-                setSelectedItems([...selectedItem, item])
+                console.log(item2)
+                return
+                const item2 = { ...item2, locations: [...item2.locations, loc] }
+
+                setItem({ ...item2 })
+                const newArr = []
+                selectedItem.map((it, i) => {
+                    if (i == index) {
+                        newArr.push(item2)
+                    } else {
+                        newArr.push(it)
+                    }
+                })
+                console.log(newArr)
+                return
+                setSelectedItems(newArr)
             } else {
-                if (selectedItem.length == 1) {
+                if (item2.locations.length == 1) {
                     clearLongPress()
                 }
-                setSelectedItems(selectedItem.filter(it => it.id != item.id))
+                const item2 = { ...item2, locations: item2.locations.filter(it => it.id != loc.id) }
+
+                setItem({ ...item2 })
+                const newArr = []
+                selectedItem.map((it, i) => {
+                    if (i == index) {
+                        newArr.push(item2)
+                    } else {
+                        newArr.push(it)
+                    }
+                })
+                console.log(newArr)
+                return
+
+                setSelectedItems(newArr)
             }
         } else {
-            setSelectedItems([item])
+            const item2 = { ...item2, locations: [loc] }
+            setItem({ ...item2 })
+            const newArr = []
+            selectedItem.map((it, i) => {
+                if (i == index) {
+                    newArr.push(item2)
+                } else {
+
+                    newArr.push(it)
+                }
+            })
+            console.log(newArr)
+
+            // setSelectedItems([...newArr])
             onDone()
+
         }
     }
     const Loader = () => (
@@ -223,7 +273,7 @@ export const Search = ({ selectedItem, setSelectedItems, setShowLoc }) => {
                                         fontFamily: myFonts.bodyBold,
                                         fontSize: myFontSize.xBody2,
                                         flex: 1
-                                    }]}>Select {selectedItem.length}</Text>
+                                    }]}>Select {item2.locations.length}</Text>
 
                                     <TouchableOpacity activeOpacity={0.7} onPress={onDone} style={{}}>
                                         <Text style={[styles.textCommon, {
@@ -321,7 +371,7 @@ export const Search = ({ selectedItem, setSelectedItems, setShowLoc }) => {
                         filterItems.length ?
 
                             <FlashList
-                                extraData={[longEnable, selectedItem]}
+                                extraData={[longEnable, selectedItem, item2]}
                                 data={filterItems}
                                 contentContainerStyle={{}}
                                 keyExtractor={(item, index) => index.toString()}
@@ -330,7 +380,7 @@ export const Search = ({ selectedItem, setSelectedItems, setShowLoc }) => {
                                     <View style={{ height: myHeight(0.35), backgroundColor: myColors.divider, marginHorizontal: myWidth(0) }} />
                                 )}
                                 renderItem={({ item }) => {
-                                    const selItisSlected = selectedItem.findIndex(it => it.id == item.id) != -1
+                                    const selItisSlected = item2.locations.findIndex(it => it.id == item.id) != -1
                                     return (
 
                                         <TouchableOpacity activeOpacity={0.75} style={{ paddingVertical: myHeight(1), paddingHorizontal: myWidth(4.5), backgroundColor: selItisSlected ? myColors.dot : myColors.background }} onLongPress={() => { onLongPress(item) }}

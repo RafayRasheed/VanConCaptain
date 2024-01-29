@@ -26,6 +26,13 @@ import { Search } from '../home/locations_screen';
 const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 export const DriverDetailEdit = ({ navigation }) => {
     const disptach = useDispatch()
+    const TimeAndLoc = [
+        { time: '5AM - 9AM', locations: [], show: false },
+        { time: '9AM - 12PM', locations: [], show: false },
+        { time: '12PM - 3PM', locations: [], show: false },
+        { time: '3PM - 6PM', locations: [], show: false },
+        { time: '6PM - 12AM', locations: [], show: false },
+    ]
     const temp = [
         {
             day: 'Mon',
@@ -90,8 +97,8 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [errorMsg, setErrorMsg] = useState(null)
     const [change, setChange] = useState(null)
     const [showChangeModal, setShowChangeModal] = useState(false)
-    const [selectedItem, setSelectedItems] = useState([])
-    const [showLoc, setShowLoc] = useState(true)
+    const [selectedItem, setSelectedItems] = useState([...TimeAndLoc])
+    const [showLoc, setShowLoc] = useState(false)
 
     function checkPackages() {
         if (packages.length) {
@@ -1191,6 +1198,93 @@ export const DriverDetailEdit = ({ navigation }) => {
                             }
 
                         </View>
+                        <Spacer paddingT={myHeight(0.8)} />
+
+                        <Text style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.bodyBold,
+                            fontSize: myFontSize.body3,
+
+
+                        }]}>Select current routes against time in order</Text>
+                        <Spacer paddingT={myHeight(0.2)} />
+                        {
+                            selectedItem.map((it, i) => {
+                                return (
+                                    <View style={{ marginVertical: myHeight(0.0), }}>
+
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+
+                                            <Text style={[styles.textCommon,
+                                            {
+                                                fontFamily: myFonts.heading,
+                                                fontSize: myFontSize.body,
+
+
+                                            }]}>{it.time}</Text>
+
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                                                <TouchableOpacity activeOpacity={0.7}
+                                                    onPress={() => {
+                                                        setShowLoc(it)
+
+                                                    }} style={{
+                                                        paddingVertical: myHeight(0.7), paddingHorizontal: myWidth(3),
+                                                        borderRadius: 5,
+                                                        // backgroundColor: myColors.primaryT,
+                                                    }}>
+                                                    <Text style={[styles.textCommon,
+                                                    {
+                                                        fontFamily: myFonts.heading,
+                                                        fontSize: myFontSize.body,
+                                                        color: myColors.primaryT
+
+                                                    }]}>{it.locations.length ? 'Edit Locations' : 'Select Locations'}</Text>
+
+                                                </TouchableOpacity>
+                                                <Spacer paddingEnd={myWidth(2)} />
+                                                <TouchableOpacity activeOpacity={0.7}
+                                                    onPress={() => {
+                                                        selectedItem[i] = { ...selectedItem[i], show: !it.show }
+                                                        setSelectedItems([...selectedItem])
+
+                                                    }} style={{ width: myWidth(1) + myHeight(1.6), paddingVertical: myHeight(0.5) }} disabled={it.locations.length == 0}>
+                                                    {
+                                                        it.locations.length ?
+
+                                                            <Image style={{
+                                                                height: myHeight(1.6),
+                                                                width: myHeight(1.6),
+                                                                resizeMode: 'contain',
+                                                                tintColor: myColors.primaryT,
+                                                                paddingHorizontal: myWidth(1),
+                                                                transform: [{ rotate: it.show ? '270deg' : '90deg' }]
+
+                                                            }} source={require('../assets/home_main/home/go.png')} />
+                                                            : null
+                                                    }
+                                                </TouchableOpacity>
+                                            </View>
+
+                                        </View>
+                                        <Collapsible collapsed={!it.show}>
+                                            {
+                                                it.locations.map(loc =>
+                                                    <TouchableOpacity disabled activeOpacity={0.75} style={{ paddingVertical: myHeight(1), paddingHorizontal: myWidth(4.5), backgroundColor: myColors.background }}
+                                                        onPress={() => onSinglePress(item)}>
+                                                        <Text style={[styles.textCommon, {
+                                                            fontFamily: myFonts.bodyBold,
+                                                            fontSize: myFontSize.xBody,
+                                                        }]}>{loc}</Text>
+                                                    </TouchableOpacity>
+                                                )
+                                            }
+                                        </Collapsible>
+                                    </View>
+                                )
+                            })
+                        }
 
                     </View>
                     {/* Delivery Charges & Time */}
@@ -1657,8 +1751,9 @@ export const DriverDetailEdit = ({ navigation }) => {
             </SafeAreaView>
 
             {
-                showLoc &&
-                <Search selectedItem={selectedItem} setShowLoc={setShowLoc} setSelectedItems={setSelectedItems} />
+                showLoc ?
+                    <Search selectedItem={selectedItem} setShowLoc={setShowLoc} showLoc={showLoc} setSelectedItems={setSelectedItems} />
+                    : null
             }
         </>
     )
