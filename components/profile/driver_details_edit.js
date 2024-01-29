@@ -1227,7 +1227,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                                 <TouchableOpacity activeOpacity={0.7}
                                                     onPress={() => {
-                                                        setShowLoc(it)
+                                                        setShowLoc({ ...it, index: i })
 
                                                     }} style={{
                                                         paddingVertical: myHeight(0.7), paddingHorizontal: myWidth(3),
@@ -1268,15 +1268,16 @@ export const DriverDetailEdit = ({ navigation }) => {
                                             </View>
 
                                         </View>
+                                        {console.log(it.locations)}
                                         <Collapsible collapsed={!it.show}>
                                             {
                                                 it.locations.map(loc =>
-                                                    <TouchableOpacity disabled activeOpacity={0.75} style={{ paddingVertical: myHeight(1), paddingHorizontal: myWidth(4.5), backgroundColor: myColors.background }}
+                                                    <TouchableOpacity disabled activeOpacity={0.75} style={{ backgroundColor: myColors.background }}
                                                         onPress={() => onSinglePress(item)}>
                                                         <Text style={[styles.textCommon, {
-                                                            fontFamily: myFonts.bodyBold,
-                                                            fontSize: myFontSize.xBody,
-                                                        }]}>{loc}</Text>
+                                                            fontFamily: myFonts.body,
+                                                            fontSize: myFontSize.body,
+                                                        }]}>{loc.name}</Text>
                                                     </TouchableOpacity>
                                                 )
                                             }
@@ -1752,7 +1753,8 @@ export const DriverDetailEdit = ({ navigation }) => {
 
             {
                 showLoc ?
-                    <Search selectedItem={selectedItem} setShowLoc={setShowLoc} showLoc={showLoc} setSelectedItems={setSelectedItems} />
+                    <Search locat={showLoc.locations} selected={selectedItem} setShowLoc={setShowLoc}
+                        index={showLoc.index} setSelected={setSelectedItems} />
                     : null
             }
         </>
