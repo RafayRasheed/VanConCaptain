@@ -27,11 +27,11 @@ const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 export const DriverDetailEdit = ({ navigation }) => {
     const disptach = useDispatch()
     const TimeAndLoc = [
-        { time: '5AM - 9AM', locations: [], show: false },
-        { time: '9AM - 12PM', locations: [], show: false },
-        { time: '12PM - 3PM', locations: [], show: false },
-        { time: '3PM - 6PM', locations: [], show: false },
-        { time: '6PM - 12AM', locations: [], show: false },
+        { id: 59, time: '5AM - 9AM', locations: [], show: false },
+        { id: 912, time: '9AM - 12PM', locations: [], show: false },
+        { id: 1215, time: '12PM - 3PM', locations: [], show: false },
+        { id: 1518, time: '3PM - 6PM', locations: [], show: false },
+        { id: 1824, time: '6PM - 12AM', locations: [], show: false },
     ]
     const temp = [
         {
@@ -97,9 +97,21 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [errorMsg, setErrorMsg] = useState(null)
     const [change, setChange] = useState(null)
     const [showChangeModal, setShowChangeModal] = useState(false)
-    const [selectedItem, setSelectedItems] = useState([...TimeAndLoc])
+    const [selectedItem, setSelectedItems] = useState(profile.routes ? getInitialRoutes() : [...TimeAndLoc])
     const [showLoc, setShowLoc] = useState(false)
+    function getInitialRoutes() {
+        if (profile.routes.length == TimeAndLoc.length) {
+            return [...profile.routes]
+        }
+        const FullArr = TimeAndLoc
+        profile.routes.map(it => {
+            const index = TimeAndLoc.findIndex(it2 => it2.id == it.id)
+            FullArr[index] = { ...it }
+        })
 
+        return (FullArr)
+
+    }
     function checkPackages() {
         if (packages.length) {
             // if (Delivery) {
@@ -208,6 +220,13 @@ export const DriverDetailEdit = ({ navigation }) => {
         })
         return s
     }
+    function checkRoutes() {
+        if (selectedItem.filter(it => it.locations.length != 0).length) {
+            return true
+        }
+        setErrorMsg('Please Add at Least 1 Route')
+        return false
+    }
     function checkData() {
 
         if (!vehicleImage) {
@@ -230,19 +249,29 @@ export const DriverDetailEdit = ({ navigation }) => {
         if (!checkPackages()) {
             return false
         }
-        // if (!address) {
 
-        //     setErrorMsg('Please Enter Resturant Address')
-        //     return true
-        // }
-        // if (!checkTimmings()) {
-        //     setErrorMsg('Select Times Of All Day If Open')
-        //     return false
-        // }
+        if (!dailyDays.length) {
+            setErrorMsg('Please Select Your Ride Days')
+            return false
+        }
+
+        if (!checkRoutes()) {
+            return false
+        }
 
         return true
     }
+    function formatRoutes() {
+        const newArr = []
+        selectedItem.filter(it => {
+            if (it.locations.length != 0) {
 
+                newArr.push({ ...it, show: false })
+            }
+
+        })
+        return newArr
+    }
     function onSave() {
         if (checkData()) {
 
@@ -257,7 +286,10 @@ export const DriverDetailEdit = ({ navigation }) => {
                 vehicleNum,
                 vehicleSeats,
                 licence,
-                contact
+                contact,
+                dailyDays,
+                routes: formatRoutes(),
+
                 // menu: MenuImages ? MenuImages : [],
                 // location: address ? address : null,
                 // locationLink: locLink ? locLink : null,
@@ -788,6 +820,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     }
     return (
         <>
+
             <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background }}>
                 <StatusbarH />
                 {/* Top */}
@@ -1206,7 +1239,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                             fontSize: myFontSize.body3,
 
 
-                        }]}>Select current routes against time in order</Text>
+                        }]}>Select current routes against time at least 1</Text>
                         <Spacer paddingT={myHeight(0.2)} />
                         {
                             selectedItem.map((it, i) => {
@@ -1240,7 +1273,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                                         fontSize: myFontSize.body,
                                                         color: myColors.primaryT
 
-                                                    }]}>{it.locations.length ? 'Edit Locations' : 'Select Locations'}</Text>
+                                                    }]}>{it.locations.length ? `(${it.locations.length}) Edit Locations` : 'Select Locations'}</Text>
 
                                                 </TouchableOpacity>
                                                 <Spacer paddingEnd={myWidth(2)} />
@@ -1254,8 +1287,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                                                         it.locations.length ?
 
                                                             <Image style={{
-                                                                height: myHeight(1.6),
-                                                                width: myHeight(1.6),
+                                                                height: myHeight(1.8),
+                                                                width: myHeight(1.8),
                                                                 resizeMode: 'contain',
                                                                 tintColor: myColors.primaryT,
                                                                 paddingHorizontal: myWidth(1),
@@ -1268,17 +1301,51 @@ export const DriverDetailEdit = ({ navigation }) => {
                                             </View>
 
                                         </View>
-                                        {console.log(it.locations)}
-                                        <Collapsible collapsed={!it.show}>
+                                        <Collapsible collapsed={!it.show} style={{}}>
                                             {
-                                                it.locations.map(loc =>
-                                                    <TouchableOpacity disabled activeOpacity={0.75} style={{ backgroundColor: myColors.background }}
-                                                        onPress={() => onSinglePress(item)}>
+                                                it.locations.map((loc, j) =>
+                                                    <View style={{ flexDirection: 'row', paddingVertical: myHeight(0.65) }}>
                                                         <Text style={[styles.textCommon, {
-                                                            fontFamily: myFonts.body,
-                                                            fontSize: myFontSize.body,
-                                                        }]}>{loc.name}</Text>
-                                                    </TouchableOpacity>
+                                                            width: myWidth(0.2) + myFontSize.body * 2,
+                                                            fontFamily: myFonts.bodyBold,
+                                                            fontSize: myFontSize.xxSmall,
+                                                        }]}>  {j + 1}.</Text>
+                                                        <TouchableOpacity disabled activeOpacity={0.75} style={{
+                                                            backgroundColor: myColors.background,
+                                                            flex: 1,
+                                                            paddingEnd: myWidth(3),
+
+                                                        }}
+                                                            onPress={() => null}>
+                                                            <Text numberOfLines={2} style={[styles.textCommon, {
+                                                                // flex: 1,
+                                                                fontFamily: myFonts.body,
+                                                                fontSize: myFontSize.xxSmall,
+                                                            }]}>{loc.name}</Text>
+                                                        </TouchableOpacity>
+                                                        <Spacer paddingEnd={myWidth(2)} />
+
+                                                        <TouchableOpacity activeOpacity={0.7}
+                                                            onPress={() => {
+                                                                selectedItem[i] = { ...selectedItem[i], locations: selectedItem[i].locations.filter(it => it.id != loc.id) }
+                                                                setSelectedItems([...selectedItem])
+
+                                                            }} style={{ width: myWidth(1) + myHeight(1.6), paddingHorizontal: myWidth(0), paddingTop: myHeight(0.8) }} >
+                                                            {
+
+
+                                                                <Image style={{
+                                                                    height: myHeight(1.6),
+                                                                    width: myHeight(1.6),
+                                                                    resizeMode: 'contain',
+                                                                    tintColor: myColors.primaryT,
+                                                                    paddingHorizontal: myWidth(1),
+
+                                                                }} source={require('../assets/account/close.png')} />
+
+                                                            }
+                                                        </TouchableOpacity>
+                                                    </View>
                                                 )
                                             }
                                         </Collapsible>

@@ -96,9 +96,13 @@ export const StatusBarHide = () => (
     <StatusBar backgroundColor={'transparent'} translucent={true} />
 )
 
-export const StatusbarH = () => (
-    <View style={{ height: StatusBar.currentHeight }} />
-)
+export const StatusbarH = () => {
+    console.log(StatusBar.currentHeight, myHeight(5.5))
+
+    return (
+        <View style={{ height: StatusBar.currentHeight }} />
+    )
+}
 
 
 export const errorTime = 2000
