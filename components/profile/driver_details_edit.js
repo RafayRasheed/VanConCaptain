@@ -81,11 +81,12 @@ export const DriverDetailEdit = ({ navigation }) => {
 
     const [packages, setPackages] = useState(profile.packages ? [...profile.packages] : [])
     const [dailyDays, setDailyDays] = useState(profile.dailyDays ? [...profile.dailyDays] : allDays)
+    const [oneRide, setOneRide] = useState(profile.oneRide ? profile.oneRide : false)
+    const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
 
     const [offer, Setoffer] = useState(profile.deal)
     const [DeliveryFee, SetDeliveryFee] = useState(profile.deliveryCharges ? profile.deliveryCharges.toString() : null)
     const [DeliveryTime, SetDeliveryTime] = useState(profile.delivery)
-    const [address, setAddress] = useState(profile.location)
     const [locLink, setLocLink] = useState(profile.locationLink);
     const [MenuImages, setMenuImages] = useState(profile.menu ? profile.menu : [])
     const [timmings, setTimmings] = useState(profile.timmings ? profile.timmings : temp)
@@ -93,12 +94,12 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [imageLoading, setImageLoading] = useState(null)
 
     const [showTimeModal, setShowTimeModal] = useState(false)
-    const [isEditMode, setIsEditMode] = useState(!profile.update)
     const [errorMsg, setErrorMsg] = useState(null)
     const [change, setChange] = useState(null)
     const [showChangeModal, setShowChangeModal] = useState(false)
     const [selectedItem, setSelectedItems] = useState(profile.routes ? getInitialRoutes() : [...TimeAndLoc])
     const [showLoc, setShowLoc] = useState(false)
+
     function getInitialRoutes() {
         if (profile.routes.length == TimeAndLoc.length) {
             return [...profile.routes]
@@ -258,6 +259,11 @@ export const DriverDetailEdit = ({ navigation }) => {
         if (!checkRoutes()) {
             return false
         }
+        if (oneRide && !oneRideDays.length) {
+            setErrorMsg('Please Select One Time Ride Days')
+            return false
+        }
+
 
         return true
     }
@@ -289,6 +295,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                 contact,
                 dailyDays,
                 routes: formatRoutes(),
+                oneRide,
+                oneRideDays,
 
                 // menu: MenuImages ? MenuImages : [],
                 // location: address ? address : null,
@@ -554,7 +562,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     }
     // For Days
 
-    const CommonFaciDays = ({ name }) => {
+    const CommonFaciDays = ({ name, setDailyDays, dailyDays }) => {
         const isAll = dailyDays.length == 7
         const fac = (name == 'All' && isAll) ? true : (dailyDays.findIndex(it => it == name) != -1 && !isAll)
         return (
@@ -608,7 +616,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                     width: myHeight(3.5),
                     paddingTop: myHeight(0.75)
                 }}>
-                    <View style={{ width: myHeight(2.2), height: myHeight(2.2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
+                    <View style={{ width: myHeight(2.3), height: myHeight(2.3), borderWidth: 1.5, borderColor: myColors.textL4 }} />
                     {
                         fac &&
                         <Image style={{
@@ -1223,11 +1231,11 @@ export const DriverDetailEdit = ({ navigation }) => {
                         <Spacer paddingT={myHeight(0.2)} />
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                            <CommonFaciDays name={'All'} />
+                            <CommonFaciDays dailyDays={dailyDays} setDailyDays={setDailyDays} name={'All'} />
 
                             {
 
-                                allDays.map(it => <CommonFaciDays name={it} />)
+                                allDays.map(it => <CommonFaciDays dailyDays={dailyDays} setDailyDays={setDailyDays} name={it} />)
                             }
 
                         </View>
@@ -1244,13 +1252,13 @@ export const DriverDetailEdit = ({ navigation }) => {
                         {
                             selectedItem.map((it, i) => {
                                 return (
-                                    <View style={{ marginVertical: myHeight(0.0), }}>
+                                    <View key={i} style={{ marginVertical: myHeight(0.0), }}>
 
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 
                                             <Text style={[styles.textCommon,
                                             {
-                                                fontFamily: myFonts.heading,
+                                                fontFamily: myFonts.headingBold,
                                                 fontSize: myFontSize.body,
 
 
@@ -1354,6 +1362,31 @@ export const DriverDetailEdit = ({ navigation }) => {
                             })
                         }
 
+                        <Spacer paddingT={myHeight(0.8)} />
+                        <CommonFaci fac={oneRide} setFAc={setOneRide} name={'Available For One Time Ride'} />
+                        <Collapsible collapsed={!oneRide}>
+                            <Spacer paddingT={myHeight(0.2)} />
+
+                            <Text style={[styles.textCommon,
+                            {
+                                fontFamily: myFonts.bodyBold,
+                                fontSize: myFontSize.body3,
+
+
+                            }]}>Select Days</Text>
+                            <Spacer paddingT={myHeight(0.2)} />
+
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                <CommonFaciDays dailyDays={oneRideDays} setDailyDays={setOneRideDays} name={'All'} />
+
+                                {
+
+                                    allDays.map(it => <CommonFaciDays dailyDays={oneRideDays} setDailyDays={setOneRideDays} name={it} />)
+                                }
+
+                            </View>
+
+                        </Collapsible>
                     </View>
                     {/* Delivery Charges & Time */}
                     <Collapsible collapsed={true}>
@@ -1531,7 +1564,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                     <Spacer paddingT={myHeight(2)} />
                     {/* Location */}
-                    <View>
+                    {/* <View>
                         <Text style={[styles.textCommon,
                         {
                             fontFamily: myFonts.heading,
@@ -1566,7 +1599,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                     <Spacer paddingT={myHeight(2.5)} />
-                    {/* Link */}
+                   
                     <View>
                         <Text style={[styles.textCommon,
                         {
@@ -1611,7 +1644,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                     <Spacer paddingT={myHeight(2.5)} />
-                    {/* Timmings */}
+                   
                     <View>
                         <Text style={[styles.textCommon,
                         {
@@ -1629,7 +1662,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                     <Spacer paddingT={myHeight(2.5)} />
-                    {/* Offer Tag */}
+                   
                     <View>
                         <Text style={[styles.textCommon,
                         {
@@ -1670,7 +1703,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                     </View>
 
 
-                    <Spacer paddingT={myHeight(2.5)} />
+                    <Spacer paddingT={myHeight(2.5)} /> */}
 
                     {/* Menu Images */}
                     {/* <View>
