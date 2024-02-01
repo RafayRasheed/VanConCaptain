@@ -84,6 +84,11 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [oneRide, setOneRide] = useState(profile.oneRide ? profile.oneRide : false)
     const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
 
+    const [isInsideUni, setIsInsideUni] = useState(profile.insideUni ? profile.insideUni : false)
+    const [insideShift, setInsideShift] = useState(profile.insideShift ? profile.insideShift : ['Morning', 'Evening'])
+    const [insideUniversities, setInsideUniversities] = useState(profile.insideUniversities ? [...profile.insideUniversities] : [])
+    const [allUnies, setAllUnies] = useState([])
+
     const [offer, Setoffer] = useState(profile.deal)
     const [DeliveryFee, SetDeliveryFee] = useState(profile.deliveryCharges ? profile.deliveryCharges.toString() : null)
     const [DeliveryTime, SetDeliveryTime] = useState(profile.delivery)
@@ -113,6 +118,23 @@ export const DriverDetailEdit = ({ navigation }) => {
         return (FullArr)
 
     }
+    useEffect(() => {
+        firestore().collection('universities').doc(profile.city).get().then((result) => {
+            if (result.exists) {
+
+                const uniii = result.data()
+                let AllUnies = []
+                for (const [key, value] of Object.entries(uniii)) {
+                    AllUnies.push(value)
+                }
+                setAllUnies(AllUnies)
+
+            }
+
+        }).catch((ERR) => {
+            console.log('ERROR ON getAreasLocations', ERR)
+        })
+    }, [])
     function checkPackages() {
         if (packages.length) {
             // if (Delivery) {
@@ -519,6 +541,46 @@ export const DriverDetailEdit = ({ navigation }) => {
 
     };
 
+    const CommonFaciUnies = ({ name, small = false }) => {
+        const fac = insideUniversities.findIndex(it => it == name) != -1
+        return (
+            <TouchableOpacity activeOpacity={0.75}
+                onPress={() => {
+                    if (fac) {
+                        setInsideUniversities(insideUniversities.filter(it => it != name))
+                    } else {
+                        setInsideUniversities([name, ...insideUniversities])
+                    }
+                }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    <View style={{
+                        height: myHeight(3.5),
+                        width: myHeight(3.5),
+                        paddingTop: myHeight(0.75)
+                    }}>
+                        <View style={{ width: myHeight(2.2), height: myHeight(2.2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
+                        {
+                            fac &&
+                            <Image style={{
+                                height: myHeight(3.3),
+                                width: myHeight(3.3),
+                                resizeMode: 'contain',
+                                tintColor: myColors.primaryT,
+                                marginTop: -myHeight(3.1)
+                            }} source={require('../assets/profile/check.png')} />
+                        }
+                    </View>
+                    {/* <Spacer paddingEnd={myWidth(0.3)} /> */}
+                    <Text style={[styles.textCommon,
+                    {
+                        fontFamily: myFonts.bodyBold,
+                        fontSize: small ? myFontSize.body : myFontSize.xBody,
+
+                    }]}>{name}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
     // For Packages
     const CommonFaciPackage = ({ name }) => {
         const fac = packages.findIndex(it => it == name) != -1
@@ -1362,6 +1424,116 @@ export const DriverDetailEdit = ({ navigation }) => {
                             })
                         }
 
+                        {/* Inside University */}
+                        <Spacer paddingT={myHeight(0.8)} />
+                        <CommonFaci fac={isInsideUni} setFAc={setIsInsideUni} name={'Available For Inside Universities'} />
+                        <Collapsible collapsed={!isInsideUni}>
+                            <Spacer paddingT={myHeight(0.2)} />
+
+                            <Text style={[styles.textCommon,
+                            {
+                                fontFamily: myFonts.bodyBold,
+                                fontSize: myFontSize.body3,
+
+
+                            }]}>Select Universities</Text>
+                            <Spacer paddingT={myHeight(0.2)} />
+
+                            <View style={{ justifyContent: 'space-between', }}>
+
+                                {
+
+                                    allUnies.map(it => <CommonFaciUnies name={it.name} small={true} />)
+                                }
+
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={[styles.textCommon,
+                                {
+                                    flex: 1,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body2,
+
+                                }]}>Average Charges Per KM*</Text>
+
+
+                                <View style={{
+                                    flexDirection: 'row',
+                                    borderRadius: myWidth(2),
+                                    width: myFontSize.body2 + myWidth(22),
+                                    paddingVertical: myHeight(0),
+                                    paddingHorizontal: myWidth(3),
+                                    color: myColors.text,
+                                    backgroundColor: myColors.offColor7,
+                                    borderWidth: 0.7,
+                                    borderColor: myColors.primaryT
+                                }}>
+
+                                    <TextInput placeholder=""
+                                        autoCorrect={false}
+                                        placeholderTextColor={myColors.text}
+                                        selectionColor={myColors.primary}
+                                        cursorColor={myColors.primaryT}
+                                        editable={false}
+                                        style={{
+                                            width: 0,
+                                            padding: 0,
+                                            textAlignVertical: 'center',
+                                            fontFamily: myFonts.body,
+                                            fontSize: myFontSize.xxSmall,
+                                            backgroundColor: myColors.offColor7,
+
+                                            // textAlign: 'center'
+                                        }}
+                                    />
+                                    <TextInput placeholder="Ex 50"
+                                        maxLength={3242}
+                                        autoCorrect={false}
+                                        placeholderTextColor={myColors.offColor}
+                                        selectionColor={myColors.primary}
+                                        cursorColor={myColors.primaryT}
+                                        value={DeliveryFee} onChangeText={SetDeliveryFee}
+                                        keyboardType='numeric'
+                                        style={{
+                                            fontFamily: myFonts.body,
+                                            fontSize: myFontSize.xxSmall,
+                                            flex: 1,
+                                            padding: 0,
+                                            backgroundColor: myColors.offColor7,
+
+                                            // textAlign: 'center'
+                                        }}
+                                    />
+
+                                    <TextInput placeholder=" Rs"
+                                        autoCorrect={false}
+                                        placeholderTextColor={myColors.text}
+                                        selectionColor={myColors.primary}
+                                        cursorColor={myColors.primaryT}
+                                        editable={false}
+                                        style={{
+
+                                            padding: 0,
+                                            textAlignVertical: 'center',
+                                            fontFamily: myFonts.body,
+                                            fontSize: myFontSize.xxSmall,
+                                            backgroundColor: myColors.offColor7,
+
+                                            // textAlign: 'center'
+                                        }}
+                                    />
+
+
+                                </View>
+
+                            </View>
+
+                            <Spacer paddingT={myHeight(0.5)} />
+
+                            <View style={{ height: myHeight(0.2), backgroundColor: myColors.divider }} />
+                        </Collapsible>
+
+                        {/* Available for one time */}
                         <Spacer paddingT={myHeight(0.8)} />
                         <CommonFaci fac={oneRide} setFAc={setOneRide} name={'Available For One Time Ride'} />
                         <Collapsible collapsed={!oneRide}>
@@ -1385,8 +1557,14 @@ export const DriverDetailEdit = ({ navigation }) => {
                                 }
 
                             </View>
+                            <Spacer paddingT={myHeight(0.5)} />
 
+
+                            <View style={{ height: myHeight(0.2), backgroundColor: myColors.divider }} />
                         </Collapsible>
+
+
+
                     </View>
                     {/* Delivery Charges & Time */}
                     <Collapsible collapsed={true}>
