@@ -89,7 +89,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [insideUniversities, setInsideUniversities] = useState(profile.insideUniversities ? [...profile.insideUniversities] : [])
     const [allUnies, setAllUnies] = useState([])
 
-    const [offer, Setoffer] = useState(profile.deal)
+    const [departCharges, SetDepartCharges] = useState(profile.departCharges ? profile.departCharges : null)
     const [DeliveryFee, SetDeliveryFee] = useState(profile.deliveryCharges ? profile.deliveryCharges.toString() : null)
     const [DeliveryTime, SetDeliveryTime] = useState(profile.delivery)
     const [locLink, setLocLink] = useState(profile.locationLink);
@@ -250,6 +250,18 @@ export const DriverDetailEdit = ({ navigation }) => {
         setErrorMsg('Please Add at Least 1 Route')
         return false
     }
+    function checkDepartCharges() {
+        if (departCharges) {
+            if (isNaN(departCharges) || departCharges < 0) {
+                setErrorMsg('Invalid Depart Charges')
+                return false
+            }
+            return true
+        }
+        setErrorMsg('Please Enter Depart Charges')
+        return false
+
+    }
     function checkData() {
 
         if (!vehicleImage) {
@@ -279,6 +291,14 @@ export const DriverDetailEdit = ({ navigation }) => {
         }
 
         if (!checkRoutes()) {
+            return false
+        }
+
+        if (isInsideUni && !allUnies.length) {
+            setErrorMsg('Please Select At Least One Univesity')
+            return false
+        }
+        if (isInsideUni && !(checkDepartCharges())) {
             return false
         }
         if (oneRide && !oneRideDays.length) {
@@ -1454,7 +1474,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                     fontFamily: myFonts.bodyBold,
                                     fontSize: myFontSize.body2,
 
-                                }]}>Average Charges Per KM*</Text>
+                                }]}>Charges to Departs*</Text>
 
 
                                 <View style={{
@@ -1492,7 +1512,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                         placeholderTextColor={myColors.offColor}
                                         selectionColor={myColors.primary}
                                         cursorColor={myColors.primaryT}
-                                        value={DeliveryFee} onChangeText={SetDeliveryFee}
+                                        value={departCharges} onChangeText={SetDepartCharges}
                                         keyboardType='numeric'
                                         style={{
                                             fontFamily: myFonts.body,
