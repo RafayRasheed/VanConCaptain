@@ -81,7 +81,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
     const [packages, setPackages] = useState(profile.packages ? [...profile.packages] : [])
     const [dailyDays, setDailyDays] = useState(profile.dailyDays ? [...profile.dailyDays] : allDays)
-    const [oneRide, setOneRide] = useState(profile.oneRide ? profile.oneRide : false)
+    const [isOneRide, setOneRide] = useState(profile.isOneRide ? profile.isOneRide : false)
     const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
 
     const [isInsideUni, setIsInsideUni] = useState(profile.insideUni ? profile.insideUni : false)
@@ -301,7 +301,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         if (isInsideUni && !(checkDepartCharges())) {
             return false
         }
-        if (oneRide && !oneRideDays.length) {
+        if (isOneRide && !oneRideDays.length) {
             setErrorMsg('Please Select One Time Ride Days')
             return false
         }
@@ -337,25 +337,13 @@ export const DriverDetailEdit = ({ navigation }) => {
                 contact,
                 dailyDays,
                 routes: formatRoutes(),
-                oneRide,
+                isOneRide,
                 oneRideDays,
+                isInsideUni,
+                allUnies,
+                departCharges,
 
-                // menu: MenuImages ? MenuImages : [],
-                // location: address ? address : null,
-                // locationLink: locLink ? locLink : null,
-                // delivery: DeliveryTime ? DeliveryTime : null,
-                // deliveryCharges: DeliveryFee ? parseFloat(DeliveryFee) : null,
-                // deal: offer ? offer : null,
-                // timmings: timmings,
-                // rating: profile.rating ? profile.rating : 0,
-                // noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
-                // reviews: profile.reviews ? [...profile.reviews] : [],
-                // ratingTotal: profile.ratingTotal ? profile.ratingTotal : 0,
-                // update: true,
-                // foodCategory: profile.foodCategory ? profile.foodCategory : [],
-                // categories: profile.categories ? profile.categories : [],
-                // subCategories: profile.subCategories ? profile.subCategories : [],
-                // icon: profile.icon ? profile.icon : 'https://firebasestorage.googleapis.com/v0/b/foodapp-edd7e.appspot.com/o/default%2Ficon.png?alt=media&token=575dea1f-76be-4585-8866-963f20ede519',
+
 
             }
 
@@ -1555,8 +1543,8 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                         {/* Available for one time */}
                         <Spacer paddingT={myHeight(0.8)} />
-                        <CommonFaci fac={oneRide} setFAc={setOneRide} name={'Available For One Time Ride'} />
-                        <Collapsible collapsed={!oneRide}>
+                        <CommonFaci fac={isOneRide} setFAc={setOneRide} name={'Available For One Time Ride'} />
+                        <Collapsible collapsed={!isOneRide}>
                             <Spacer paddingT={myHeight(0.2)} />
 
                             <Text style={[styles.textCommon,
