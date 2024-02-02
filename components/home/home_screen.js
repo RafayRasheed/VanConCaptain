@@ -33,6 +33,17 @@ import { setChats, setTotalUnread } from '../../redux/chat_reducer';
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
 }
+function Greeting() {
+    let greet = '';
+    const myDate = new Date();
+    const hrs = myDate.getHours();
+    if (hrs >= 5 && hrs < 12) greet = 'Good Morning';
+    else if (hrs >= 12 && hrs < 16) greet = 'Good Afternoon';
+    else if (hrs >= 16 && hrs < 20) greet = 'Good Evening';
+    else if (hrs >= 20 && hrs < 24) greet = 'Good Night';
+    else if (hrs >= 0 && hrs < 5) greet = 'Mid Night Owl...';
+    return greet;
+}
 export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
     const { profile } = useSelector(state => state.profile)
@@ -269,17 +280,27 @@ export const HomeScreen = ({ navigation }) => {
                     :
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
 
-                        <Spacer paddingT={myHeight(1.4)} />
-                        <Text style={[styles.textCommon, {
+                        <Spacer paddingT={myHeight(2)} />
+                        {/* <Text style={[styles.textCommon, {
                             fontSize: myFontSize.medium2,
                             fontFamily: myFonts.heading,
                             alignSelf: 'center',
 
-                        }]}>VanCon<Text style={{ color: myColors.primaryT }}> Captain</Text></Text>
+                        }]}>VanCon<Text style={{ color: myColors.primaryT }}> Captain</Text></Text> */}
 
+                        <View style={{ paddingHorizontal: myWidth(6) }}>
+                            <Text
+                                numberOfLines={1}
+                                style={{
+                                    color: myColors.text, fontSize: myFontSize.xBody,
+                                    fontFamily: myFonts.bodyBold
+                                }}>
 
+                                {Greeting()}, <Text style={{ color: myColors.primaryT }}>{profile.name}</Text>
+                            </Text>
+                        </View>
 
-                        <Spacer paddingT={myHeight(3)} />
+                        <Spacer paddingT={myHeight(1.5)} />
 
                         {/* Banner */}
                         <Banners />
