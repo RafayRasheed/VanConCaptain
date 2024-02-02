@@ -97,7 +97,6 @@ export const StatusBarHide = () => (
 )
 
 export const StatusbarH = () => {
-    console.log(StatusBar.currentHeight, myHeight(5.5))
 
     return (
         <View style={{ height: StatusBar.currentHeight }} />

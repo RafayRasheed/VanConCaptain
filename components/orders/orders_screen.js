@@ -97,7 +97,6 @@ export const OrderScreen = ({ navigation }) => {
                     progress.map((item, ind) =>
                         <TouchableOpacity key={ind} activeOpacity={0.85}
                             onPress={() => navigation.navigate('OrderDetails', { item })}>
-                            {console.log('dg')}
                             {ind != 0 &&
                                 <View style={{
 

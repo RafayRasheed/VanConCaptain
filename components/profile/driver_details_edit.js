@@ -84,7 +84,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [isOneRide, setOneRide] = useState(profile.isOneRide ? profile.isOneRide : false)
     const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
 
-    const [isInsideUni, setIsInsideUni] = useState(profile.insideUni ? profile.insideUni : false)
+    const [isInsideUni, setIsInsideUni] = useState(profile.isInsideUni ? profile.isInsideUni : false)
     const [insideShift, setInsideShift] = useState(profile.insideShift ? profile.insideShift : ['Morning', 'Evening'])
     const [insideUniversities, setInsideUniversities] = useState(profile.insideUniversities ? [...profile.insideUniversities] : [])
     const [allUnies, setAllUnies] = useState([])
@@ -293,8 +293,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         if (!checkRoutes()) {
             return false
         }
-
-        if (isInsideUni && !allUnies.length) {
+        if (isInsideUni && !insideUniversities.length) {
             setErrorMsg('Please Select At Least One Univesity')
             return false
         }
@@ -340,7 +339,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                 isOneRide,
                 oneRideDays,
                 isInsideUni,
-                allUnies,
+                insideUniversities,
                 departCharges,
 
 
@@ -1435,7 +1434,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                         {/* Inside University */}
                         <Spacer paddingT={myHeight(0.8)} />
                         <CommonFaci fac={isInsideUni} setFAc={setIsInsideUni} name={'Available For Inside Universities'} />
-                        <Collapsible collapsed={!isInsideUni}>
+                        <Collapsible collapsed={!isInsideUni} style={{ paddingStart: myWidth(3) }}>
                             <Spacer paddingT={myHeight(0.2)} />
 
                             <Text style={[styles.textCommon,
@@ -1544,7 +1543,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                         {/* Available for one time */}
                         <Spacer paddingT={myHeight(0.8)} />
                         <CommonFaci fac={isOneRide} setFAc={setOneRide} name={'Available For One Time Ride'} />
-                        <Collapsible collapsed={!isOneRide}>
+                        <Collapsible collapsed={!isOneRide} >
                             <Spacer paddingT={myHeight(0.2)} />
 
                             <Text style={[styles.textCommon,
@@ -1568,7 +1567,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                             <Spacer paddingT={myHeight(0.5)} />
 
 
-                            <View style={{ height: myHeight(0.2), backgroundColor: myColors.divider }} />
+                            {/* <View style={{ height: myHeight(0.2), backgroundColor: myColors.divider }} /> */}
                         </Collapsible>
 
 

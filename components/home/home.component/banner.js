@@ -1,26 +1,79 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, ScrollView, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Spacer, myHeight, myWidth } from "../../common"
 import { myFontSize, myFonts, myLetSpacing } from "../../../ultils/myFonts"
 import { myColors } from "../../../ultils/myColors"
-import { offers } from "../home_data";
-import LinearGradient from "react-native-linear-gradient";
+import { offers2 } from "../home_data";
+import { FlashList } from "@shopify/flash-list";
 
 export const Banners = () => {
     const [i, setI] = useState(0)
     const dotArr = []
+    const scrollRef = useRef(null)
     const offerWidthSScroll = myWidth(95)
-    const lenOffers = Object.keys(offers).length
+    const lenOffers = offers2.length
+    const slideIntervalRef = useRef(null);
+
+    const autoSlide = () => {
+        if (typeof slideIntervalRef.current !== 'undefined') {
+            clearInterval(slideIntervalRef.current);
+        }
+
+        slideIntervalRef.current = setInterval(() => {
+            setI((prevI) => {
+                const maxLength = lenOffers;
+
+                if (prevI + 1 === maxLength) {
+                    // scrollRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+                    scrollRef.current?.scrollToOffset({ offset: 0, y: 0, animated: true });
+                    return prevI;
+                } else {
+
+                    scrollRef.current?.scrollToOffset({ offset: (prevI + 1) * offerWidthSScroll, y: 0, animated: true });
+
+                    return prevI;
+                }
+            });
+        }, 3 * 1000);
+    };
+
+    useEffect(() => {
+        // Start auto-slide on component mount
+        autoSlide();
+
+        // Cleanup interval on component unmount
+        return () => {
+            if (slideIntervalRef.current) {
+                clearInterval(slideIntervalRef.current);
+            }
+        };
+    }, []);
 
     // Loop for dots
     for (let j = 0; j < lenOffers; j++) {
         dotArr.push(<View key={j} style={[{
-            height: myHeight(1), width: j == i? myHeight(1.5):myHeight(1),
+            height: myHeight(1), width: j == i ? myHeight(1.5) : myHeight(1),
             margin: 3, borderRadius: myHeight(0.8),
             backgroundColor: j == i ? myColors.primary : myColors.dot,
         }]} />)
     }
 
+    // useEffect(() => {
+    //     const dis = i * myWidth(95)
+
+    //     scrollRef.current.scrollTo({ x: dis, animated: true });
+
+
+    // }, [i])
+    // useEffect(() => {
+
+    //     const timer = setTimeout(() => {
+    //         setI(i == lenOffers - 1 ? 0 : i + 1);
+
+    //     }, 5000)
+    //     return () => clearTimeout(timer);
+
+    // }, [i])
     //Offer Scroll
     function handleScroll(event) {
         const a = (event.nativeEvent.contentOffset.x) / offerWidthSScroll
@@ -32,7 +85,41 @@ export const Banners = () => {
 
     return (
         <View>
-            <ScrollView
+            {/* <ScrollView onScroll={handleScroll}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                    flexGrow: 1, justifyContent: 'center',
+                    paddingHorizontal: myWidth(5)
+                }}
+                ref={scrollRef}
+                onMomentumScrollEnd={() => console.log('hn')}
+                onsc
+                pagingEnabled
+                snapToInterval={offerWidthSScroll}
+                scrollEventThrottle={1} >
+                {offers2.map((item, i) => <View key={i} style={{ flex: 1, }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            width: myWidth(90), height: myWidth(90) * 0.47,
+                            borderRadius: myHeight(5), borderWidth: 1, borderColor: myColors.offColor2,
+                            marginEnd: myWidth(5), overflow: 'hidden'
+                        }}
+
+                    >
+                        <Image style={{
+                            maxWidth: '100%', maxHeight: '100%', justifyContent: 'flex-end',
+                            resizeMode: 'stretch',
+                            // resizeMode: 'cover',
+                        }} source={item.image} />
+                    </View>
+
+                </View>)}
+
+            </ScrollView> */}
+
+            <FlashList
                 onScroll={handleScroll}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
@@ -40,60 +127,49 @@ export const Banners = () => {
                     flexGrow: 1, justifyContent: 'center',
                     paddingHorizontal: myWidth(5)
                 }}
+                onScrollBeginDrag={() => { }}
+                ref={scrollRef}
                 pagingEnabled
                 snapToInterval={offerWidthSScroll}
                 scrollEventThrottle={1}
-            >
-                {offers.map((item, i) =>
-                    <View key={i} style={{ flex: 1 }}>
-                        {/* Offers */}
-                        <LinearGradient
-                            colors={item.colors}
-                            style={{
-                                flexDirection: 'row', justifyContent: 'space-between',
-                                width: myWidth(90), height: myHeight(20),
-                                borderRadius: myHeight(5), backgroundColor: '#FFE1B4',
-                                marginEnd: myWidth(5), elevation: 1, overflow: 'hidden'
-                            }}
-                            // for horizontal
-                            start={{ x: 0, y: 1 }}
-                            end={{ x: 1, y: 1 }}
-                        >
-                            {/* Content Offers */}
-                            <View style={{ maxWidth: '45%', paddingStart: '7.1%', justifyContent: 'center' }}>
+                onScrollEndDrag={() => { }}
+                onScrollAnimationEnd={() => { }}
+                extraData={[i]}
+                data={offers2}
+                keyExtractor={(item, index) => index.toString()}
+                estimatedItemSize={87}
+                ItemSeparatorComponent={() => (
+                    <View style={{ height: myHeight(0.35), backgroundColor: myColors.divider, marginHorizontal: myWidth(0) }} />
+                )}
+                renderItem={({ item }) => {
+                    return (
 
-                                <Text style={{
-                                    fontFamily: myFonts.headingBold, fontSize: myFontSize.xBody, color: myColors.background,
-                                }}>{item.title}</Text>
+                        <View key={i} style={{ flex: 1, }}>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    width: myWidth(90), height: myWidth(90) * 0.47,
+                                    borderRadius: myHeight(5), borderWidth: 1, borderColor: myColors.offColor2,
+                                    marginEnd: myWidth(5), overflow: 'hidden'
+                                }}
 
-                                <Text numberOfLines={2} style={{
-                                    fontFamily: myFonts.heading, fontSize: myFontSize.small, color: myColors.background,
-                                }}>{item.des}</Text>
-
-                                <Spacer paddingT={myHeight(1)} />
-                                {/* Order */}
-                                <TouchableOpacity activeOpacity={0.8}
-                                    style={{ flexDirection: 'row', alignItems: 'center' }}
-                                    onPress={() => null}>
-                                    <Text style={{
-                                        fontFamily: myFonts.headingBold, fontSize: myFontSize.small3, color: myColors.background,
-                                    }}>Details <Image style={{
-                                        height: myHeight(1), width: myHeight(1), resizeMode: 'contain', tintColor: myColors.background
-                                    }} source={require('../../assets/home_main/home/go.png')} /></Text>
-                                </TouchableOpacity>
+                            >
+                                <Image style={{
+                                    maxWidth: '100%', maxHeight: '100%', justifyContent: 'flex-end',
+                                    resizeMode: 'stretch',
+                                    // resizeMode: 'cover',
+                                }} source={item.image} />
                             </View>
 
-                            {/* Image Offers */}
-                            <Image style={{
-                                maxWidth: '55%', maxHeight: '100%', justifyContent: 'flex-end',
-                                resizeMode: 'contain',
-                            }} source={item.image} />
-                        </LinearGradient>
-
-                    </View>
-                )
+                        </View>
+                    )
                 }
-            </ScrollView>
+                }
+
+
+            />
+
+
             <Spacer paddingT={myHeight(1.6)} />
             {/*Dots */}
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
