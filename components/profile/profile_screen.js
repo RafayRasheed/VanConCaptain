@@ -122,6 +122,18 @@ export const Profile = ({ navigation }) => {
                     <View style={{ borderTopWidth: myHeight(0.18), borderColor: myColors.dot, }} />
 
 
+                    {/* Details */}
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('DriverDetailEdit')}
+                        style={{}}>
+                        <Common icon={require('../assets/profile/user.png')} iconSize={myHeight(2.6)}
+                            name={'Driver Details'}
+                        />
+
+                    </TouchableOpacity>
+                    {/* Divider */}
+                    <View style={{ borderTopWidth: myHeight(0.18), borderColor: myColors.dot, }} />
+
+
 
                     {/* Favourites */}
                     <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Favourite')}

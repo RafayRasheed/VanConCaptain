@@ -310,9 +310,7 @@ export const HomeScreen = ({ navigation }) => {
                         <Spacer paddingT={myHeight(3)} />
 
                         {
-                            profile.ready ? <View style={{ height: myHeight(20), width: myWidth(80), backgroundColor: myColors.primary }}>
-
-                            </View> :
+                            profile.ready ? null :
                                 <View style={{ width: '100%', alignItems: 'center' }}>
 
                                     <Text style={[styles.textCommon,

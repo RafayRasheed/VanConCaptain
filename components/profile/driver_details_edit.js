@@ -83,6 +83,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [dailyDays, setDailyDays] = useState(profile.dailyDays ? [...profile.dailyDays] : allDays)
     const [isOneRide, setOneRide] = useState(profile.isOneRide ? profile.isOneRide : false)
     const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
+    const [ac, setAc] = useState(profile.ac ? profile.ac : false)
 
     const [isInsideUni, setIsInsideUni] = useState(profile.isInsideUni ? profile.isInsideUni : false)
     const [insideShift, setInsideShift] = useState(profile.insideShift ? profile.insideShift : ['Morning', 'Evening'])
@@ -341,6 +342,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                 isInsideUni,
                 insideUniversities,
                 departCharges,
+                ac,
+                ready: true,
 
 
 
@@ -1181,48 +1184,58 @@ export const DriverDetailEdit = ({ navigation }) => {
 
 
                             </View>
-                            <Spacer paddingEnd={myWidth(2)} />
-                            <View style={{
-                                borderRadius: myWidth(1.5),
-                                width: myWidth(28),
-                                flex: 0.7,
-                                paddingVertical: myHeight(0.5),
-                                paddingHorizontal: myWidth(3),
-                                color: myColors.text,
-                                backgroundColor: myColors.offColor7,
-                                // borderWidth: 0.7,
-                                // borderColor: myColors.primaryT
-                            }}>
+                            <Spacer paddingEnd={myWidth(3)} />
+                            <CommonFaci fac={ac} setFAc={setAc} name={'Air Conditioning'} />
+                        </View>
 
-                                <TextInput placeholder="Contact No Ex 03"
-                                    autoCorrect={false}
-                                    maxLength={11}
-                                    keyboardType='numeric'
+                    </View>
+                    <Spacer paddingT={myWidth(3.5)} />
+                    {/* Contact */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.xBody2,
 
-                                    placeholderTextColor={myColors.offColor}
-                                    selectionColor={myColors.primary}
-                                    cursorColor={myColors.primaryT}
-                                    value={contact} onChangeText={setContact}
-                                    style={{
-                                        padding: 0,
-                                        backgroundColor: myColors.offColor7,
-                                        fontFamily: myFonts.bodyBold,
-                                        fontSize: myFontSize.body
+                        }]}>Contact *</Text>
+                        <Spacer paddingEnd={myHeight(2)} />
+                        <View style={{
+                            borderRadius: myWidth(1.5),
+                            width: myWidth(28),
+                            flex: 1,
+                            paddingVertical: myHeight(0.5),
+                            paddingHorizontal: myWidth(3),
+                            color: myColors.text,
+                            backgroundColor: myColors.offColor7,
+                            // borderWidth: 0.7,
+                            // borderColor: myColors.primaryT
+                        }}>
+
+                            <TextInput placeholder="Contact No Ex 03"
+                                autoCorrect={false}
+                                maxLength={11}
+                                keyboardType='numeric'
+
+                                placeholderTextColor={myColors.offColor}
+                                selectionColor={myColors.primary}
+                                cursorColor={myColors.primaryT}
+                                value={contact} onChangeText={setContact}
+                                style={{
+                                    padding: 0,
+                                    backgroundColor: myColors.offColor7,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body
 
 
-                                        // textAlign: 'center'
-                                    }}
-                                />
-
-                            </View>
-
-
+                                    // textAlign: 'center'
+                                }}
+                            />
 
                         </View>
 
                     </View>
-                    <Spacer paddingT={myWidth(2.5)} />
 
+                    <Spacer paddingT={myWidth(1.5)} />
                     {/* Description */}
                     <View>
                         <Text style={[styles.textCommon,
