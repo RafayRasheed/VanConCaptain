@@ -344,6 +344,10 @@ export const DriverDetailEdit = ({ navigation }) => {
                 departCharges,
                 ac,
                 ready: true,
+                rating: profile.rating ? profile.rating : 0,
+                noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
+                reviews: profile.reviews ? [...profile.reviews] : [],
+                ratingTotal: profile.ratingTotal ? profile.ratingTotal : 0,
 
 
 
