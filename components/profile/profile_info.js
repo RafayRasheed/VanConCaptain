@@ -220,13 +220,13 @@ export const ProfileInfo = ({ navigation }) => {
                 {/* City */}
                 <View>
                     <Text style={[styles.heading, { color: myColors.text }]}>City</Text>
-                    <TouchableOpacity activeOpacity={isEditMode ? 0.8 : 1} onPress={() => {
-                        if (isEditMode) {
+                    <TouchableOpacity disabled activeOpacity={isEditMode ? 0.8 : 1} onPress={() => {
+                        // if (isEditMode) {
 
-                            setShowCityModal(true)
-                        }
+                        //     setShowCityModal(true)
+                        // }
                     }}
-                        style={[styles.containerInput, { borderColor: isEditMode ? myColors.primaryT : myColors.textL4 }]}>
+                        style={[styles.containerInput, { borderColor: myColors.textL4 }]}>
                         <View>
                             <Image style={{
                                 height: myHeight(2.8),

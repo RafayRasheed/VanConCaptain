@@ -178,8 +178,13 @@ export const Search = ({ locat, selected, index, setSelected, setShowLoc }) => {
 
     }, [search, location])
     function clearLongPress() {
-        setLongEnable(false)
-        setSelectedItems([])
+        if (locat.length != 0) {
+            setShowLoc(false)
+        } else {
+
+            setLongEnable(false)
+            setSelectedItems([])
+        }
     }
 
     // useEffect(() => {

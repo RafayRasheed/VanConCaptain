@@ -246,6 +246,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         return s
     }
     function checkRoutes() {
+        return
         if (selectedItem.filter(it => it.locations.length != 0).length) {
             return true
         }

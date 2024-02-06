@@ -29,6 +29,7 @@ import { setProfile } from '../../redux/profile_reducer';
 import { Search } from './locations_screen';
 import database from '@react-native-firebase/database';
 import { setChats, setTotalUnread } from '../../redux/chat_reducer';
+import { DriverInfoFull } from './home.component/driver_info_full';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -310,7 +311,10 @@ export const HomeScreen = ({ navigation }) => {
                         <Spacer paddingT={myHeight(3)} />
 
                         {
-                            profile.ready ? null :
+                            profile.ready ? <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DriverDetail', { driver: profile })}>
+
+                                <DriverInfoFull navigation={navigation} driver={profile} />
+                            </TouchableOpacity> :
                                 <View style={{ width: '100%', alignItems: 'center' }}>
 
                                     <Text style={[styles.textCommon,
