@@ -84,6 +84,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [isOneRide, setOneRide] = useState(profile.isOneRide ? profile.isOneRide : false)
     const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
     const [ac, setAc] = useState(profile.ac ? profile.ac : false)
+    const [isWifi, setIsWifi] = useState(profile.isWifi ? profile.isWifi : false)
 
     const [isInsideUni, setIsInsideUni] = useState(profile.isInsideUni ? profile.isInsideUni : false)
     const [insideShift, setInsideShift] = useState(profile.insideShift ? profile.insideShift : ['Morning', 'Evening'])
@@ -324,7 +325,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         if (checkData()) {
 
             setIsLoading(true)
-            const newProfile = {
+            let newProfile = {
                 ...profile,
                 description,
                 packages,
@@ -343,14 +344,22 @@ export const DriverDetailEdit = ({ navigation }) => {
                 insideUniversities,
                 departCharges,
                 ac,
+                isWifi,
                 ready: true,
-                rating: profile.rating ? profile.rating : 0,
-                noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
-                reviews: profile.reviews ? [...profile.reviews] : [],
-                ratingTotal: profile.ratingTotal ? profile.ratingTotal : 0,
 
 
 
+
+            }
+
+            if (!profile.ready) {
+                newProfile = {
+                    ...newProfile,
+                    rating: 0,
+                    noOfRatings: 0,
+                    reviews: [],
+                    ratingTotal: 0,
+                }
             }
 
             // setAddress(JSON.stringify(newProfile))
@@ -1189,7 +1198,10 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                             </View>
                             <Spacer paddingEnd={myWidth(3)} />
-                            <CommonFaci fac={ac} setFAc={setAc} name={'Air Conditioning'} />
+                            <CommonFaci fac={ac} setFAc={setAc} name={'AC'} />
+
+                            <Spacer paddingEnd={myWidth(3)} />
+                            <CommonFaci fac={isWifi} setFAc={setIsWifi} name={'Wifi'} />
                         </View>
 
                     </View>
