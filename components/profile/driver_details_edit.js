@@ -916,7 +916,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         <>
 
             <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background }}>
-                <StatusbarH />
+                {/* <StatusbarH /> */}
                 {/* Top */}
                 <View>
                     <Spacer paddingT={myHeight(1.5)} />
