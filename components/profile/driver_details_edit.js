@@ -246,7 +246,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         return s
     }
     function checkRoutes() {
-        return
+        // return true
         if (selectedItem.filter(it => it.locations.length != 0).length) {
             return true
         }
@@ -294,6 +294,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         }
 
         if (!checkRoutes()) {
+
             return false
         }
         if (isInsideUni && !insideUniversities.length) {
@@ -312,20 +313,25 @@ export const DriverDetailEdit = ({ navigation }) => {
         return true
     }
     function formatRoutes() {
-        const newArr = []
+        const routes = []
+        let allRoutes = []
+
         selectedItem.filter(it => {
             if (it.locations.length != 0) {
 
-                newArr.push({ ...it, show: false })
+                routes.push({ ...it, show: false })
+                allRoutes = [...allRoutes, ...it.locations]
             }
 
         })
-        return newArr
+        return { routes, allRoutes }
     }
     function onSave() {
+        console.log(checkData())
         if (checkData()) {
 
             setIsLoading(true)
+            const { routes, allRoutes } = formatRoutes()
             let newProfile = {
                 ...profile,
                 description,
@@ -338,7 +344,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                 licence,
                 contact,
                 dailyDays,
-                routes: formatRoutes(),
+                routes,
+                allRoutes,
                 isOneRide,
                 oneRideDays,
                 isInsideUni,
@@ -347,11 +354,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                 ac,
                 isWifi,
                 ready: true,
-
-
-
-
             }
+            console.log('newUpdate', newProfile)
 
             if (!profile.ready) {
                 newProfile = {
@@ -916,7 +920,7 @@ export const DriverDetailEdit = ({ navigation }) => {
         <>
 
             <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background }}>
-                {/* <StatusbarH /> */}
+                <StatusbarH />
                 {/* Top */}
                 <View>
                     <Spacer paddingT={myHeight(1.5)} />
@@ -1334,7 +1338,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                             {
 
-                                allDays.map(it => <CommonFaciDays dailyDays={dailyDays} setDailyDays={setDailyDays} name={it} />)
+                                allDays.map((it, i) => <CommonFaciDays key={i} dailyDays={dailyDays} setDailyDays={setDailyDays} name={it} />)
                             }
 
                         </View>
@@ -1590,7 +1594,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                 {
 
-                                    allDays.map(it => <CommonFaciDays dailyDays={oneRideDays} setDailyDays={setOneRideDays} name={it} />)
+                                    allDays.map((it, i) => <CommonFaciDays key={i} dailyDays={oneRideDays} setDailyDays={setOneRideDays} name={it} />)
                                 }
 
                             </View>
