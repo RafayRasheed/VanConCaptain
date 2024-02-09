@@ -923,7 +923,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                 <StatusbarH />
                 {/* Top */}
                 <View>
-                    <Spacer paddingT={myHeight(1.5)} />
+                    <Spacer paddingT={myHeight(1.55)} />
                     <View style={{ paddingEnd: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
                         {/* Search */}
 
