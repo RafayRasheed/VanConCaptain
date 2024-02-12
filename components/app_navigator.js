@@ -18,12 +18,13 @@ import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { setProfile } from "../redux/profile_reducer"
 import { Checkout } from "./cart/checkout"
-import { OrderDetails } from "./orders/order_detail_screen"
+// import { OrderDetails } from "./orders/ride_detail_screen"
 import { navigationRef } from "./RootNavigation"
 import NavigationService from "./NavigationService"
 import { Chat } from "./home/chat_screen"
 import { DriverDetailEdit } from "./profile/driver_details_edit"
 import { DriverDetail } from "./home/driver_detail_screen"
+import { RideDetails } from "./orders/ride_detail_screen"
 
 const AppTAB = createStackNavigator()
 
@@ -62,7 +63,7 @@ export const AppNavigator = () => {
                 <AppTAB.Screen component={ProfileInfo} name="ProfileInfo" />
                 <AppTAB.Screen component={Favourite} name="Favourite" />
                 <AppTAB.Screen component={Checkout} name="Checkout" />
-                <AppTAB.Screen component={OrderDetails} name="OrderDetails" />
+                <AppTAB.Screen component={RideDetails} name="RideDetails" />
                 <AppTAB.Screen component={DriverDetailEdit} name="DriverDetailEdit" />
 
 

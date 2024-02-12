@@ -12,9 +12,10 @@ import { createStackNavigator } from "@react-navigation/stack"
 import { deleteLogin } from "../functions/storageMMKV";
 import { useSelector } from "react-redux";
 import { ProfileNavigator } from "../profile/profile_navigator";
-import { OrderScreen } from "../orders/orders_screen";
+// import { OrderScreen } from "../orders/ride_screen";
 import { ChatList } from "./chat_all_screen";
 import { RFValue } from "react-native-responsive-fontsize";
+import { RidesScreen } from "../orders/ride_screen";
 
 const Tab = createBottomTabNavigator()
 
@@ -48,7 +49,7 @@ const Icons = {
 
 const screenOptions = ({ navigator, route }) => {
     const { totalUnread } = useSelector(state => state.chats)
-    const { progress } = useSelector(state => state.orders)
+    const { progress, unread } = useSelector(state => state.orders)
     const name = route.name
     return {
         headerShown: false,
@@ -105,12 +106,12 @@ const screenOptions = ({ navigator, route }) => {
                         <Image style={[Icons[name].style, { tintColor: color, resizeMode: 'contain', }]}
                             source={Icons[name].image} />
                         {
-                            progress?.length ?
+                            unread?.length ?
                                 <View style={{
                                     position: 'absolute', top: -myHeight(0.6), right: -myHeight(1.4), backgroundColor: myColors.red, borderRadius: 100,
                                     paddingVertical: myHeight(0.35), paddingHorizontal: myHeight(1)
                                 }}>
-                                    <Text style={[styles.textCommon, { fontSize: myFontSize.tiny, fontFamily: myFonts.bodyBold, color: myColors.background }]}>{progress.length}</Text>
+                                    <Text style={[styles.textCommon, { fontSize: myFontSize.tiny, fontFamily: myFonts.bodyBold, color: myColors.background }]}>{unread.length}</Text>
                                 </View>
                                 : null
                         }
@@ -158,7 +159,7 @@ export const HomeBottomNavigator = ({ route, navigation }) => {
                 initialRouteName="HOME"
             >
                 <Tab.Screen name="HOME" component={HomeNavigator} />
-                <Tab.Screen name="RIDES" component={OrderScreen} />
+                <Tab.Screen name="RIDES" component={RidesScreen} />
                 {/* <Tab.Screen name="HOT" component={OrderScreen} /> */}
                 <Tab.Screen name="CHATS" component={ChatList} />
                 <Tab.Screen name="PROFILE" component={ProfileNavigator} />

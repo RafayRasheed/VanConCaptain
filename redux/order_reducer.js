@@ -7,6 +7,8 @@ const orderReducer = createSlice({
         pending: [],
         progress: [],
         history: [],
+        allRequest: [],
+        unread: []
 
     },
     reducers: {
@@ -21,9 +23,15 @@ const orderReducer = createSlice({
         setHistoryOrderse(state, action) {
             state.history = action.payload
         },
+        setAllRequest(state, action) {
+            state.allRequest = action.payload
+        },
+        setAllUnread(state, action) {
+            state.unread = action.payload
+        }
 
     },
 });
 
-export const { setPendingOrderse, setProgressOrderse, setHistoryOrderse } = orderReducer.actions;
+export const { setPendingOrderse, setProgressOrderse, setHistoryOrderse, setAllRequest, setAllUnread } = orderReducer.actions;
 export default orderReducer.reducer;

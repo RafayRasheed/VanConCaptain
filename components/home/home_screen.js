@@ -18,7 +18,7 @@ import { HomeSkeleton } from './home.component/home_skeleton';
 import { ImageUri } from '../common/image_uri';
 import storage from '@react-native-firebase/storage';
 import { setAllItems, setAllRest, setNearby, setRecommend } from '../../redux/data_reducer';
-import { setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
+import { setAllRequest, setAllUnread, setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
 import { SetErrorAlertToFunction, deccodeInfo, getAreasLocations, getCurrentLocations, statusDate } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
@@ -271,7 +271,68 @@ export const HomeScreen = ({ navigation }) => {
         return () => database().ref(`/chats`).off('value', onValueChange);
     }, []);
 
+    // Realtime
+    useEffect(() => {
+        const onValueChange = database()
+            .ref(`/requests/${profile.uid}`).orderByChild('dateInt')
+            .on('value', snapshot => {
+                if (snapshot.exists()) {
+                    let Pending = []
+                    let InProgress = []
+                    let History = []
+                    let all = []
+                    const unread = []
 
+                    snapshot.forEach((documentSnapshot1, i) => {
+                        const val = documentSnapshot1.val()
+                        all.push(val)
+                        if (val.status == 1 || val.status == 2) {
+                            Pending.push(val)
+                            if (val.unread) {
+                                unread.push({ id: val.id, code: 2 })
+                            }
+                        }
+                        else if (val.status == 3) {
+
+                            InProgress.push(val)
+                            if (val.unread) {
+                                unread.push({ id: val.id, code: 1 })
+                            }
+                        }
+                        else {
+                            History.push(val)
+                            if (val.unread) {
+                                unread.push({ id: val.id, code: 3 })
+                            }
+                        }
+
+
+                    });
+                    console.log('unread', unread)
+                    Pending.reverse()
+                    InProgress.reverse()
+                    History.reverse()
+                    dispatch(setPendingOrderse(Pending))
+                    dispatch(setProgressOrderse(InProgress))
+                    dispatch(setHistoryOrderse(History))
+                    dispatch(setAllRequest(all))
+                    dispatch(setAllUnread(unread))
+
+                } else {
+                    dispatch(setPendingOrderse([]))
+                    dispatch(setProgressOrderse([]))
+                    dispatch(setHistoryOrderse([]))
+                    dispatch(setAllRequest([]))
+                    dispatch(setAllUnread([]))
+                    dispatch(setAllRequest([]))
+
+
+                }
+            });
+
+        // Stop listening for updates when no longer required
+        return () => database().ref(`/requests/${profile.uid}`).off('value', onValueChange);
+    }, []);
     return (
 
         <SafeAreaView style={styles.container}>
