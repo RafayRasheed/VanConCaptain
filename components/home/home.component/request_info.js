@@ -1,5 +1,5 @@
 
-import { Image, TouchableOpacity, SafeAreaView, StyleSheet, Text, View, ImageBackground } from 'react-native'
+import { Image, TouchableOpacity, SafeAreaView, StyleSheet, Text, View, ImageBackground, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Spacer, myHeight, myWidth } from "../../common"
 import { myFontSize, myFonts, myLetSpacing } from "../../../ultils/myFonts"
@@ -7,11 +7,19 @@ import { myColors } from "../../../ultils/myColors"
 import { useDispatch, useSelector } from 'react-redux'
 import { addFavoriteRest, removeFavoriteRest } from '../../../redux/favorite_reducer'
 import { ImageUri } from '../../common/image_uri'
+import database from '@react-native-firebase/database';
 
 export const RequestInfo = ({ item, navigation, code }) => {
     const { profile } = useSelector(state => state.profile)
-
     const me = item.sendDrivers.find(it => it.did == profile.uid)
+
+    useEffect(() => {
+        if (item.unread) {
+            console.log('han')
+            database()
+                .ref(`/requests/${profile.uid}/${item.id}`).update({ unread: false }).then(() => { }).catch((err) => { console.log('error on update unread err') })
+        }
+    }, [item])
     return (
         <View
 
@@ -69,51 +77,47 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     >{item.distance} </Text>
                 </View>
 
-                {
-                    code == 2 ?
-                        <>
-                            {
-                                item.status == 1 &&
-                                <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('RequestRide', { preReq: item })}>
-                                    <Text
-                                        style={[
-                                            styles.textCommon,
-                                            {
-                                                fontSize: myFontSize.body2,
-                                                fontFamily: myFonts.heading,
-                                                color: myColors.primaryT,
-                                                paddingStart: myWidth(3)
-                                            },
-                                        ]}
-                                    >{'EDIT'}</Text>
-                                </TouchableOpacity>
-                            }
-                        </>
-                        :
-                        <>
-                            <Image
-                                style={{
-                                    width: myHeight(2),
-                                    height: myHeight(2),
-                                    resizeMode: 'contain',
-                                    tintColor: myColors.primaryT
-                                }}
-                                source={require('../../assets/home_main/home/driver.png')}
-                            />
-                            <Spacer paddingEnd={myWidth(2)} />
-                            <Text
-                                style={[
-                                    styles.textCommon,
-                                    {
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity activeOpacity={0.85} style={{
+                        padding: myHeight(0.8), backgroundColor: myColors.background,
+                        elevation: 3,
+                        borderRadius: 100
+                    }}
+                        onPress={() => { Linking.openURL(`tel:${item.contact}`); }}
+                    >
+                        <Image source={require('../../assets/home_main/home/phone.png')}
+                            style={{
+                                width: myHeight(1.8),
+                                height: myHeight(1.8),
+                                resizeMode: 'contain',
+                                tintColor: myColors.text
+                            }}
+                        />
 
-                                        fontSize: myFontSize.body2,
-                                        fontFamily: myFonts.bodyBold,
-                                    },
-                                ]}
-                            >{item.driverName}
-                            </Text>
-                        </>
-                }
+                    </TouchableOpacity>
+                    <Spacer paddingEnd={myWidth(3.5)} />
+
+                    <TouchableOpacity activeOpacity={0.85} style={{
+                        padding: myHeight(0.8), backgroundColor: myColors.background,
+                        elevation: 3,
+                        borderRadius: 100
+                    }}
+                        onPress={() => {
+                            navigation.navigate('Chat',
+                                { user2: item }
+                            )
+                        }}
+                    >
+                        <Image source={require('../../assets/home_main/home/navigator/chat2.png')}
+                            style={{
+                                width: myHeight(1.8),
+                                height: myHeight(1.8),
+                                resizeMode: 'contain',
+                                tintColor: myColors.text
+                            }}
+                        />
+                    </TouchableOpacity>
+                </View>
 
 
 
@@ -299,6 +303,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     ]}
                 >{item.name}
                 </Text>
+
                 {
                     code == 2 ?
                         <>
@@ -331,7 +336,18 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
                         </>
                         :
-                        null
+                        <Text
+                            style={[
+                                styles.textCommon,
+                                {
+
+                                    fontSize: myFontSize.body,
+                                    fontFamily: myFonts.bodyBold,
+                                    color: me.status < 0 ? 'red' : myColors.text
+                                },
+                            ]}
+                        >{me.status < 0 ? 'Request Rejected' : `Request Accepted`}</Text>
+
                 }
             </View>
             <Spacer paddingT={myHeight(1.5)} />
