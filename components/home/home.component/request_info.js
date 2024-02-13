@@ -58,6 +58,17 @@ export const RequestInfo = ({ item, navigation, code }) => {
                         console.log('To accept successfully')
                         dispatch(setErrorAlert({ Title: 'Request Accept Successfully', Body: null, Status: 2 }))
                         setLoad(false)
+
+                        item.sendDrivers.map(dr => {
+                            if (dr.did != profile.uid) {
+                                database()
+                                    .ref(`/requests/${dr.did}/${item.id}`).update(update)
+                                    .then(() => {
+                                        console.log('To update others successfully')
+                                    }).catch((err) => { console.log(err) })
+
+                            }
+                        })
                         firestore().collection('users').doc(item.uid).get().then((data) => {
                             const captain = data.data()
                             const token = captain.deviceToken
