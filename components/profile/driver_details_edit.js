@@ -341,6 +341,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                 vehicleModal,
                 vehicleNum,
                 vehicleSeats,
+                availableSeats: profile.availableSeats ? profile.availableSeats : vehicleSeats,
                 licence,
                 contact,
                 dailyDays,

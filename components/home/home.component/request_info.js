@@ -8,18 +8,174 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addFavoriteRest, removeFavoriteRest } from '../../../redux/favorite_reducer'
 import { ImageUri } from '../../common/image_uri'
 import database from '@react-native-firebase/database';
+import { FirebaseUser, sendPushNotification } from '../../functions/firebase'
+import { setErrorAlert } from '../../../redux/error_reducer'
+import firestore from '@react-native-firebase/firestore';
 
 export const RequestInfo = ({ item, navigation, code }) => {
     const { profile } = useSelector(state => state.profile)
     const me = item.sendDrivers.find(it => it.did == profile.uid)
+    const [load, setLoad] = useState(false)
 
+    const dispatch = useDispatch()
     useEffect(() => {
         if (item.unread) {
-            console.log('han')
             database()
-                .ref(`/requests/${profile.uid}/${item.id}`).update({ unread: false }).then(() => { }).catch((err) => { console.log('error on update unread err') })
+                .ref(`/requests/${profile.uid}/${item.id}`).update({ unread: false }).
+                then(() => { console.log('To Unread successfully') })
+                .catch((err) => { console.log('error on update unread err') })
         }
     }, [item])
+    function onAccept() {
+        if (profile.availableSeats < item.seats) {
+            dispatch(setErrorAlert({ Title: 'Seats Not Available', Body: null, Status: 0 }))
+            return
+        }
+        setLoad(true)
+
+        let drivers = item.sendDrivers
+        const ind = item.sendDrivers.findIndex(it => it.did == profile.uid)
+        drivers[ind].status = 2
+        const update = { sendDrivers: drivers, did: profile.uid, driverName: profile.name, driverContact: profile.contact, status: 3 }
+        console.log(item.uid)
+
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
+            .then(() => {
+                console.log('To accept user successfully')
+
+                database()
+                    .ref(`/requests/${profile.uid}/${item.id}`).update(update)
+                    .then(() => {
+                        console.log('To accept successfully')
+                        dispatch(setErrorAlert({ Title: 'Request Accept Successfully', Body: null, Status: 2 }))
+                        setLoad(false)
+                        firestore().collection('users').doc(item.uid).get().then((data) => {
+                            const captain = data.data()
+                            const token = captain.deviceToken
+
+                            sendPushNotification('Request Accepted', `Your request ${item.id} is accepted by ${profile.name}`, 2, [token])
+                        }).catch((err) => { console.log(err) })
+
+                        FirebaseUser.doc(profile.uid)
+                            .update({ availableSeats: profile.availableSeats - item.seats })
+                            .then(() => {
+
+                                console.log('To accept me successfully')
+
+                            }).catch(err => {
+
+                                console.log('Internal error while Updating a Restaurant', err)
+                            });
+
+                    })
+                    .catch((err) => {
+                        console.log('error on accept unread err', err)
+                        setLoad(false)
+
+                    })
+            })
+            .catch((err) => {
+                console.log('error on accept unread err', err)
+                setLoad(false)
+
+            })
+
+
+
+    }
+    function onReject() {
+        setLoad(true)
+
+        let drivers = item.sendDrivers
+        const ind = item.sendDrivers.findIndex(it => it.did == profile.uid)
+        drivers[ind].status = -1
+        const update = { sendDrivers: drivers }
+        console.log(item.uid)
+
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update(update)
+            .then(() => {
+                console.log('To reject user successfully')
+
+                database()
+                    .ref(`/requests/${profile.uid}/${item.id}`).update({ ...update, status: -1 })
+                    .then(() => {
+                        console.log('To reject successfully')
+                        dispatch(setErrorAlert({ Title: 'Request Rejected Successfully', Body: null, Status: 2 }))
+                        setLoad(false)
+
+                        firestore().collection('users').doc(item.uid).get().then((data) => {
+                            const captain = data.data()
+                            const token = captain.deviceToken
+
+                            sendPushNotification('Request Rejected', `Your request ${item.id} is rejected by ${profile.name}`, 0, [token])
+                        }).catch((err) => { console.log(err) })
+
+                    })
+                    .catch((err) => {
+                        console.log('error on accept unread err', err)
+                        setLoad(false)
+
+                    })
+            })
+            .catch((err) => {
+                console.log('error on accept unread err', err)
+                setLoad(false)
+
+            })
+    }
+    function onCancel() {
+        let drivers = item.sendDrivers
+        const ind = item.sendDrivers.findIndex(it => it.did == profile.uid)
+        drivers[ind].status = 5
+        const update = { sendDrivers: drivers, did: profile.uid, driverName: profile.name, driverContact: profile.contact, status: 5 }
+        console.log(item.uid)
+
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
+            .then(() => {
+                console.log('To accept user successfully')
+
+                database()
+                    .ref(`/requests/${profile.uid}/${item.id}`).update(update)
+                    .then(() => {
+                        console.log('To accept successfully')
+                        dispatch(setErrorAlert({ Title: 'Ride Ended Successfully', Body: null, Status: 2 }))
+                        setLoad(false)
+                        firestore().collection('users').doc(item.uid).get().then((data) => {
+                            const captain = data.data()
+                            const token = captain.deviceToken
+
+                            sendPushNotification('Ride End', `Your ride ${item.id} is ended by ${profile.name}`, 2, [token])
+                        }).catch((err) => { console.log(err) })
+
+                        const seats = profile.availableSeats + item.seats
+                        FirebaseUser.doc(profile.uid)
+                            .update({ availableSeats: seats > profile.availableSeats ? profile.availableSeats : seats })
+                            .then(() => {
+
+                                console.log('To accept me successfully')
+
+                            }).catch(err => {
+
+                                console.log('Internal error while Updating a Restaurant', err)
+                            });
+
+                    })
+                    .catch((err) => {
+                        console.log('error on accept unread err', err)
+                        setLoad(false)
+
+                    })
+            })
+            .catch((err) => {
+                console.log('error on accept unread err', err)
+                setLoad(false)
+
+            })
+
+    }
     return (
         <View
 
@@ -75,54 +231,81 @@ export const RequestInfo = ({ item, navigation, code }) => {
                             },
                         ]}
                     >{item.distance} </Text>
-                </View>
+                    <Spacer paddingEnd={myWidth(2.5)} />
 
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TouchableOpacity activeOpacity={0.85} style={{
-                        padding: myHeight(0.8), backgroundColor: myColors.background,
-                        elevation: 3,
-                        borderRadius: 100
-                    }}
-                        onPress={() => { Linking.openURL(`tel:${item.contact}`); }}
-                    >
-                        <Image source={require('../../assets/home_main/home/phone.png')}
-                            style={{
-                                width: myHeight(1.8),
-                                height: myHeight(1.8),
-                                resizeMode: 'contain',
-                                tintColor: myColors.text
-                            }}
-                        />
+                    <Image
+                        style={{
 
-                    </TouchableOpacity>
-                    <Spacer paddingEnd={myWidth(3.5)} />
-
-                    <TouchableOpacity activeOpacity={0.85} style={{
-                        padding: myHeight(0.8), backgroundColor: myColors.background,
-                        elevation: 3,
-                        borderRadius: 100
-                    }}
-                        onPress={() => {
-                            navigation.navigate('Chat',
-                                { user2: item }
-                            )
+                            width: myHeight(1.6),
+                            height: myHeight(1.6),
+                            resizeMode: 'contain',
+                            tintColor: myColors.primaryT
                         }}
-                    >
-                        <Image source={require('../../assets/home_main/home/navigator/chat2.png')}
-                            style={{
-                                width: myHeight(1.8),
-                                height: myHeight(1.8),
-                                resizeMode: 'contain',
-                                tintColor: myColors.text
-                            }}
-                        />
-                    </TouchableOpacity>
+                        source={require('../../assets/home_main/home/seatSF.png')}
+                    />
+                    <Spacer paddingEnd={myWidth(1)} />
+                    <Text
+                        style={[
+                            styles.textCommon,
+                            {
+                                flex: 1,
+                                fontSize: myFontSize.body,
+                                fontFamily: myFonts.bodyBold,
+                            },
+                        ]}
+                    >{item.seats}
+                    </Text>
                 </View>
+
+                {
+                    !code == 3 &&
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TouchableOpacity activeOpacity={0.85} style={{
+                            padding: myHeight(0.8), backgroundColor: myColors.background,
+                            elevation: 3,
+                            borderRadius: 100
+                        }}
+                            onPress={() => { Linking.openURL(`tel:${item.contact}`); }}
+                        >
+                            <Image source={require('../../assets/home_main/home/phone.png')}
+                                style={{
+                                    width: myHeight(1.8),
+                                    height: myHeight(1.8),
+                                    resizeMode: 'contain',
+                                    tintColor: myColors.text
+                                }}
+                            />
+
+                        </TouchableOpacity>
+                        <Spacer paddingEnd={myWidth(3.5)} />
+
+                        <TouchableOpacity activeOpacity={0.85} style={{
+                            padding: myHeight(0.8), backgroundColor: myColors.background,
+                            elevation: 3,
+                            borderRadius: 100
+                        }}
+                            onPress={() => {
+                                navigation.navigate('Chat',
+                                    { user2: item }
+                                )
+                            }}
+                        >
+                            <Image source={require('../../assets/home_main/home/navigator/chat2.png')}
+                                style={{
+                                    width: myHeight(1.8),
+                                    height: myHeight(1.8),
+                                    resizeMode: 'contain',
+                                    tintColor: myColors.text
+                                }}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                }
 
 
 
             </View>
-            <Spacer paddingT={myHeight(1.2)} />
+            <Spacer paddingT={myHeight(1.7)} />
 
             <View style={{ flexDirection: 'row' }}>
                 {/* Circles & Line*/}
@@ -266,7 +449,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     </View>
                 </View>
             </View>
-            <Spacer paddingT={myHeight(1.2)} />
+            <Spacer paddingT={myHeight(1.5)} />
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 {/* <Text
@@ -305,37 +488,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                 </Text>
 
                 {
-                    code == 2 ?
-                        <>
-                            <TouchableOpacity activeOpacity={0.7} onPress={() => null}>
-                                <Text
-                                    style={[
-                                        styles.textCommon,
-                                        {
-                                            fontSize: myFontSize.body,
-                                            fontFamily: myFonts.heading,
-                                            color: myColors.red
-                                        },
-                                    ]}
-                                >{'Reject'}</Text>
-                            </TouchableOpacity>
-                            <Spacer paddingEnd={myWidth(4)} />
-                            <TouchableOpacity activeOpacity={0.7} onPress={() => null}>
-                                <Text
-                                    style={[
-                                        styles.textCommon,
-                                        {
-                                            fontSize: myFontSize.body,
-                                            fontFamily: myFonts.heading,
-                                            color: myColors.primaryT
-                                        },
-                                    ]}
-                                >{'Accept'}</Text>
-                            </TouchableOpacity>
-
-
-                        </>
-                        :
+                    load ?
                         <Text
                             style={[
                                 styles.textCommon,
@@ -343,11 +496,96 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
                                     fontSize: myFontSize.body,
                                     fontFamily: myFonts.bodyBold,
-                                    color: me.status < 0 ? 'red' : myColors.text
+                                    color: myColors.primaryT
                                 },
                             ]}
-                        >{me.status < 0 ? 'Request Rejected' : `Request Accepted`}</Text>
+                        >Loading...</Text>
+                        :
+                        <>
 
+                            {
+                                code == 2 ?
+                                    <>
+                                        <TouchableOpacity activeOpacity={0.7} onPress={() => onReject()}>
+                                            <Text
+                                                style={[
+                                                    styles.textCommon,
+                                                    {
+                                                        fontSize: myFontSize.body,
+                                                        fontFamily: myFonts.heading,
+                                                        color: myColors.red
+                                                    },
+                                                ]}
+                                            >{'Reject'}</Text>
+                                        </TouchableOpacity>
+                                        <Spacer paddingEnd={myWidth(4)} />
+                                        <TouchableOpacity activeOpacity={0.7} onPress={() => onAccept()}>
+                                            <Text
+                                                style={[
+                                                    styles.textCommon,
+                                                    {
+                                                        fontSize: myFontSize.body,
+                                                        fontFamily: myFonts.heading,
+                                                        color: myColors.primaryT
+                                                    },
+                                                ]}
+                                            >{'Accept'}</Text>
+                                        </TouchableOpacity>
+
+
+                                    </>
+                                    :
+
+                                    <>
+                                        {
+
+                                            code == 1 ?
+                                                <>
+
+                                                    {/* <Text
+                                                        style={[
+                                                            styles.textCommon,
+                                                            {
+
+                                                                fontSize: myFontSize.xxSmall,
+                                                                fontFamily: myFonts.bodyBold,
+                                                                color: myColors.text
+                                                            },
+                                                        ]}
+                                                    >Accepted</Text>
+                                                    <Spacer paddingEnd={myWidth(6)} /> */}
+                                                    <TouchableOpacity activeOpacity={0.7} onPress={() => onCancel()}>
+                                                        <Text
+                                                            style={[
+                                                                styles.textCommon,
+                                                                {
+                                                                    fontSize: myFontSize.body,
+                                                                    fontFamily: myFonts.heading,
+                                                                    color: myColors.red
+                                                                },
+                                                            ]}
+                                                        >{'End Now'}</Text>
+                                                    </TouchableOpacity>
+                                                </>
+
+                                                :
+                                                <Text
+                                                    style={[
+                                                        styles.textCommon,
+                                                        {
+
+                                                            fontSize: myFontSize.body,
+                                                            fontFamily: myFonts.bodyBold,
+                                                            color: me.status < 0 ? 'red' : myColors.primaryT
+                                                        },
+                                                    ]}
+                                                >{me.status < 0 ? 'Rejected' : `Completed`}</Text>
+                                        }
+
+                                    </>
+
+                            }
+                        </>
                 }
             </View>
             <Spacer paddingT={myHeight(1.5)} />

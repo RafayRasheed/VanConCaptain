@@ -286,7 +286,7 @@ export const HomeScreen = ({ navigation }) => {
                     snapshot.forEach((documentSnapshot1, i) => {
                         const val = documentSnapshot1.val()
                         all.push(val)
-                        if (val.status == 1 || val.status == 2) {
+                        if (val.status == 2) {
                             Pending.push(val)
                             if (val.unread) {
                                 unread.push({ id: val.id, code: 2 })
