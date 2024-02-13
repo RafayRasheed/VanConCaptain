@@ -292,8 +292,8 @@ export const HomeScreen = ({ navigation }) => {
                                 unread.push({ id: val.id, code: 2 })
                             }
                         }
-                        else if (val.status == 3) {
-
+                        else if (val.status == 3 && val.did == profile.uid) {
+                            console.log(profile.uid)
                             InProgress.push(val)
                             if (val.unread) {
                                 unread.push({ id: val.id, code: 1 })

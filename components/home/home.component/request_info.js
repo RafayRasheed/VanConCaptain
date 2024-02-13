@@ -17,6 +17,8 @@ export const RequestInfo = ({ item, navigation, code }) => {
     const me = item.sendDrivers.find(it => it.did == profile.uid)
     const [load, setLoad] = useState(false)
 
+    const isMissed = item.status >= 3 && item.did != profile.uid
+    console.log(item.id, isMissed)
     const dispatch = useDispatch()
     useEffect(() => {
         if (item.unread) {
@@ -33,11 +35,17 @@ export const RequestInfo = ({ item, navigation, code }) => {
         }
         setLoad(true)
 
-        let drivers = item.sendDrivers
-        const ind = item.sendDrivers.findIndex(it => it.did == profile.uid)
-        drivers[ind].status = 2
+        const ind = item.sendDrivers.filter(it => it.did == profile.uid)
+        let drivers = [{ ...ind[0], status: 2 }]
+
+        item.sendDrivers.map(dr => {
+            if (dr.did != profile.uid) {
+                drivers.push({ ...dr })
+            }
+        })
+
         const update = { sendDrivers: drivers, did: profile.uid, driverName: profile.name, driverContact: profile.contact, status: 3 }
-        console.log(item.uid)
+        console.log('item.uid', drivers)
 
         database()
             .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
@@ -569,17 +577,34 @@ export const RequestInfo = ({ item, navigation, code }) => {
                                                 </>
 
                                                 :
-                                                <Text
-                                                    style={[
-                                                        styles.textCommon,
-                                                        {
+                                                <>
+                                                    {
+                                                        me.status == 1 ?
+                                                            <Text
+                                                                style={[
+                                                                    styles.textCommon,
+                                                                    {
 
-                                                            fontSize: myFontSize.body,
-                                                            fontFamily: myFonts.bodyBold,
-                                                            color: me.status < 0 ? 'red' : myColors.primaryT
-                                                        },
-                                                    ]}
-                                                >{me.status < 0 ? 'Rejected' : `Completed`}</Text>
+                                                                        fontSize: myFontSize.body,
+                                                                        fontFamily: myFonts.bodyBold,
+                                                                        color: 'red'
+                                                                    },
+                                                                ]}
+                                                            >{isMissed ? 'You Missed' : 'Cancelled By Customer'}</Text>
+                                                            :
+                                                            <Text
+                                                                style={[
+                                                                    styles.textCommon,
+                                                                    {
+
+                                                                        fontSize: myFontSize.body,
+                                                                        fontFamily: myFonts.bodyBold,
+                                                                        color: me.status < 0 ? 'red' : myColors.primaryT
+                                                                    },
+                                                                ]}
+                                                            >{me.status < 0 ? 'Rejected' : `Completed`}</Text>
+                                                    }
+                                                </>
                                         }
 
                                     </>
