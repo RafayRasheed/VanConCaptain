@@ -1,27 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { Image, TouchableOpacity, ScrollView, StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { Image, TouchableOpacity, ScrollView, StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
 import { Spacer, StatusbarH, myHeight, myWidth, storage } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
+import { RFValue } from 'react-native-responsive-fontsize';
 
+// const startupData = [
+//     {
+//         title: 'Nearby restaurants',
+//         des: 'You dont have to go far to find a good restaurant, we provided all the restaurants that is near you',
+//         image: require('../assets/startup/maps.png'),
+//         style: { width: myWidth(70), height: myWidth(70) * 0.6, marginBottom: myHeight(5) },
+
+//     },
+//     {
+//         title: 'Select Favorites Menu',
+//         des: 'Now eat well, dont leave the house,You can choose your favorite food only with one click',
+//         image: require('../assets/startup/order.png'),
+//         style: { width: myWidth(60), height: myWidth(60), marginBottom: myHeight(2) },
+
+//     },
+//     {
+//         title: 'Good food, Cheap price',
+//         des: 'You can eat at expensive restaurants with affordable price',
+//         image: require('../assets/startup/food.png'),
+//         style: { width: myWidth(60), height: myWidth(60), marginBottom: myHeight(3) },
+
+//     },
+
+
+
+// ]
 const startupData = [
     {
-        title: 'Nearby restaurants',
-        des: 'You dont have to go far to find a good restaurant, we provided all the restaurants that is near you',
-        image: require('../assets/startup/maps.png'),
-        style: { width: myWidth(70), height: myWidth(70) * 0.6, marginBottom: myHeight(5) },
+        title: 'Welcome to VanCon',
+        des: 'Your convenient Van Booking App',
+        image: require('../assets/startup/On1.png'),
+        style: {}
+
     },
     {
-        title: 'Select Favorites Menu',
-        des: 'Now eat well, dont leave the house,You can choose your favorite food only with one click',
-        image: require('../assets/startup/order.png'),
-        style: { width: myWidth(60), height: myWidth(60), marginBottom: myHeight(2) },
+        title: 'Find your Perfect Ride',
+        des: 'Discover Van Services',
+        image: require('../assets/startup/On2.png'),
+        style: {}
+
     },
     {
-        title: 'Good food, Cheap price',
-        des: 'You can eat at expensive restaurants with affordable price',
-        image: require('../assets/startup/food.png'),
-        style: { width: myWidth(60), height: myWidth(60), marginBottom: myHeight(3) },
+        title: 'Track and stay Connected',
+        des: 'Real-Time location Tracking',
+        image: require('../assets/startup/On3.png'),
+        style: {}
     },
 
 
@@ -119,25 +148,79 @@ export const StartupScreen = ({ navigation }) => {
 
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Top --> Skip */}
-            <StatusbarH />
-            <View style={{ flex: 1, justifyContent: 'space-between' }}>
-                <View style={styles.containerTopSkip}>
+        <View style={styles.container}>
+            {/* <StatusbarH /> */}
+            <View style={{ flex: 1, }}>
 
-                    {i < lenStartup - 1 &&
-                        <TouchableOpacity activeOpacity={0.6} onPress={getReady} style={styles.containerSkip}>
-                            <Text style={styles.textSkip}>Skip</Text>
-                            <Spacer paddingEnd={myWidth(1)} />
-                            <Image style={styles.imageGo} source={require('../assets/startup/go.png')} />
-                            <Image style={[styles.imageGo, { marginStart: -myWidth(1) }]} source={require('../assets/startup/go.png')} />
-                        </TouchableOpacity>
+
+                <ScrollView
+                    horizontal
+                    onTouchStart={() => setScrollTouch(true)}
+                    onScroll={handleScroll}
+                    overScrollMode='never'
+                    style={{}}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{}}
+                    pagingEnabled
+                    scrollEventThrottle={10}
+                    ref={ref => setRef(ref)}
+                >
+                    {
+                        startupData.map((item, i) =>
+                            <View onLayout={(event) => {
+                                const layout = event.nativeEvent.layout;
+                                // posX[i] = layout.x;
+                                // setPosX(posX);
+                                // console.log(posX)
+                            }} key={i} style={{
+                                width: myWidth(100), overflow: 'hidden'
+                            }}>
+                                <View
+                                    style={{
+                                        maxHeight: myHeight(75), height: (myWidth(100) * 1.3) + StatusBar.currentHeight, width: '100%', overflow: 'hidden',
+                                        borderBottomStartRadius: myWidth(50), borderBottomEndRadius: myWidth(50)
+                                    }}>
+                                    <Image style={[{ height: '100%', width: '100%', resizeMode: 'cover' }]} source={item.image} />
+
+                                </View>
+                                <View style={{ paddingHorizontal: myWidth(4.5), }}>
+
+                                    <Spacer paddingT={myHeight(3.5)} />
+                                    <Text numberOfLines={2} style={styles.textTitle}>{item.title}</Text>
+                                    <Text numberOfLines={1} style={styles.textDes}>{item.des}</Text>
+                                    <Spacer paddingT={myHeight(2.5)} />
+
+                                </View>
+                            </View>
+                        )
                     }
+
+                </ScrollView>
+
+
+                <View style={{ paddingHorizontal: myWidth(4), height: myHeight(14), flexDirection: 'row', alignItems: 'center' }}>
+
+                    <View style={{ flexDirection: 'row' }}>
+                        {dotArr}
+                    </View>
+                    <View style={{ flex: 1 }} />
+                    <View style={styles.containerTopSkip}>
+
+                        {i < lenStartup - 1 &&
+                            <TouchableOpacity activeOpacity={0.6} onPress={getReady} style={styles.containerSkip}>
+                                <Text style={styles.textSkip}>Skip</Text>
+                                <Spacer paddingEnd={myWidth(1)} />
+                                <Image style={styles.imageGo} source={require('../assets/startup/go.png')} />
+                                <Image style={[styles.imageGo, { marginStart: -myWidth(1) }]} source={require('../assets/startup/go.png')} />
+                            </TouchableOpacity>
+                        }
+                    </View>
                 </View>
 
+                {/* <Spacer paddingT={myHeight(6)} /> */}
 
                 {/* Mid */}
-                <View>
+                {/* <View>
                     <ScrollView
                         horizontal
                         onTouchStart={() => setScrollTouch(true)}
@@ -162,61 +245,27 @@ export const StartupScreen = ({ navigation }) => {
                                             // console.log(posX)
                                         }}
                                         style={styles.containerMid} key={i}>
-                                        {/* <Image /> */}
+                                      
                                         <Image style={[styles.imageMid, item.style]} source={item.image} />
-                                        {/* <Spacer paddingT={myHeight(0.8)} /> */}
+                                       
                                         <Text style={styles.textTitle}> {item.title}</Text>
                                         <Spacer paddingT={myHeight(1.5)} />
                                     </View>
                                     <Text style={styles.textDes}>{item.des}</Text>
                                     <Spacer paddingT={myHeight(12.5)} />
-                                    {/* <View style={{ flex: 1 }} /> */}
+                                 
                                 </View>
                             )
                         }
 
                     </ScrollView>
-                </View>
+                </View> */}
 
-                {/* Bottom * => Start Button & Change*/}
-                <View style={styles.containerBottom}>
 
-                    {/* {!getStart? */}
-                    <View style={styles.containerChange}>
 
-                        {/* Arrow Left */}
-                        <View style={{ width: myHeight(3) }}>
-                            {i > 0 &&
-                                <TouchableOpacity style={styles.containerGoLR} activeOpacity={0.6} onPress={() => { if (i > 0) { onBack() } }} >
-                                    <Image style={styles.imageGoLR} source={require('../assets/startup/goL.png')} />
-                                </TouchableOpacity>
-                            }
-                        </View>
+            </View >
 
-                        <View style={{ flexDirection: 'row' }}>
-                            {dotArr}
-                        </View>
-
-                        {/* Arrow Right */}
-                        <View style={{ width: myHeight(3) }}>
-                            {i < lenStartup - 1 &&
-                                <TouchableOpacity style={styles.containerGoLR} activeOpacity={0.6} onPress={() => { if (i < lenStartup - 1) { onForward() } }} >
-                                    <Image style={styles.imageGoLR} source={require('../assets/startup/goR.png')} />
-                                </TouchableOpacity>
-
-                            }
-                        </View>
-                    </View>
-                    {/* :
-                    <TouchableOpacity activeOpacity={0.6} onPress={onContinue} style={styles.containerStart}>
-                        <Text style={styles.textStart}>Get Started</Text>
-                    </TouchableOpacity> */}
-                    <Spacer paddingT={myHeight(8)} />
-
-                </View>
-            </View>
-
-        </SafeAreaView>
+        </View >
     )
 }
 
@@ -246,13 +295,11 @@ const styles = StyleSheet.create({
     containerTopSkip: {
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
-        paddingEnd: myWidth(5),
-        height: myHeight(6.2),
     },
     containerSkip: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: myHeight(1)
+
     },
     containerBottom: {
         width: myWidth(100),
@@ -272,10 +319,10 @@ const styles = StyleSheet.create({
     },
 
     containerDot: {
-        width: myHeight(1.5),
-        height: myHeight(1.5),
+        width: myHeight(1.25),
+        height: myHeight(1.25),
         borderRadius: myHeight(1),
-        marginHorizontal: myWidth(1.2),
+        marginHorizontal: myWidth(1),
     },
     containerStart: {
         backgroundColor: myColors.primaryT,
@@ -298,7 +345,7 @@ const styles = StyleSheet.create({
 
     //Text
     textSkip: {
-        fontSize: myFontSize.body3,
+        fontSize: myFontSize.body4,
         fontFamily: myFonts.body,
         color: myColors.primaryT,
         includeFontPadding: false,
@@ -306,21 +353,20 @@ const styles = StyleSheet.create({
 
     },
     textTitle: {
-        fontSize: myFontSize.medium2,
-        fontFamily: myFonts.heading,
+        fontSize: myFontSize.large,
+        fontFamily: myFonts.bodyBold,
         color: myColors.text,
         includeFontPadding: false,
         padding: 0,
 
     },
     textDes: {
-        fontSize: myFontSize.xxSmall,
-        fontFamily: myFonts.body,
-        color: myColors.text,
-        textAlign: 'center',
-        paddingHorizontal: myWidth(8),
+        fontSize: myFontSize.body,
+        fontFamily: myFonts.bodyBold,
+        color: myColors.textL3,
         includeFontPadding: false,
         padding: 0,
+        // paddingStart: RFValue(7.5)
 
     },
     textStart: {
@@ -359,3 +405,40 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
 })
+
+
+{/* Bottom * => Start Button & Change*/ }
+//    <View style={styles.containerBottom}>
+
+//    <View style={styles.containerChange}>
+
+//        {/* Arrow Left */}
+//        <View style={{ width: myHeight(3) }}>
+//            {i > 0 &&
+//                <TouchableOpacity style={styles.containerGoLR} activeOpacity={0.6} onPress={() => { if (i > 0) { onBack() } }} >
+//                    <Image style={styles.imageGoLR} source={require('../assets/startup/goL.png')} />
+//                </TouchableOpacity>
+//            }
+//        </View>
+
+//        <View style={{ flexDirection: 'row' }}>
+//            {dotArr}
+//        </View>
+
+//        {/* Arrow Right */}
+//        <View style={{ width: myHeight(3) }}>
+//            {i < lenStartup - 1 &&
+//                <TouchableOpacity style={styles.containerGoLR} activeOpacity={0.6} onPress={() => { if (i < lenStartup - 1) { onForward() } }} >
+//                    <Image style={styles.imageGoLR} source={require('../assets/startup/goR.png')} />
+//                </TouchableOpacity>
+
+//            }
+//        </View>
+//    </View>
+//    {/* :
+//    <TouchableOpacity activeOpacity={0.6} onPress={onContinue} style={styles.containerStart}>
+//        <Text style={styles.textStart}>Get Started</Text>
+//    </TouchableOpacity> */}
+//    <Spacer paddingT={myHeight(8)} />
+
+// </View>
