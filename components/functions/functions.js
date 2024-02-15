@@ -1335,7 +1335,7 @@ export const getAreasLocations = () => {
 // karaAreas.map((it, i) => {
 //   const address = `${encodeURIComponent(it.name)},${encodeURIComponent(profile.city)}`;
 
-//   fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyDbtbYuxR7TAHhFcs6D_wQIF93UlVNelzc`)
+//   fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=`)
 //     .then(response => response.json())
 //     .then(data => {
 //       if (data.results.length > 0) {
