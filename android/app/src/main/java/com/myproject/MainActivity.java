@@ -6,6 +6,9 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import org.devio.rn.splashscreen.SplashScreen; 
 import android.os.Bundle; 
+import android.view.WindowManager;
+import android.view.Window;
+
 public class MainActivity extends ReactActivity {
 
   /**
@@ -17,6 +20,7 @@ public class MainActivity extends ReactActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
+
     }
   @Override
   protected String getMainComponentName() {
