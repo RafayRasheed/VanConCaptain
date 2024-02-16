@@ -96,6 +96,7 @@ export const Chat = ({ navigation, route }) => {
     const [loader, setLoader] = useState(true)
     const [unreadCount, setUnreadCount] = useState(0)
     const [showScrollToLast, setShowScrollToLast] = useState(false)
+    const [colorC, setColorC] = useState(myColors.red)
     const { user2 } = route.params
     const { profile } = useSelector(state => state.profile)
     const { chats } = useSelector(state => state.chats)
@@ -134,6 +135,7 @@ export const Chat = ({ navigation, route }) => {
     useEffect(() => {
         const myChat = chats.filter(it => it.chatId == chatId)
         if (myChat.length) {
+            setColorC(myChat[0].colorC)
 
             //     setChatss()
             let lastDate = null
@@ -327,7 +329,7 @@ export const Chat = ({ navigation, route }) => {
                         shadowRadius: 2, flexDirection: 'row', alignItems: 'center'
                     }}>
                         {/* Back */}
-                        <TouchableOpacity style={{
+                        {/* <TouchableOpacity style={{
                             height: myHeight(5),
                             width: myHeight(7),
                             alignItems: 'center',
@@ -340,9 +342,45 @@ export const Chat = ({ navigation, route }) => {
                                 resizeMode: "contain",
                                 tintColor: myColors.text
                             }} source={require('../assets/home_main/home/back.png')} />
+                        </TouchableOpacity> */}
+                        <Spacer paddingEnd={myWidth(4)} />
+
+                        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7} style={{
+                            backgroundColor: myColors.primaryT,
+                            padding: myHeight(0.9),
+                            borderRadius: myHeight(3),
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            alignSelf: 'center',
+                        }}  >
+                            <Image style={
+                                {
+                                    height: myHeight(1.75),
+                                    width: myHeight(1.75),
+                                    resizeMode: 'contain'
+                                }
+                            } source={require('../assets/startup/goL.png')} />
                         </TouchableOpacity>
 
-                        <Spacer paddingEnd={myWidth(1)} />
+                        <Spacer paddingEnd={myWidth(4)} />
+                        <View style={{
+                            borderRadius: myHeight(100),
+                            height: myHeight(4.2), width: myHeight(4.2),
+                            borderColor: myColors.offColor7, borderWidth: 1,
+                            backgroundColor: colorC,
+                            marginTop: myHeight(0.2), justifyContent: 'center', alignItems: 'center'
+                        }}>
+                            <Image
+                                style={{
+                                    width: myHeight(2),
+                                    height: myHeight(2),
+                                    resizeMode: 'contain',
+                                    tintColor: myColors.background
+                                }}
+                                source={require('../assets/home_main/home/user.png')}
+                            />
+                        </View>
+                        <Spacer paddingEnd={myWidth(2.4)} />
                         {/* Name & Last seen */}
                         <View>
                             <Text style={[styles.textCommon, {
@@ -533,7 +571,7 @@ export const Chat = ({ navigation, route }) => {
                                     <TouchableOpacity style={{
                                         paddingVertical: myHeight(1.4),
                                         paddingHorizontal: myWidth(6),
-                                        backgroundColor: myColors.primaryT,
+                                        backgroundColor: myColors.textL0,
                                         borderRadius: myWidth(2)
                                     }}
                                         onPress={onSendMsg} activeOpacity={0.85}>

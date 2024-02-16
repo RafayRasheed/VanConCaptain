@@ -1279,6 +1279,9 @@ export function updateAndNewLocation(coords) {
   }
 
 }
+export function containString(contain, thiss) {
+  return (contain.toLowerCase().includes(thiss.toLowerCase()))
+}
 export function getCurrentLocations() {
   Geolocation.getCurrentPosition(info => {
     if (info) {

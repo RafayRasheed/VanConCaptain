@@ -14,6 +14,8 @@ export const myColors = {
     // primaryL4: '#edfaed ', //50%
     // primaryL5: '#f7fcf7', //30%
     star: '#FFC700',
+    orange: '#FF7A00',
+
     textL0: '#525252',
     textL: '#8F8F8F',
     textL2: '#9E9C9C',
@@ -60,4 +62,47 @@ export const myColors = {
     black2: '#222222',
     border: '#BEC5D1',
     searchbar: '#E6E7E9'
+}
+
+
+const alpha = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+const darkColors = [
+    '#283618',
+    '#1B4F72',
+    '#4A235A',
+    '#FF7A00',
+    '#36454F',
+    '#2E4053',
+    '#EB4646',
+    '#2980B9',
+    '#7D6608',
+    '#283618',
+    '#1B4F72',
+    '#4A235A',
+    '#FF7A00',
+    '#36454F',
+    '#2E4053',
+    '#EB4646',
+    '#2980B9',
+    '#7D6608',
+    '#283618',
+    '#1B4F72',
+    '#4A235A',
+    '#FF7A00',
+    '#36454F',
+    '#2E4053',
+    '#EB4646',
+    '#2980B9',
+    '#7D6608',
+];
+
+export function getAvatarColor(name) {
+    const alph = name.slice(0, 1).toLowerCase()
+    const ind = alpha.findIndex(it => it == alph)
+    if (ind != -1) {
+        return darkColors[ind]
+    }
+
+    return darkColors[26]
+
 }
