@@ -125,42 +125,62 @@ export const ProfileInfo = ({ navigation }) => {
     }
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background }}>
-            <StatusbarH />
             {/* Top */}
-            <View>
+            <View
+                style={{
+                    width: '100%', overflow: 'hidden', backgroundColor: myColors.text,
+                    borderBottomStartRadius: myHeight(50), borderBottomEndRadius: myHeight(50), alignItems: 'center'
+                }}>
                 <Spacer paddingT={myHeight(2)} />
-                <View style={{ paddingEnd: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
+                <StatusbarH />
 
-                    {/* Arrow */}
-                    <TouchableOpacity activeOpacity={0.7}
-                        onPress={() => navigation.goBack()} style={{ paddingHorizontal: myWidth(4), }}>
-                        <Image style={{
-                            height: myHeight(2.4),
-                            width: myHeight(2.4),
-                            resizeMode: 'contain',
-                            tintColor: myColors.textL0
-                        }} source={require('../assets/home_main/home/back.png')} />
+                <View style={{ width: '100%', paddingHorizontal: myWidth(5) }}>
+
+                    <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7} style={{
+                        backgroundColor: myColors.primaryT,
+                        height: myHeight(4.2),
+                        width: myHeight(4.2),
+                        borderRadius: myHeight(3),
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}  >
+                        <Image style={
+                            {
+                                height: myHeight(2),
+                                width: myHeight(2),
+                                resizeMode: 'contain'
+                            }
+                        } source={require('../assets/startup/goL.png')} />
                     </TouchableOpacity>
-                    {/* <Spacer paddingEnd={myWidth(2.5)} /> */}
-                    <Text style={[styles.textCommon,
-                    {
-                        fontFamily: myFonts.heading,
-                        fontSize: myFontSize.xBody2
-                    }]}>Profile Info </Text>
                 </View>
+                {/* image */}
+                <View style={{
+                    borderRadius: myWidth(100), overflow: 'hidden',
+                    // backgroundColor: myColors.primaryL5, padding: myHeight(1.3),
+                    // borderWidth: myWidth(0.1), borderColor: myColors.textL4, 
+                }}>
+                    <Image source={require('../assets/profile/profile.png')}
+                        style={{
+                            width: myHeight(13),
+                            height: myHeight(13),
+                            resizeMode: 'contain',
+                            // tintColor: myColors.primaryT
+                        }}
+                    />
 
-                <Spacer paddingT={myHeight(1.5)} />
-                <View style={{ height: myHeight(0.5), width: myWidth(100), marginStart: -myWidth(4), backgroundColor: myColors.divider }} />
+                </View>
+                <Spacer paddingT={myHeight(6)} />
 
-                {/* <View style={{ height: myHeight(0.6), backgroundColor: myColors.divider }} /> */}
+
             </View>
+
 
             <Spacer paddingT={myHeight(1.5)} />
 
             <View style={{ flex: 1, paddingHorizontal: myWidth(4) }}>
                 {/* email Portion */}
                 <View>
-                    <Text style={[styles.heading, { color: myColors.text }]}>Email</Text>
+                    <Text style={[styles.heading, { color: myColors.primaryT }]}>Email</Text>
                     <View style={[styles.containerInput, { borderColor: myColors.textL4 }]}>
 
                         <TextInput placeholder="Full Name"
@@ -177,7 +197,7 @@ export const ProfileInfo = ({ navigation }) => {
                 <Spacer paddingT={myHeight(0.98)} />
                 {/* name Portion */}
                 <View>
-                    <Text style={[styles.heading, { color: myColors.text }]}>Name</Text>
+                    <Text style={[styles.heading, { color: myColors.primaryT }]}>Name</Text>
                     <View style={[styles.containerInput, { borderColor: isEditMode ? myColors.primaryT : myColors.textL4 }]}>
 
                         <TextInput placeholder="Full Name"
@@ -193,7 +213,7 @@ export const ProfileInfo = ({ navigation }) => {
                 <Spacer paddingT={myHeight(0.98)} />
                 {/* password Portion */}
                 <View>
-                    <Text style={[styles.heading, { color: myColors.text }]}>Password</Text>
+                    <Text style={[styles.heading, { color: myColors.primaryT }]}>Password</Text>
 
                     <View style={[styles.containerInput, { borderColor: isEditMode ? myColors.primaryT : myColors.textL4 }]}>
 
@@ -219,7 +239,7 @@ export const ProfileInfo = ({ navigation }) => {
 
                 {/* City */}
                 <View>
-                    <Text style={[styles.heading, { color: myColors.text }]}>City</Text>
+                    <Text style={[styles.heading, { color: myColors.primaryT }]}>City</Text>
                     <TouchableOpacity disabled activeOpacity={isEditMode ? 0.8 : 1} onPress={() => {
                         // if (isEditMode) {
 
@@ -254,7 +274,7 @@ export const ProfileInfo = ({ navigation }) => {
                 activeOpacity={0.8}
                 style={{
                     width: myWidth(92), alignSelf: 'center', paddingVertical: myHeight(1.3),
-                    borderRadius: myHeight(1.4), alignItems: 'center', justifyContent: 'center',
+                    borderRadius: myHeight(100), alignItems: 'center', justifyContent: 'center',
                     flexDirection: 'row', backgroundColor: myColors.primaryT,
                     // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
                 }}>
@@ -286,23 +306,25 @@ const styles = StyleSheet.create({
         padding: 0,
     },
     heading: {
-        paddingVertical: myHeight(0.8),
+        // paddingVertical: myHeight(0.8),
+        paddingTop: myHeight(1.5),
         fontFamily: myFonts.heading,
         fontSize: myFontSize.body,
     },
     containerInput: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: myWidth(2.5),
-        paddingHorizontal: myWidth(2),
-        borderWidth: myHeight(0.14),
+        // borderRadius: myWidth(2.5),
+        // paddingHorizontal: myWidth(2),
+        borderBottomWidth: myHeight(0.14),
         backgroundColor: myColors.background,
     },
 
     input: {
         flex: 1,
         textAlignVertical: 'center',
-        paddingVertical: ios ? myHeight(1) : myHeight(100) > 600 ? myHeight(0.8) : myHeight(0.2),
+        // paddingVertical: ios ? myHeight(1) : myHeight(100) > 600 ? myHeight(0.8) : myHeight(0.2),
+        paddingVertical: 0,
         fontSize: myFontSize.body,
         color: myColors.text,
         includeFontPadding: false,
