@@ -20,12 +20,14 @@ export const RequestInfo = ({ item, navigation, code }) => {
     const isMissed = item.status >= 3 && item.did != profile.uid
     const dispatch = useDispatch()
     useEffect(() => {
-
         if (me.unread) {
-            database()
-                .ref(`/requests/${item.uid}/${item.id}/${profile.uid}`).update({ unread: false }).
-                then(() => { console.log('To Unread successfully') })
-                .catch((err) => { console.log('error on update unread err') })
+            setTimeout(() => {
+
+                database()
+                    .ref(`/requests/${item.uid}/${item.id}/${profile.uid}`).update({ unread: false }).
+                    then(() => { console.log('To Unread successfully') })
+                    .catch((err) => { console.log('error on update unread err') })
+            }, 3000)
         }
     }, [item])
     function onAccept() {
@@ -235,7 +237,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                             width: myHeight(2),
                             height: myHeight(2),
                             resizeMode: 'contain',
-                            tintColor: myColors.primaryT
+                            tintColor: myColors.textL4
                         }} source={require('../../assets/home_main/home/distance.png')}
                     />
                     <Spacer paddingEnd={myWidth(1.2)} />
@@ -258,7 +260,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                             width: myHeight(1.6),
                             height: myHeight(1.6),
                             resizeMode: 'contain',
-                            tintColor: myColors.primaryT
+                            tintColor: myColors.textL4
                         }}
                         source={require('../../assets/home_main/home/seatSF.png')}
                     />
@@ -385,7 +387,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                                 width: myHeight(2),
                                 height: myHeight(2),
                                 resizeMode: 'contain',
-                                tintColor: myColors.primaryT
+                                tintColor: myColors.textL4
                             }} source={require('../../assets/home_main/home/clock.png')}
                         />
                         <Spacer paddingEnd={myWidth(1.3)} />
@@ -438,7 +440,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                                             width: myHeight(2),
                                             height: myHeight(2),
                                             resizeMode: 'contain',
-                                            tintColor: myColors.primaryT
+                                            tintColor: myColors.textL4
                                         }} source={require('../../assets/home_main/home/clock.png')}
                                     />
                                     <Spacer paddingEnd={myWidth(1.3)} />
@@ -489,7 +491,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                         width: myHeight(2),
                         height: myHeight(2),
                         resizeMode: 'contain',
-                        tintColor: myColors.primaryT
+                        tintColor: myColors.textL4
                     }}
                     source={require('../../assets/home_main/home/profile.png')}
                 />
@@ -515,7 +517,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
                                     fontSize: myFontSize.body,
                                     fontFamily: myFonts.bodyBold,
-                                    color: myColors.primaryT
+                                    color: myColors.green
                                 },
                             ]}
                         >Loading...</Text>
