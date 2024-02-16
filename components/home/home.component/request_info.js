@@ -544,7 +544,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                                                     {
                                                         fontSize: myFontSize.body,
                                                         fontFamily: myFonts.heading,
-                                                        color: myColors.primaryT
+                                                        color: myColors.green
                                                     },
                                                 ]}
                                             >{'Accept'}</Text>
@@ -609,7 +609,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
                                                                         fontSize: myFontSize.body,
                                                                         fontFamily: myFonts.bodyBold,
-                                                                        color: me.status < 0 ? 'red' : myColors.primaryT
+                                                                        color: me.status < 0 ? 'red' : myColors.green
                                                                     },
                                                                 ]}
                                                             >{me.status < 0 ? 'Rejected' : `Completed`}</Text>

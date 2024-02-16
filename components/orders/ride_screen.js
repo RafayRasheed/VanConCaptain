@@ -99,7 +99,7 @@ export const RidesScreen = ({ navigation }) => {
 
             <FlashList
                 showsVerticalScrollIndicator={false}
-                scrollEnabled={false}
+                // scrollEnabled={false}
                 data={i == 0 ? progress : i == 1 ? pending : history}
                 extraData={i}
                 // extraData={[ac, wifi, topRated, search]}
