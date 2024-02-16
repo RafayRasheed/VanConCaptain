@@ -276,7 +276,8 @@ export const HomeScreen = ({ navigation }) => {
     // Realtime
     useEffect(() => {
         const onValueChange = database()
-            .ref(`/requests/${profile.uid}`).orderByChild('dateInt')
+            // .ref(`/requests/${profile.uid}`).orderByChild('dateInt')
+            .ref(`/requests`)
             .on('value', snapshot => {
                 if (snapshot.exists()) {
                     let Pending = []
@@ -286,27 +287,34 @@ export const HomeScreen = ({ navigation }) => {
                     const unread = []
 
                     snapshot.forEach((documentSnapshot1, i) => {
-                        const val = documentSnapshot1.val()
-                        all.push(val)
-                        if (val.status == 2) {
-                            Pending.push(val)
-                            if (val.unread) {
-                                unread.push({ id: val.id, code: 2 })
+                        const val2 = documentSnapshot1.val()
+                        Object.entries(val2).forEach(([key, value]) => {
+                            const val = value
+                            const me = val ? val[profile.uid] : false
+                            if (val && me) {
+
+
+                                all.push(val)
+                                if (val.status == 2 && me.status == 1) {
+                                    Pending.push(val)
+                                    if (me.unread) {
+                                        unread.push({ id: val.id, code: 2 })
+                                    }
+                                }
+                                else if (val.status == 3 && val.did == profile.uid) {
+                                    InProgress.push(val)
+                                    if (me.unread) {
+                                        unread.push({ id: val.id, code: 1 })
+                                    }
+                                }
+                                else {
+                                    History.push(val)
+                                    if (me.unread) {
+                                        unread.push({ id: val.id, code: 3 })
+                                    }
+                                }
                             }
-                        }
-                        else if (val.status == 3 && val.did == profile.uid) {
-                            console.log(profile.uid)
-                            InProgress.push(val)
-                            if (val.unread) {
-                                unread.push({ id: val.id, code: 1 })
-                            }
-                        }
-                        else {
-                            History.push(val)
-                            if (val.unread) {
-                                unread.push({ id: val.id, code: 3 })
-                            }
-                        }
+                        });
 
 
                     });
@@ -333,7 +341,7 @@ export const HomeScreen = ({ navigation }) => {
             });
 
         // Stop listening for updates when no longer required
-        return () => database().ref(`/requests/${profile.uid}`).off('value', onValueChange);
+        return () => database().ref(`/requests`).off('value', onValueChange);
     }, []);
     return (
 

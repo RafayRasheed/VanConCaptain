@@ -14,16 +14,16 @@ import firestore from '@react-native-firebase/firestore';
 
 export const RequestInfo = ({ item, navigation, code }) => {
     const { profile } = useSelector(state => state.profile)
-    const me = item.sendDrivers.find(it => it.did == profile.uid)
+    const me = item[profile.uid]
     const [load, setLoad] = useState(false)
 
     const isMissed = item.status >= 3 && item.did != profile.uid
-    console.log(item.id, isMissed)
     const dispatch = useDispatch()
     useEffect(() => {
-        if (item.unread) {
+
+        if (me.unread) {
             database()
-                .ref(`/requests/${profile.uid}/${item.id}`).update({ unread: false }).
+                .ref(`/requests/${item.uid}/${item.id}/${profile.uid}`).update({ unread: false }).
                 then(() => { console.log('To Unread successfully') })
                 .catch((err) => { console.log('error on update unread err') })
         }
@@ -33,66 +33,27 @@ export const RequestInfo = ({ item, navigation, code }) => {
             dispatch(setErrorAlert({ Title: 'Seats Not Available', Body: null, Status: 0 }))
             return
         }
-        setLoad(true)
+        setLoad(false)
 
-        const ind = item.sendDrivers.filter(it => it.did == profile.uid)
-        let drivers = [{ ...ind[0], status: 2 }]
 
-        item.sendDrivers.map(dr => {
-            if (dr.did != profile.uid) {
-                drivers.push({ ...dr })
-            }
-        })
+        const update = { did: profile.uid, driverName: profile.name, driverContact: profile.contact, status: 3 }
+        update[profile.uid] = { ...item[profile.uid], status: 2 }
 
-        const update = { sendDrivers: drivers, did: profile.uid, driverName: profile.name, driverContact: profile.contact, status: 3 }
-        console.log('item.uid', drivers)
-
+        // console.log(update)
+        // return
         database()
             .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
             .then(() => {
                 console.log('To accept user successfully')
+                dispatch(setErrorAlert({ Title: 'Request Accept Successfully', Body: null, Status: 2 }))
+                setLoad(false)
+                firestore().collection('users').doc(item.uid).get().then((data) => {
+                    const captain = data.data()
+                    const token = captain.deviceToken
 
-                database()
-                    .ref(`/requests/${profile.uid}/${item.id}`).update(update)
-                    .then(() => {
-                        console.log('To accept successfully')
-                        dispatch(setErrorAlert({ Title: 'Request Accept Successfully', Body: null, Status: 2 }))
-                        setLoad(false)
+                    sendPushNotification('Request Accepted', `Your request ${item.id} is accepted by ${profile.name}`, 2, [token])
+                }).catch((err) => { console.log(err) })
 
-                        item.sendDrivers.map(dr => {
-                            if (dr.did != profile.uid) {
-                                database()
-                                    .ref(`/requests/${dr.did}/${item.id}`).update(update)
-                                    .then(() => {
-                                        console.log('To update others successfully')
-                                    }).catch((err) => { console.log(err) })
-
-                            }
-                        })
-                        firestore().collection('users').doc(item.uid).get().then((data) => {
-                            const captain = data.data()
-                            const token = captain.deviceToken
-
-                            sendPushNotification('Request Accepted', `Your request ${item.id} is accepted by ${profile.name}`, 2, [token])
-                        }).catch((err) => { console.log(err) })
-
-                        FirebaseUser.doc(profile.uid)
-                            .update({ availableSeats: profile.availableSeats - item.seats })
-                            .then(() => {
-
-                                console.log('To accept me successfully')
-
-                            }).catch(err => {
-
-                                console.log('Internal error while Updating a Restaurant', err)
-                            });
-
-                    })
-                    .catch((err) => {
-                        console.log('error on accept unread err', err)
-                        setLoad(false)
-
-                    })
             })
             .catch((err) => {
                 console.log('error on accept unread err', err)
@@ -105,13 +66,32 @@ export const RequestInfo = ({ item, navigation, code }) => {
     }
     function onReject() {
         setLoad(true)
+        database()
+            .ref(`/requests/${item.uid}/${item.id}/${profile.uid}`).update({ status: -1 }).
+            then(() => {
+                setLoad(false)
+                firestore().collection('users').doc(item.uid).get().then((data) => {
+                    const captain = data.data()
+                    const token = captain.deviceToken
 
-        let drivers = item.sendDrivers
-        const ind = item.sendDrivers.findIndex(it => it.did == profile.uid)
-        drivers[ind].status = -1
-        const update = { sendDrivers: drivers }
-        console.log(item.uid)
+                    sendPushNotification('Request Rejected', `Your request ${item.id} is rejected by ${profile.name}`, 0, [token])
+                }).catch((err) => { console.log(err) })
 
+                console.log('To Unread successfully')
+            })
+            .catch((err) => {
+                setLoad(false)
+
+                console.log('error on update unread err')
+            })
+        // let drivers = item.sendDrivers
+        // const ind = item.sendDrivers.findIndex(it => it.did == profile.uid)
+        // drivers[ind].status = -1
+        // const update = { sendDrivers: drivers }
+        // console.log(item.uid)
+
+
+        return
         database()
             .ref(`/requests/${item.uid}/${item.id}`).update(update)
             .then(() => {
@@ -144,7 +124,26 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
             })
     }
-    function onCancel() {
+    function onEnd() {
+
+        setLoad(true)
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update({ status: 5, unread: true })
+            .then(() => {
+                setLoad(false)
+                firestore().collection('users').doc(item.uid).get().then((data) => {
+                    const captain = data.data()
+                    const token = captain.deviceToken
+
+                    sendPushNotification('Ride End', `Your ride ${item.id} is ended by ${profile.name}`, 2, [token])
+                }).catch((err) => { console.log(err) })
+            })
+            .catch((err) => {
+                console.log('error on accept unread err', err)
+                setLoad(false)
+
+            })
+        return
         let drivers = item.sendDrivers
         const ind = item.sendDrivers.findIndex(it => it.did == profile.uid)
         drivers[ind].status = 5
@@ -573,7 +572,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                                                         ]}
                                                     >Accepted</Text>
                                                     <Spacer paddingEnd={myWidth(6)} /> */}
-                                                    <TouchableOpacity activeOpacity={0.7} onPress={() => onCancel()}>
+                                                    <TouchableOpacity activeOpacity={0.7} onPress={() => onEnd()}>
                                                         <Text
                                                             style={[
                                                                 styles.textCommon,
@@ -601,7 +600,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                                                                         color: 'red'
                                                                     },
                                                                 ]}
-                                                            >{isMissed ? 'You Missed' : 'Cancelled By Customer'}</Text>
+                                                            >{isMissed ? 'You Missed' : 'Customer Cancelled'}</Text>
                                                             :
                                                             <Text
                                                                 style={[

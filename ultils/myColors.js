@@ -1,5 +1,7 @@
 export const myColors = {
-    primary: '#B079FF',
+    // primary: '#B079FF',
+    primary: '#8358ad',
+
     primaryT: '#7744aa',
     primaryL: '#d4b8fc',
     primaryL2: '#ddc4ff',
@@ -15,6 +17,7 @@ export const myColors = {
     // primaryL5: '#f7fcf7', //30%
     star: '#FFC700',
     orange: '#FF7A00',
+    green: '#2aa85e',
 
     textL0: '#525252',
     textL: '#8F8F8F',
