@@ -43,49 +43,6 @@ export const RidesScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusbarH />
-            <Spacer paddingT={myHeight(2)} />
-            <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
-
-                {/* Search */}
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: myWidth(4),
-                    borderRadius: myWidth(10),
-                    backgroundColor: myColors.primaryL5,
-                    // marginHorizontal: myWidth(4)
-                }}>
-
-                    <TextInput placeholder="Search address, customer name"
-                        placeholderTextColor={myColors.textL4}
-                        autoCorrect={false}
-                        selectionColor={myColors.text}
-                        style={{
-                            flex: 1,
-                            textAlignVertical: 'center',
-                            paddingVertical: myHeight(0.4),
-                            fontSize: myFontSize.xxSmall,
-                            color: myColors.text,
-                            includeFontPadding: false,
-                            fontFamily: myFonts.bodyBold,
-                        }}
-                        cursorColor={myColors.primaryT}
-                        value={search} onChangeText={setSearch}
-                    // value={search} onChangeText={(val) => null}
-                    />
-                    <Image
-                        style={{
-                            width: myHeight(2.2),
-                            height: myHeight(2.2),
-                            resizeMode: 'contain',
-                            tintColor: myColors.textL
-                        }}
-                        source={require('../assets/home_main/home/search.png')}
-                    />
-                </View>
-
-            </View>
             <Spacer paddingT={myHeight(0.7)} />
 
             {/* Top Container */}
@@ -94,44 +51,55 @@ export const RidesScreen = ({ navigation }) => {
                 <View style={styles.containerActivity_Ic}>
                     <Text style={styles.textActivity}>Rides</Text>
                 </View>
+                <Spacer paddingT={myHeight(0.5)} />
 
-                {/* <Spacer paddingT={myHeight(1.5)} /> */}
-                {/* Search */}
-                {/* <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    borderRadius: myHeight(8),
-                    paddingHorizontal: myWidth(4),
-                    borderWidth: myHeight(0.09),
-                    borderColor: myColors.primaryT,
-                    backgroundColor: myColors.background,
 
-                }}>
-                    <TextInput placeholder="Search"
-                        keyboardType={'number-pad'}
-                        placeholderTextColor={myColors.offColor}
-                        selectionColor={myColors.primaryT}
-                        cursorColor={myColors.primaryT}
-                        value={search} onChangeText={setSearch}
-                        style={{
-                            flex: 1,
-                            textAlignVertical: 'center',
-                            paddingVertical: ios ? myHeight(0.8) : myHeight(100) > 600 ? myHeight(0.6) : myHeight(0.1),
-                            fontSize: myFontSize.xxSmall,
-                            color: myColors.text,
-                            includeFontPadding: false,
-                            fontFamily: myFonts.bodyBold,
-                        }}
-                    />
 
-                    <Spacer paddingEnd={myWidth(2)} />
-                    <Image style={{
-                        height: myHeight(2), width: myHeight(2), resizeMode: 'contain', tintColor: myColors.primaryT
-                    }} source={require('../assets/home_main/search2.png')} />
+                {/* <Spacer paddingT={myHeight(1)} /> */}
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-                </View> */}
+                    {/* Search */}
+                    <View style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingHorizontal: myWidth(4),
+                        borderRadius: myWidth(10),
+                        backgroundColor: myColors.divider,
+                        // marginHorizontal: myWidth(4)
+                    }}>
 
-                <Spacer paddingT={myHeight(1)} />
+                        <TextInput placeholder="Search by id, address, name"
+                            placeholderTextColor={myColors.textL4}
+                            autoCorrect={false}
+                            selectionColor={myColors.text}
+                            style={{
+                                flex: 1,
+                                textAlignVertical: 'center',
+                                paddingVertical: myHeight(0.4),
+                                fontSize: myFontSize.xxSmall,
+                                color: myColors.text,
+                                includeFontPadding: false,
+                                fontFamily: myFonts.bodyBold,
+                            }}
+                            cursorColor={myColors.primaryT}
+                            value={search} onChangeText={setSearch}
+                        // value={search} onChangeText={(val) => null}
+                        />
+                        <Image
+                            style={{
+                                width: myHeight(2.2),
+                                height: myHeight(2.2),
+                                resizeMode: 'contain',
+                                tintColor: myColors.textL
+                            }}
+                            source={require('../assets/home_main/home/search.png')}
+                        />
+                    </View>
+
+                </View>
+                <Spacer paddingT={myHeight(2)} />
+
                 {/* Button Order & History */}
                 <View style={styles.containerOrder_Hist}>
                     {/* Order */}
@@ -153,7 +121,7 @@ export const RidesScreen = ({ navigation }) => {
                 </View>
             </View>
 
-            <Spacer paddingT={myHeight(1.5)} />
+            <Spacer paddingT={myHeight(2)} />
             <View style={styles.containerLine} />
 
             {/* <Spacer paddingT={myHeight(0.86)} /> */}
