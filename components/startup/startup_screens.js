@@ -33,22 +33,22 @@ import { RFValue } from 'react-native-responsive-fontsize';
 // ]
 const startupData = [
     {
-        title: 'Welcome to VanCon',
+        title: 'Welcome to VanCon Captain',
         des: 'Your convenient Van Booking App',
         image: require('../assets/startup/On1.png'),
         style: {}
 
     },
     {
-        title: 'Find your Perfect Ride',
-        des: 'Discover Van Services',
+        title: 'View and Choose Requests',
+        des: 'Receive customer’s ride requests and choose the one you like.',
         image: require('../assets/startup/On2.png'),
         style: {}
 
     },
     {
-        title: 'Track and stay Connected',
-        des: 'Real-Time location Tracking',
+        title: 'Track Everything At One Place',
+        des: 'Keep track of the ride and customer details at all times.',
         image: require('../assets/startup/On3.png'),
         style: {}
     },
