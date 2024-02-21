@@ -73,6 +73,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [vehicleModal, setVehicleModal] = useState(profile.vehicleModal ? profile.vehicleModal : null)
     const [description, SetDescription] = useState(profile.description)
     const [vehicleImage, setVehicleImage] = useState(profile.vehicleImage ? profile.vehicleImage : null);
+    // const [vehicleImage, setVehicleImage] = useState(null);
     const [vehicleNum, setVehicleNum] = useState(profile.vehicleNum)
     const [vehicleSeats, setVehicleSeats] = useState(profile.vehicleSeats)
 
@@ -85,6 +86,8 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
     const [ac, setAc] = useState(profile.ac ? profile.ac : false)
     const [isWifi, setIsWifi] = useState(profile.isWifi ? profile.isWifi : false)
+
+    const [isOnline, setIsOnline] = useState(profile.isOnline ? profile.isOnline : false)
 
     const [isInsideUni, setIsInsideUni] = useState(profile.isInsideUni ? profile.isInsideUni : false)
     const [insideShift, setInsideShift] = useState(profile.insideShift ? profile.insideShift : ['Morning', 'Evening'])
@@ -99,7 +102,6 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [timmings, setTimmings] = useState(profile.timmings ? profile.timmings : temp)
 
     const [imageLoading, setImageLoading] = useState(null)
-
     const [showTimeModal, setShowTimeModal] = useState(false)
     const [errorMsg, setErrorMsg] = useState(null)
     const [change, setChange] = useState(null)
@@ -355,6 +357,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                 ac,
                 isWifi,
                 ready: true,
+                isOnline,
             }
             console.log('newUpdate', newProfile)
 
@@ -569,7 +572,103 @@ export const DriverDetailEdit = ({ navigation }) => {
         // }
 
     };
+    const DaysShow = ({ list = [], setList }) => {
+        return (
+            <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
+                {
+                    allDays.map((it, i) => {
+                        const is = list.findIndex(li => li == it) != -1
 
+                        return (
+
+                            <>
+                                <TouchableOpacity activeOpacity={0.8} onPress={() =>
+                                    setList(is ? dailyDays.filter(it2 => it2 != it) : [it, ...dailyDays])
+                                } key={i} style={[styles.backItem, {
+                                    backgroundColor: is ? myColors.primaryT : myColors.background, width: myWidth(11.82), paddingVertical: myHeight(0.6),
+                                    paddingHorizontal: myWidth(0), justifyContent: 'center'
+                                }]}>
+
+
+                                    <Text numberOfLines={1}
+
+                                        style={{
+                                            fontSize: myFontSize.small3,
+                                            fontFamily: myFonts.bodyBold,
+                                            color: is ? myColors.background : myColors.text,
+                                            letterSpacing: myLetSpacing.common,
+                                            includeFontPadding: false,
+                                            padding: 0,
+                                        }}>{it}</Text>
+
+                                </TouchableOpacity>
+                                {
+                                    i != 6 &&
+                                    <Spacer paddingEnd={myWidth(1.5)} />
+                                }
+                            </>
+
+                        )
+                    }
+                    )
+                }
+            </View>
+        )
+    }
+
+
+    const YesNo = ({ fav, setFac }) => {
+        return (
+            <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
+
+                <TouchableOpacity activeOpacity={0.8} onPress={() =>
+                    setFac(true)
+                } style={[styles.backItem, {
+                    backgroundColor: fav ? myColors.primaryT : myColors.background,
+                    paddingVertical: myHeight(0.6), width: myWidth(18),
+                    paddingHorizontal: myWidth(0), justifyContent: 'center'
+                }]}>
+
+
+                    <Text numberOfLines={1}
+
+                        style={{
+                            fontSize: myFontSize.body,
+                            fontFamily: myFonts.bodyBold,
+                            color: fav ? myColors.background : myColors.text,
+                            letterSpacing: myLetSpacing.common,
+                            includeFontPadding: false,
+                            padding: 0,
+                        }}>Yes</Text>
+
+                </TouchableOpacity>
+                <Spacer paddingEnd={myWidth(2.5)} />
+
+                <TouchableOpacity activeOpacity={0.8} onPress={() =>
+                    setFac(false)
+                } style={[styles.backItem, {
+                    backgroundColor: !fav ? myColors.primaryT : myColors.background,
+                    paddingVertical: myHeight(0.6), width: myWidth(18),
+                    paddingHorizontal: myWidth(0), justifyContent: 'center'
+                }]}>
+
+
+                    <Text numberOfLines={1}
+
+                        style={{
+                            fontSize: myFontSize.body,
+                            fontFamily: myFonts.bodyBold,
+                            color: !fav ? myColors.background : myColors.text,
+                            letterSpacing: myLetSpacing.common,
+                            includeFontPadding: false,
+                            padding: 0,
+                        }}>No</Text>
+
+                </TouchableOpacity>
+
+            </View>
+        )
+    }
     const CommonFaciUnies = ({ name, small = false }) => {
         const fac = insideUniversities.findIndex(it => it == name) != -1
         return (
@@ -587,15 +686,15 @@ export const DriverDetailEdit = ({ navigation }) => {
                         width: myHeight(3.5),
                         paddingTop: myHeight(0.75)
                     }}>
-                        <View style={{ width: myHeight(2.2), height: myHeight(2.2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
+                        <View style={{ width: myHeight(2), height: myHeight(2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
                         {
                             fac &&
                             <Image style={{
-                                height: myHeight(3.3),
-                                width: myHeight(3.3),
+                                height: myHeight(3),
+                                width: myHeight(3),
                                 resizeMode: 'contain',
                                 tintColor: myColors.primaryT,
-                                marginTop: -myHeight(3.1)
+                                marginTop: -myHeight(2.8)
                             }} source={require('../assets/profile/check.png')} />
                         }
                     </View>
@@ -729,6 +828,40 @@ export const DriverDetailEdit = ({ navigation }) => {
             </View>
         </TouchableOpacity>
     )
+    const CommonFaci2 = ({ name, fac, setFAc, ImageSize = 0, ImageSrc = null }) => (
+        <TouchableOpacity style={[styles.backItem, { backgroundColor: fac ? myColors.primaryT : myColors.background }]} activeOpacity={0.75}
+            onPress={() => {
+                setFAc(!fac)
+            }}>
+            {
+                ImageSrc ?
+                    <>
+                        <Image style={{
+                            width: ImageSize, height: ImageSize,
+                            resizeMode: 'contain', marginTop: myHeight(0), tintColor: fac ? myColors.background : myColors.textL4
+                        }}
+                            source={ImageSrc} />
+
+
+                        <Spacer paddingEnd={myWidth(1.5)} />
+                    </>
+                    : null
+            }
+
+            <Text
+
+                style={{
+                    fontSize: myFontSize.body,
+                    fontFamily: myFonts.bodyBold,
+                    color: fac ? myColors.background : myColors.text,
+                    letterSpacing: myLetSpacing.common,
+                    includeFontPadding: false,
+                    padding: 0,
+                }}>{name}</Text>
+
+        </TouchableOpacity>
+    )
+
 
     const verifyLink = async () => {
         const text = '2'
@@ -917,6 +1050,8 @@ export const DriverDetailEdit = ({ navigation }) => {
         setTimmings(copy)
         setChange(!change)
     }
+
+
     return (
         <>
 
@@ -925,20 +1060,27 @@ export const DriverDetailEdit = ({ navigation }) => {
                 {/* Top */}
                 <View>
                     <Spacer paddingT={myHeight(1.55)} />
-                    <View style={{ paddingEnd: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
                         {/* Search */}
 
                         {/* Arrow */}
-                        <TouchableOpacity activeOpacity={0.7}
-                            onPress={() => navigation.goBack()} style={{ paddingHorizontal: myWidth(4), }}>
-                            <Image style={{
-                                height: myHeight(2.4),
-                                width: myHeight(2.4),
-                                resizeMode: 'contain',
-                                tintColor: myColors.textL0
-                            }} source={require('../assets/home_main/home/back.png')} />
+                        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7} style={{
+                            backgroundColor: myColors.primaryT,
+                            height: myHeight(4),
+                            width: myHeight(4),
+                            borderRadius: myHeight(3),
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}  >
+                            <Image style={
+                                {
+                                    height: myHeight(2),
+                                    width: myHeight(2),
+                                    resizeMode: 'contain'
+                                }
+                            } source={require('../assets/startup/goL.png')} />
                         </TouchableOpacity>
-                        {/* <Spacer paddingEnd={myWidth(2.5)} /> */}
+                        <Spacer paddingEnd={myWidth(5.5)} />
                         <Text style={[styles.textCommon,
                         {
                             fontFamily: myFonts.heading,
@@ -947,16 +1089,16 @@ export const DriverDetailEdit = ({ navigation }) => {
                             Driver Details
                         </Text>
                     </View>
-                    <Spacer paddingT={myHeight(1.5)} />
+                    <Spacer paddingT={myHeight(2)} />
 
-                    <View style={{ height: myHeight(0.6), backgroundColor: myColors.divider }} />
+                    <View style={{ height: myHeight(0.2), backgroundColor: myColors.divider }} />
                 </View>
                 <KeyboardAwareScrollView
                     // scrollEnabled={isEditMode} 
                     contentContainerStyle={{ flexGrow: 1, paddingHorizontal: myWidth(4) }} showsVerticalScrollIndicator={false}>
 
 
-                    <Spacer paddingT={myHeight(1.5)} />
+                    <Spacer paddingT={myHeight(2)} />
                     {/* Background Image */}
                     <TouchableOpacity disable={imageLoading == 'vehicle'}
                         activeOpacity={0.75} onPress={() => {
@@ -973,7 +1115,8 @@ export const DriverDetailEdit = ({ navigation }) => {
                         }}
                         style={{
                             height: myHeight(20), justifyContent: 'center', alignItems: 'center',
-                            borderRadius: myWidth(4), backgroundColor: myColors.offColor7
+                            borderRadius: myWidth(4), backgroundColor: myColors.divider,
+                            borderWidth: myHeight(0.4), borderColor: vehicleImage ? myColors.background : myColors.primaryL5
                         }}>
                         {
                             imageLoading == 'vehicle' ?
@@ -1000,16 +1143,17 @@ export const DriverDetailEdit = ({ navigation }) => {
                                             fontSize: myFontSize.body4,
 
                                         }]}>
-                                            Upload Vehicle Image *
+                                            Upload Van Photo
                                         </Text>
                                         <Text style={[styles.textCommon,
                                         {
                                             fontFamily: myFonts.body,
-                                            fontSize: myFontSize.body,
-                                            textAlign: 'center'
+                                            fontSize: myFontSize.small3,
+                                            textAlign: 'center',
+
 
                                         }]}>
-                                            (maximum size 1 MB)
+                                            maximum size 1 MB
                                         </Text>
                                     </View>
                         }
@@ -1020,231 +1164,26 @@ export const DriverDetailEdit = ({ navigation }) => {
                     <Spacer paddingT={myHeight(2.7)} />
                     {/* Vehicle Details */}
                     <View>
-                        <Text style={[styles.textCommon,
-                        {
-                            fontFamily: myFonts.heading,
-                            fontSize: myFontSize.xBody2,
+                        <Text
 
-                        }]}>Vehicle Details *</Text>
+                            style={styles.heading}>Van Info</Text>
+
+
                         <Spacer paddingT={myHeight(1)} />
                         {/*Vehicle Name & Modal Year*/}
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={{
-                                borderRadius: myWidth(1.5),
-                                flex: 1,
-                                paddingVertical: myHeight(0.5),
-                                paddingHorizontal: myWidth(3),
-                                color: myColors.text,
-                                backgroundColor: myColors.offColor7,
-                                // borderWidth: 0.7,
-                                // borderColor: myColors.primaryT
-                            }}>
+                        <View style={styles.inputCont}>
 
-                                <TextInput placeholder="Vehicle Name Ex HiRoof"
-                                    autoCorrect={false}
-                                    maxLength={35}
-                                    placeholderTextColor={myColors.offColor}
-                                    selectionColor={myColors.primary}
-                                    cursorColor={myColors.primaryT}
-                                    value={vehicleName} onChangeText={setVehicleName}
-                                    style={{
-                                        padding: 0,
-                                        backgroundColor: myColors.offColor7,
-                                        fontFamily: myFonts.bodyBold,
-                                        fontSize: myFontSize.body
-
-
-                                        // textAlign: 'center'
-                                    }}
-                                />
-
-                            </View>
-                            <Spacer paddingEnd={myWidth(2)} />
-                            <View style={{
-                                borderRadius: myWidth(1.5),
-                                width: myWidth(30),
-                                paddingVertical: myHeight(0.5),
-                                paddingHorizontal: myWidth(3),
-                                color: myColors.text,
-                                backgroundColor: myColors.offColor7,
-                                // borderWidth: 0.7,
-                                // borderColor: myColors.primaryT
-                            }}>
-
-                                <TextInput placeholder="Modal Year"
-                                    autoCorrect={false} maxLength={4}
-                                    placeholderTextColor={myColors.offColor}
-                                    selectionColor={myColors.primary}
-                                    cursorColor={myColors.primaryT}
-                                    value={vehicleModal} onChangeText={setVehicleModal}
-                                    keyboardType='numeric'
-                                    style={{
-
-                                        padding: 0,
-                                        backgroundColor: myColors.offColor7,
-                                        fontFamily: myFonts.bodyBold,
-                                        fontSize: myFontSize.body
-
-                                        // textAlign: 'center'
-                                    }}
-                                />
-
-
-                            </View>
-
-
-
-                        </View>
-                        <Spacer paddingT={myHeight(1)} />
-                        {/* Number Plate &  Capacity*/}
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={{
-                                borderRadius: myWidth(1.5),
-                                flex: 1,
-                                paddingVertical: myHeight(0.5),
-                                paddingHorizontal: myWidth(3),
-                                color: myColors.text,
-                                backgroundColor: myColors.offColor7,
-                                // borderWidth: 0.7,
-                                // borderColor: myColors.primaryT
-                            }}>
-
-                                <TextInput placeholder="Vehicle Number Ex MKV-150"
-                                    autoCorrect={false}
-                                    maxLength={35}
-                                    placeholderTextColor={myColors.offColor}
-                                    selectionColor={myColors.primary}
-                                    cursorColor={myColors.primaryT}
-                                    value={vehicleNum} onChangeText={setVehicleNum}
-                                    style={{
-                                        padding: 0,
-                                        backgroundColor: myColors.offColor7,
-                                        fontFamily: myFonts.bodyBold,
-                                        fontSize: myFontSize.body
-
-
-                                        // textAlign: 'center'
-                                    }}
-                                />
-
-                            </View>
-
-                            <Spacer paddingEnd={myWidth(2)} />
-
-
-                            <View style={{
-                                borderRadius: myWidth(1.5),
-                                width: myWidth(25),
-                                paddingVertical: myHeight(0.5),
-                                paddingHorizontal: myWidth(3),
-                                color: myColors.text,
-                                backgroundColor: myColors.offColor7,
-                                // borderWidth: 0.7,
-                                // borderColor: myColors.primaryT
-                            }}>
-
-                                <TextInput placeholder="Capacity"
-                                    autoCorrect={false} maxLength={4}
-                                    placeholderTextColor={myColors.offColor}
-                                    selectionColor={myColors.primary}
-                                    cursorColor={myColors.primaryT}
-                                    value={vehicleSeats} onChangeText={setVehicleSeats}
-                                    keyboardType='numeric'
-                                    style={{
-
-                                        padding: 0,
-                                        backgroundColor: myColors.offColor7,
-                                        fontFamily: myFonts.bodyBold,
-                                        fontSize: myFontSize.body
-
-                                        // textAlign: 'center'
-                                    }}
-                                />
-
-
-                            </View>
-
-
-
-                        </View>
-                        <Spacer paddingT={myHeight(1)} />
-                        {/* Licence & Contact */}
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={{
-                                borderRadius: myWidth(1.5),
-                                flex: 1,
-                                paddingVertical: myHeight(0.5),
-                                paddingHorizontal: myWidth(3),
-                                color: myColors.text,
-                                backgroundColor: myColors.offColor7,
-                                // borderWidth: 0.7,
-                                // borderColor: myColors.primaryT
-                            }}>
-
-                                <TextInput placeholder="Driving Licence No"
-                                    autoCorrect={false}
-                                    keyboardType='numeric'
-                                    maxLength={15}
-                                    placeholderTextColor={myColors.offColor}
-                                    selectionColor={myColors.primary}
-                                    cursorColor={myColors.primaryT}
-                                    value={licence} onChangeText={setLicence}
-                                    style={{
-                                        padding: 0,
-                                        backgroundColor: myColors.offColor7,
-                                        fontFamily: myFonts.bodyBold,
-                                        fontSize: myFontSize.body
-
-
-                                        // textAlign: 'center'
-                                    }}
-                                />
-
-
-                            </View>
-                            <Spacer paddingEnd={myWidth(3)} />
-                            <CommonFaci fac={ac} setFAc={setAc} name={'AC'} />
-
-                            <Spacer paddingEnd={myWidth(3)} />
-                            <CommonFaci fac={isWifi} setFAc={setIsWifi} name={'Wifi'} />
-                        </View>
-
-                    </View>
-                    <Spacer paddingT={myWidth(3.5)} />
-                    {/* Contact */}
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={[styles.textCommon,
-                        {
-                            fontFamily: myFonts.heading,
-                            fontSize: myFontSize.xBody2,
-
-                        }]}>Contact *</Text>
-                        <Spacer paddingEnd={myHeight(2)} />
-                        <View style={{
-                            borderRadius: myWidth(1.5),
-                            width: myWidth(28),
-                            flex: 1,
-                            paddingVertical: myHeight(0.5),
-                            paddingHorizontal: myWidth(3),
-                            color: myColors.text,
-                            backgroundColor: myColors.offColor7,
-                            // borderWidth: 0.7,
-                            // borderColor: myColors.primaryT
-                        }}>
-
-                            <TextInput placeholder="Contact No Ex 03"
+                            <TextInput placeholder="Brand - e.g Suzuki Bolan"
                                 autoCorrect={false}
-                                maxLength={11}
-                                keyboardType='numeric'
-
+                                maxLength={35}
                                 placeholderTextColor={myColors.offColor}
                                 selectionColor={myColors.primary}
                                 cursorColor={myColors.primaryT}
-                                value={contact} onChangeText={setContact}
+                                value={vehicleName} onChangeText={setVehicleName}
                                 style={{
                                     padding: 0,
-                                    backgroundColor: myColors.offColor7,
+                                    backgroundColor: myColors.background,
                                     fontFamily: myFonts.bodyBold,
                                     fontSize: myFontSize.body
 
@@ -1255,19 +1194,340 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                         </View>
 
+
+
+
+                        <Spacer paddingT={myHeight(2)} />
+                        <View style={styles.inputCont}>
+
+                            <TextInput placeholder="Modal Year - e.g 2000"
+                                autoCorrect={false} maxLength={4}
+                                placeholderTextColor={myColors.offColor}
+                                selectionColor={myColors.primary}
+                                cursorColor={myColors.primaryT}
+                                value={vehicleModal} onChangeText={setVehicleModal}
+                                keyboardType='numeric'
+                                style={{
+
+                                    padding: 0,
+                                    backgroundColor: myColors.background,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body
+
+                                    // textAlign: 'center'
+                                }}
+                            />
+                        </View>
+                        <Spacer paddingT={myHeight(2)} />
+
+                        {/* Number Plate &  Capacity*/}
+                        <View style={styles.inputCont}>
+
+                            <TextInput placeholder="Number Plate - e.g MKV-150"
+                                autoCorrect={false}
+                                maxLength={35}
+                                placeholderTextColor={myColors.offColor}
+                                selectionColor={myColors.primary}
+                                cursorColor={myColors.primaryT}
+                                value={vehicleNum} onChangeText={setVehicleNum}
+                                style={{
+                                    padding: 0,
+                                    backgroundColor: myColors.background,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body
+
+
+                                    // textAlign: 'center'
+                                }}
+                            />
+
+                        </View>
+
+                        <Spacer paddingT={myHeight(2)} />
+
+                        <View style={styles.inputCont}>
+
+                            <TextInput placeholder="Seats - e.g 12"
+                                autoCorrect={false} maxLength={4}
+                                placeholderTextColor={myColors.offColor}
+                                selectionColor={myColors.primary}
+                                cursorColor={myColors.primaryT}
+                                value={vehicleSeats} onChangeText={setVehicleSeats}
+                                keyboardType='numeric'
+                                style={{
+
+                                    padding: 0,
+                                    backgroundColor: myColors.background,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body
+
+                                    // textAlign: 'center'
+                                }}
+                            />
+
+
+                        </View>
+
+                        <Spacer paddingT={myHeight(2)} />
+
+                    </View>
+                    <Spacer paddingT={myHeight(0.5)} />
+
+                    {/* Driver  Info*/}
+                    <View>
+                        <Text style={styles.heading}>Driver Info</Text>
+                        <Spacer paddingT={myHeight(1)} />
+                        <View style={styles.inputCont}>
+
+                            <TextInput placeholder="Contact - e.g 03343534343"
+                                autoCorrect={false}
+                                maxLength={11}
+                                keyboardType='numeric'
+
+                                placeholderTextColor={myColors.offColor}
+                                selectionColor={myColors.primary}
+                                cursorColor={myColors.primaryT}
+                                value={contact} onChangeText={setContact}
+                                style={{
+                                    padding: 0,
+                                    backgroundColor: myColors.background,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body
+
+
+                                    // textAlign: 'center'
+                                }}
+                            />
+
+                        </View>
+
+                        <Spacer paddingT={myHeight(2)} />
+
+                        {/* Licence & Contact */}
+                        <View style={styles.inputCont}>
+
+
+                            <TextInput placeholder="Licence Number - e.g 123456789101112"
+                                autoCorrect={false}
+                                keyboardType='numeric'
+                                maxLength={15}
+                                placeholderTextColor={myColors.offColor}
+                                selectionColor={myColors.primary}
+                                cursorColor={myColors.primaryT}
+                                value={licence} onChangeText={setLicence}
+                                style={{
+                                    padding: 0,
+                                    backgroundColor: myColors.background,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body,
+
+
+                                    textAlignVertical: 'center'
+                                }}
+                            />
+
+
+                        </View>
+                    </View>
+                    <Spacer paddingT={myHeight(2.5)} />
+
+                    {/* Amenities*/}
+                    <View>
+                        <Text style={styles.heading}>Amenities</Text>
+
+                        <Text style={styles.textH}>Kindly select the amenities available in your Van</Text>
+                        <Spacer paddingT={myHeight(1)} />
+
+                        <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
+
+
+
+
+
+
+                            <CommonFaci2 fac={ac} setFAc={setAc} name={'Air Conditioned'} ImageSize={myHeight(2)} ImageSrc={require('../assets/home_main/home/ac2.png')} />
+
+
+                            <Spacer paddingEnd={myWidth(2.8)} />
+
+                            <CommonFaci2 fac={isWifi} setFAc={setIsWifi} name={'Wifi'} ImageSize={myHeight(2.3)} ImageSrc={require('../assets/home_main/home/wifi.png')} />
+
+                        </View>
+
                     </View>
 
-                    <Spacer paddingT={myWidth(1.5)} />
+                    <Spacer paddingT={myHeight(2.5)} />
+
+                    {/* Availability*/}
+                    <View>
+                        <Text style={styles.heading}>Availability</Text>
+
+                        <Spacer paddingT={myHeight(1)} />
+                        <DaysShow list={dailyDays} setList={setDailyDays} />
+                    </View>
+
+                    <Spacer paddingT={myHeight(2.5)} />
+
+
+                    {/* Availability for Events*/}
+                    <View>
+                        <Text style={styles.heading}>Availability for Events</Text>
+
+                        <Spacer paddingT={myHeight(1)} />
+                        <YesNo fav={isOneRide} setFac={setOneRide} />
+
+                        <Collapsible collapsed={!isOneRide} >
+                            <Spacer paddingT={myHeight(1)} />
+
+                            <Text style={styles.textH}>Select Days</Text>
+                            <Spacer paddingT={myHeight(0.7)} />
+                            <DaysShow list={oneRideDays} setList={setOneRideDays} />
+
+
+
+
+                        </Collapsible>
+                    </View>
+
+                    <Spacer paddingT={myHeight(2.5)} />
+
+                    {/*Available For Inside Universities */}
+                    <View>
+                        <Text style={styles.heading}>Available For Inside Universities?</Text>
+
+                        <Spacer paddingT={myHeight(1.3)} />
+                        <YesNo fav={isInsideUni} setFac={setIsInsideUni} />
+                        <Collapsible collapsed={!isInsideUni} style={{ paddingStart: myWidth(2) }}>
+                            <Spacer paddingT={myHeight(1)} />
+
+                            <Text style={styles.textH}>Select Universities</Text>
+                            <Spacer paddingT={myHeight(0.2)} />
+
+                            <View style={{ justifyContent: 'space-between', }}>
+
+                                {
+
+                                    allUnies.map((it, ii) => <CommonFaciUnies key={ii} name={it.name} small={true} />)
+                                }
+
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={[styles.textCommon,
+                                {
+                                    flex: 1,
+                                    fontFamily: myFonts.bodyBold,
+                                    fontSize: myFontSize.body2,
+
+                                }]}>Charges to Departs*</Text>
+
+
+                                <View style={{
+                                    flexDirection: 'row',
+                                    borderRadius: myWidth(2),
+                                    width: myFontSize.body2 + myWidth(22),
+                                    paddingVertical: myHeight(0),
+                                    paddingHorizontal: myWidth(3),
+                                    color: myColors.text,
+                                    backgroundColor: myColors.offColor7,
+                                    borderWidth: 0.7,
+                                    borderColor: myColors.primaryT
+                                }}>
+
+                                    <TextInput placeholder=""
+                                        autoCorrect={false}
+                                        placeholderTextColor={myColors.text}
+                                        selectionColor={myColors.primary}
+                                        cursorColor={myColors.primaryT}
+                                        editable={false}
+                                        style={{
+                                            width: 0,
+                                            padding: 0,
+                                            textAlignVertical: 'center',
+                                            fontFamily: myFonts.body,
+                                            fontSize: myFontSize.xxSmall,
+                                            backgroundColor: myColors.offColor7,
+
+                                            // textAlign: 'center'
+                                        }}
+                                    />
+                                    <TextInput placeholder="Ex 50"
+                                        maxLength={3242}
+                                        autoCorrect={false}
+                                        placeholderTextColor={myColors.offColor}
+                                        selectionColor={myColors.primary}
+                                        cursorColor={myColors.primaryT}
+                                        value={departCharges} onChangeText={SetDepartCharges}
+                                        keyboardType='numeric'
+                                        style={{
+                                            fontFamily: myFonts.body,
+                                            fontSize: myFontSize.xxSmall,
+                                            flex: 1,
+                                            padding: 0,
+                                            backgroundColor: myColors.offColor7,
+
+                                            // textAlign: 'center'
+                                        }}
+                                    />
+
+                                    <TextInput placeholder=" Rs"
+                                        autoCorrect={false}
+                                        placeholderTextColor={myColors.text}
+                                        selectionColor={myColors.primary}
+                                        cursorColor={myColors.primaryT}
+                                        editable={false}
+                                        style={{
+
+                                            padding: 0,
+                                            textAlignVertical: 'center',
+                                            fontFamily: myFonts.body,
+                                            fontSize: myFontSize.xxSmall,
+                                            backgroundColor: myColors.offColor7,
+
+                                            // textAlign: 'center'
+                                        }}
+                                    />
+
+
+                                </View>
+
+                            </View>
+
+
+                        </Collapsible>
+                    </View>
+
+                    <Spacer paddingT={myHeight(2.5)} />
+
+
+                    {/*Available for One-Time Rides?*/}
+                    <View>
+                        <Text style={styles.heading}>Available for One-Time Rides?</Text>
+                        <Text style={styles.textH}>Do you provide one-time ride i.e carpooling service?</Text>
+
+                        <Spacer paddingT={myHeight(1.3)} />
+                        <YesNo fav={isOnline} setFac={setIsOnline} />
+
+                    </View>
+
+                    <Spacer paddingT={myHeight(2.5)} />
+
+
+
+
+                    {/*Billing Frequency*/}
+                    <View>
+                        <Text style={styles.heading}>Billing Frequency</Text>
+
+                        <Spacer paddingT={myHeight(1.3)} />
+                        <CommonFaci2 fav={isInsideUni} setFac={setIsInsideUni} />
+                    </View>
+
+                    <Spacer paddingT={myHeight(2.5)} />
                     {/* Description */}
                     <View>
-                        <Text style={[styles.textCommon,
-                        {
-                            fontFamily: myFonts.heading,
-                            fontSize: myFontSize.xBody2,
-
-                        }]}>Description *</Text>
+                        <Text style={styles.heading}>Description </Text>
                         <Spacer paddingT={myHeight(1)} />
-                        <TextInput placeholder="About yourself & services"
+                        <TextInput placeholder="Write something you want your customer to know about your service..."
                             multiline={true}
                             autoCorrect={false}
                             maxLength={100}
@@ -1277,7 +1537,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                             cursorColor={myColors.primaryT}
                             value={description} onChangeText={SetDescription}
                             style={{
-                                height: myFontSize.body * 2 + myHeight(6),
+                                height: myFontSize.body * 2 + myHeight(8),
                                 textAlignVertical: 'top',
                                 borderRadius: myWidth(2),
                                 width: '100%',
@@ -1288,7 +1548,9 @@ export const DriverDetailEdit = ({ navigation }) => {
                                 includeFontPadding: false,
                                 fontFamily: myFonts.body,
                                 paddingHorizontal: myWidth(3),
-                                backgroundColor: myColors.offColor7
+                                backgroundColor: myColors.background,
+                                borderWidth: myHeight(0.1),
+                                borderColor: myColors.dot,
                             }}
                         />
                     </View>
@@ -1313,37 +1575,10 @@ export const DriverDetailEdit = ({ navigation }) => {
                         </View>
                     </View>
 
-                    <Spacer paddingT={myHeight(1.5)} />
+                    <Spacer paddingT={myHeight(2)} />
 
                     {/*Ride Informatons */}
                     <View>
-                        <Text style={[styles.textCommon,
-                        {
-                            fontFamily: myFonts.heading,
-                            fontSize: myFontSize.xBody2,
-
-
-                        }]}>Ride Informatons *</Text>
-                        <Spacer paddingT={myHeight(0.1)} />
-                        <Text style={[styles.textCommon,
-                        {
-                            fontFamily: myFonts.bodyBold,
-                            fontSize: myFontSize.body3,
-
-
-                        }]}>Select Days</Text>
-                        <Spacer paddingT={myHeight(0.2)} />
-
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                            <CommonFaciDays dailyDays={dailyDays} setDailyDays={setDailyDays} name={'All'} />
-
-                            {
-
-                                allDays.map((it, i) => <CommonFaciDays key={i} dailyDays={dailyDays} setDailyDays={setDailyDays} name={it} />)
-                            }
-
-                        </View>
-                        <Spacer paddingT={myHeight(0.8)} />
 
                         <Text style={[styles.textCommon,
                         {
@@ -1416,7 +1651,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                         <Collapsible collapsed={!it.show} style={{}}>
                                             {
                                                 it.locations.map((loc, j) =>
-                                                    <View style={{ flexDirection: 'row', paddingVertical: myHeight(0.65) }}>
+                                                    <View key={j} style={{ flexDirection: 'row', paddingVertical: myHeight(0.65) }}>
                                                         <Text style={[styles.textCommon, {
                                                             width: myWidth(0.2) + myFontSize.body * 2,
                                                             fontFamily: myFonts.bodyBold,
@@ -1485,7 +1720,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                 {
 
-                                    allUnies.map(it => <CommonFaciUnies name={it.name} small={true} />)
+                                    allUnies.map((it, ii) => <CommonFaciUnies key={ii} name={it.name} small={true} />)
                                 }
 
                             </View>
@@ -1578,32 +1813,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                         {/* Available for one time */}
                         <Spacer paddingT={myHeight(0.8)} />
                         <CommonFaci fac={isOneRide} setFAc={setOneRide} name={'Available For One Time Ride'} />
-                        <Collapsible collapsed={!isOneRide} >
-                            <Spacer paddingT={myHeight(0.2)} />
 
-                            <Text style={[styles.textCommon,
-                            {
-                                fontFamily: myFonts.bodyBold,
-                                fontSize: myFontSize.body3,
-
-
-                            }]}>Select Days</Text>
-                            <Spacer paddingT={myHeight(0.2)} />
-
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                                <CommonFaciDays dailyDays={oneRideDays} setDailyDays={setOneRideDays} name={'All'} />
-
-                                {
-
-                                    allDays.map((it, i) => <CommonFaciDays key={i} dailyDays={oneRideDays} setDailyDays={setOneRideDays} name={it} />)
-                                }
-
-                            </View>
-                            <Spacer paddingT={myHeight(0.5)} />
-
-
-                            {/* <View style={{ height: myHeight(0.2), backgroundColor: myColors.divider }} /> */}
-                        </Collapsible>
 
 
 
@@ -2086,6 +2296,39 @@ const styles = StyleSheet.create({
     //Text
     textCommon: {
         color: myColors.text,
+        letterSpacing: myLetSpacing.common,
+        includeFontPadding: false,
+        padding: 0,
+    },
+    inputCont: {
+        borderRadius: myWidth(1.5),
+        flex: 1,
+        paddingVertical: myHeight(0.5),
+        paddingHorizontal: myWidth(3),
+        color: myColors.text,
+        borderWidth: myHeight(0.1),
+        borderRadius: myWidth(2),
+        backgroundColor: myColors.background,
+        // borderWidth: 0.7,
+        borderColor: myColors.dot
+    },
+    backItem: {
+        paddingHorizontal: myWidth(5), paddingVertical: myHeight(0.75), borderRadius: myWidth(100),
+        backgroundColor: myColors.background, borderWidth: myHeight(0.1), borderColor: myColors.divider,
+        flexDirection: 'row', alignItems: 'center'
+    },
+    heading: {
+        fontSize: myFontSize.body4,
+        fontFamily: myFonts.bodyBold,
+        color: myColors.textL4,
+        letterSpacing: myLetSpacing.common,
+        includeFontPadding: false,
+        padding: 0,
+    },
+    textH: {
+        fontSize: myFontSize.xxSmall,
+        fontFamily: myFonts.bodyBold,
+        color: myColors.textL4,
         letterSpacing: myLetSpacing.common,
         includeFontPadding: false,
         padding: 0,

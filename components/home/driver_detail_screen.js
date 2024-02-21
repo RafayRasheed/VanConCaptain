@@ -97,7 +97,7 @@ export const DriverDetail = ({ navigation, route }) => {
 
               <>
                 <View key={i} style={[styles.backItem, {
-                  backgroundColor: is ? myColors.primaryT : myColors.background, width: myWidth(12.2), paddingVertical: myHeight(0.6),
+                  backgroundColor: is ? myColors.primaryT : myColors.background, width: myWidth(11.82), paddingVertical: myHeight(0.6),
                   paddingHorizontal: myWidth(0), justifyContent: 'center'
                 }]}>
 
@@ -116,7 +116,7 @@ export const DriverDetail = ({ navigation, route }) => {
                 </View>
                 {
                   i != 6 &&
-                  <Spacer paddingEnd={myWidth(1)} />
+                  <Spacer paddingEnd={myWidth(1.5)} />
                 }
               </>
 
@@ -414,7 +414,7 @@ export const DriverDetail = ({ navigation, route }) => {
               {
                 driver.packages.map((it, i) => (
                   <>
-                    <View style={styles.backItem}>
+                    <View key={i} style={styles.backItem}>
                       <Text numberOfLines={1}
 
                         style={{
@@ -520,7 +520,7 @@ export const DriverDetail = ({ navigation, route }) => {
                     </View>
                     {driver.insideUniversities.map((it, j) => (
 
-                      <View style={{ flexDirection: 'row', paddingVertical: myHeight(0.65) }}>
+                      <View key={j} style={{ flexDirection: 'row', paddingVertical: myHeight(0.65) }}>
                         <Text style={[styles.textCommon, {
                           width: myWidth(0.2) + myFontSize.body * 2,
                           fontFamily: myFonts.bodyBold,
@@ -557,7 +557,7 @@ export const DriverDetail = ({ navigation, route }) => {
 
               style={styles.heading}>Reviews</Text>
 
-            <Spacer paddingT={myHeight(0.5)} />
+            <Spacer paddingT={myHeight(1)} />
 
             <FlashList
               showsVerticalScrollIndicator={false}
@@ -574,7 +574,7 @@ export const DriverDetail = ({ navigation, route }) => {
 
                 return (
                   <View key={index} style={{ borderWidth: myHeight(0.1), backgroundColor: myColors.background, elevation: 1, borderColor: myColors.divider, borderRadius: myWidth(2), paddingHorizontal: myWidth(2) }}>
-                    <Spacer paddingT={myHeight(0.5)} />
+                    <Spacer paddingT={myHeight(0.8)} />
 
 
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -687,7 +687,7 @@ export const DriverDetail = ({ navigation, route }) => {
             ]}>CHAT</Text>
           </TouchableOpacity>
         </View>
-
+es
         <Spacer paddingT={myHeight(1.5)} />
 
       </View> */}
