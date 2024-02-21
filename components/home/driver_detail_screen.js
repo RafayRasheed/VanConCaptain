@@ -4,7 +4,7 @@ import {
   View, Text, StatusBar,
   Linking, Platform, ImageBackground, BackHandler, TextInput,
 } from 'react-native';
-import { Loader, MyError, Spacer, StatusBarHide, errorTime, ios, myHeight, myWidth } from '../common';
+import { Loader, MyError, Spacer, StatusBarHide, StatusbarH, errorTime, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import { ItemInfo } from './home.component/item_info';
@@ -92,211 +92,76 @@ export const DriverDetail = ({ navigation, route }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: myColors.background }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
 
-      <View style={{
-        width: '100%',
-        height: myHeight(28),
-
-        borderBottomLeftRadius: myWidth(4),
-        borderBottomRightRadius: myWidth(4),
-        overflow: 'hidden',
-      }} >
-        <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={driver.vehicleImage} />
-
-        {/* Back */}
-        <TouchableOpacity
+        <View
           style={{
-            backgroundColor: myColors.background,
-            padding: myHeight(1),
-            borderRadius: myHeight(5),
-            position: 'absolute',
-            top: StatusBar.currentHeight + myHeight(0.6),
-            left: myWidth(4),
-          }}
-          activeOpacity={0.8}
-          onPress={back}>
-          <Image
-            style={{
-              width: myHeight(2.6),
-              height: myHeight(2.6),
-              resizeMode: 'contain',
-            }}
-            source={require('../assets/home_main/home/back.png')}
-          />
-        </TouchableOpacity>
+            width: '100%', overflow: 'hidden', backgroundColor: myColors.text,
+            borderBottomStartRadius: myHeight(50), borderBottomEndRadius: myHeight(50), alignItems: 'center'
+          }}>
+          <Spacer paddingT={myHeight(2)} />
+          <StatusbarH />
 
-        <View style={{
-          backgroundColor: 'transparent',
-          position: 'absolute',
-          top: StatusBar.currentHeight + myHeight(0.6),
-          right: myWidth(4),
-          flexDirection: 'row'
-        }}>
+          <View style={{ width: '100%', paddingHorizontal: myWidth(5), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 
-          {/* Search */}
-          {/* <TouchableOpacity
-            style={{
-              backgroundColor: myColors.background,
-              padding: myHeight(1),
-              borderRadius: myHeight(5),
-
-            }}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate('ItemSearch', { items: allItems, driver })}>
-            <Image
+            <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7} style={{
+              backgroundColor: myColors.primaryT,
+              height: myHeight(4.2),
+              width: myHeight(4.2),
+              borderRadius: myHeight(3),
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}  >
+              <Image style={
+                {
+                  height: myHeight(2),
+                  width: myHeight(2),
+                  resizeMode: 'contain'
+                }
+              } source={require('../assets/startup/goL.png')} />
+            </TouchableOpacity>
+            <TouchableOpacity
               style={{
-                width: myHeight(2.6),
-                height: myHeight(2.6),
-                resizeMode: 'contain',
+                backgroundColor: myColors.primaryL5,
+                padding: myHeight(1.2),
+                borderRadius: myHeight(5),
+
               }}
-              source={require('../assets/home_main/home/search.png')}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('DriverDetailEdit',
+
+              )}>
+              <Image style={{
+                height: myHeight(2.3),
+                width: myHeight(2.3),
+                resizeMode: 'contain',
+                tintColor: myColors.textL0,
+
+              }}
+                source={require('../assets/home_main/home/edit.png')} />
+            </TouchableOpacity>
+          </View>
+          {/* image */}
+          <View style={{
+            borderRadius: myWidth(100), overflow: 'hidden',
+            // backgroundColor: myColors.primaryL5, padding: myHeight(1.3),
+            // borderWidth: myWidth(0.1), borderColor: myColors.textL4, 
+          }}>
+            <Image source={require('../assets/profile/profile.png')}
+              style={{
+                width: myHeight(13),
+                height: myHeight(13),
+                resizeMode: 'contain',
+                // tintColor: myColors.primaryT
+              }}
             />
-          </TouchableOpacity> */}
 
-        </View>
+          </View>
+          <Spacer paddingT={myHeight(1)} />
 
-      </View>
-
-      {/* Content */}
-      {/* Restuarant Info */}
-      <TouchableOpacity disabled activeOpacity={0.96} onPress={() => navigation.navigate('RestaurantMoreDetails', { driver: driver })}
-        style={{
-          // height:'100%',
-          //    position:'absolute', left:0,
-          backgroundColor: myColors.background,
-          marginTop: -myHeight(5.5),
-          borderRadius: myHeight(3),
-          borderTopStartRadius: myHeight(3),
-          borderTopEndRadius: myHeight(3),
-          marginHorizontal: myWidth(3.5),
-          elevation: 10,
-          paddingHorizontal: myWidth(4),
-
-          //    backgroundColor:'#ffffff30'
-        }}>
-        {/* Icon */}
-        <View
-          style={{
-            width: myHeight(6.5),
-            height: myHeight(6.5),
-            borderRadius: myHeight(6),
-            borderWidth: myHeight(0.15),
-            marginTop: -myHeight(3),
-            borderColor: myColors.primaryT,
-            alignSelf: 'center',
-            overflow: 'hidden',
-            backgroundColor: myColors.background
-
-          }}>
-          <Image style={{
-            width: '100%', height: '100%',
-            resizeMode: 'contain', marginTop: myHeight(0.0), tintColor: myColors.text
-          }}
-            source={require('../assets/home_main/home/driver.png')} />
-          {/* <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={driver.vehicleImage} borderRadius={5000} /> */}
-        </View>
-
-
-        {/* Heart */}
-        <TouchableOpacity
-          style={{
-            backgroundColor: myColors.background,
-            padding: myHeight(2.5),
-            paddingTop: myHeight(1.5),
-            borderRadius: myHeight(5),
-            top: myHeight(0),
-            right: myWidth(0),
-            position: 'absolute'
-          }}
-          activeOpacity={0.8}
-          onPress={() => navigation.navigate('DriverDetailEdit',
-
-          )}>
-          <Image style={{
-            height: myHeight(2.7),
-            width: myHeight(2.7),
-            resizeMode: 'contain',
-            tintColor: myColors.text,
-
-          }}
-            source={require('../assets/home_main/home/edit.png')} />
-        </TouchableOpacity>
-        <Spacer paddingT={myHeight(0.3)} />
-        {/* name */}
-        <Text
-          numberOfLines={2}
-          style={[
-            styles.textCommon,
-            {
-              textAlign: 'center',
-              fontSize: myFontSize.medium0,
-              fontFamily: myFonts.heading,
-            },
-          ]}>
-          {driver.name}
-        </Text>
-        <Spacer paddingT={myHeight(1)} />
-
-        {/* Rating & Rate Us */}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image style={{
-            width: myHeight(2.6), height: myHeight(2.6),
-            marginLeft: -myWidth(0.5), marginTop: -myHeight(0.2),
-            resizeMode: 'contain', tintColor: myColors.primaryT
-          }}
-            source={require('../assets/home_main/home/navigator/van2.png')} />
-          <Spacer paddingEnd={myWidth(0.8)} />
-
-          {/* Name */}
-          <Text numberOfLines={1}
-            style={{
-              flex: 1,
-              fontSize: myFontSize.xBody,
-              color: myColors.text, fontFamily: myFonts.heading
-            }}>{driver.vehicleName} <Text style={{
-              fontSize: myFontSize.body4,
-              color: myColors.text, fontFamily: myFonts.body
-            }}>({driver.vehicleModal})</Text></Text>
-
-
-
-          <Spacer paddingEnd={myWidth(1.5)} />
-
-          <Image style={{
-            width: myHeight(3.5), height: myHeight(3.5),
-            resizeMode: 'contain', marginTop: myHeight(0.5), tintColor: myColors.primaryT
-          }}
-            source={require('../assets/home_main/home/ac.png')} />
-          <Spacer paddingEnd={myWidth(2.5)} />
-
-          <Text
-
-            style={{
-              fontSize: myFontSize.xBody,
-              fontFamily: myFonts.heading,
-              color: myColors.text,
-              letterSpacing: myLetSpacing.common,
-              includeFontPadding: false,
-              padding: 0,
-            }}>{driver.ac ? 'AC' : 'Non AC'}</Text>
-          <Spacer paddingEnd={myWidth(2.5)} />
-
-          <Image style={{
-            width: myHeight(2.8), height: myHeight(2.8),
-            resizeMode: 'contain', marginTop: myHeight(0),
-            tintColor: driver.isWifi ? myColors.primaryT : myColors.offColor
-          }}
-            source={driver.isWifi ? require('../assets/home_main/home/wifi.png') : require('../assets/home_main/home/wifiO.png')} />
-
-        </View>
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            alignSelf: 'center',
-            justifyContent: 'space-between',
-          }}>
-          {/* Rating */}
+          <Text style={{
+            color: myColors.background, fontSize: myFontSize.medium2, fontFamily: myFonts.heading, paddingHorizontal: myWidth(16),
+          }}>{profile.name}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -305,8 +170,8 @@ export const DriverDetail = ({ navigation, route }) => {
             {/* Star */}
             <Image
               style={{
-                width: myHeight(2.1),
-                height: myHeight(2.1),
+                width: myHeight(2.3),
+                height: myHeight(2.3),
                 resizeMode: 'contain',
                 // tintColor: myColors.primaryT
               }}
@@ -319,9 +184,9 @@ export const DriverDetail = ({ navigation, route }) => {
               style={[
                 styles.textCommon,
                 {
-                  fontSize: myFontSize.body2,
+                  fontSize: myFontSize.body4,
                   fontFamily: myFonts.heading,
-                  color: myColors.text,
+                  color: myColors.background,
                 },
               ]}>
               {`${driver.rating} `}
@@ -335,7 +200,7 @@ export const DriverDetail = ({ navigation, route }) => {
                   {
                     fontSize: myFontSize.body2,
                     fontFamily: myFonts.heading,
-                    color: myColors.textL4,
+                    color: myColors.dot,
                   },
                 ]}>
                 {`(${driver.noOfRatings})`}
@@ -355,105 +220,10 @@ export const DriverDetail = ({ navigation, route }) => {
                 ]}> {myReview ? 'Edit Rating' : 'Rate'} </Text>
             </TouchableOpacity> */}
           </View>
+          <Spacer paddingT={myHeight(8)} />
 
-          {/*more */}
-          {/* <TouchableOpacity activeOpacity={0.8} onPress={() => null}> 
-            </TouchableOpacity>
-            */}
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-            <Image style={{
-              width: myHeight(2), height: myHeight(2),
-              resizeMode: 'contain', marginTop: myHeight(0.0), tintColor: myColors.primaryT
-            }}
-              source={require('../assets/home_main/home/seatSF.png')} />
-            <Spacer paddingEnd={myWidth(1.5)} />
-
-            <Text
-
-              style={{
-                fontSize: myFontSize.body3,
-                fontFamily: myFonts.bodyBold,
-                color: myColors.text,
-                letterSpacing: myLetSpacing.common,
-                includeFontPadding: false,
-                padding: 0,
-              }}>{driver.vehicleSeats} Seater</Text>
-            <Spacer paddingEnd={myWidth(1.5)} />
-          </View>
         </View>
-
-
-        <Spacer paddingT={myHeight(1.5)} />
-      </TouchableOpacity>
-
-
-      <Spacer paddingT={myHeight(1)} />
-      <ScrollView showsVerticalScrollIndicator={false}>
         <Spacer paddingT={myHeight(1)} />
-
-        {/*Phone &  Chat */}
-        <View style={{
-          flexDirection: 'row',
-          borderTopWidth: myWidth(0.2), borderWidth: myWidth(0.2),
-          borderColor: myColors.textL, marginHorizontal: myWidth(4),
-          borderRadius: myWidth(50)
-        }}>
-          {/* Phone */}
-          <TouchableOpacity activeOpacity={0.7} onPress={() => { Linking.openURL(`tel:${driver.contact}`); }}
-            style={{
-              width: '50%', flexDirection: 'row', paddingVertical: myHeight(1.2),
-              alignItems: 'center', justifyContent: 'center', borderEndWidth: myWidth(0.2),
-              borderColor: myColors.textL,
-            }}>
-            <Image source={require('../assets/home_main/home/phone.png')}
-              style={{
-                width: myHeight(2.28),
-                height: myHeight(2.28),
-                resizeMode: 'contain',
-                tintColor: myColors.primaryT
-              }}
-            />
-            <Spacer paddingEnd={myWidth(3)} />
-            <Text style={[
-              styles.textCommon,
-              {
-                fontSize: myFontSize.body2,
-                fontFamily: myFonts.heading,
-                color: myColors.text
-              }
-            ]}>CALL</Text>
-          </TouchableOpacity>
-
-          {/* Chat */}
-          <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Chat',
-            { user2: driver }
-          )}
-            style={{
-              width: '50%', flexDirection: 'row', paddingVertical: myHeight(1.2),
-              alignItems: 'center', justifyContent: 'center'
-            }}>
-            <Image source={require('../assets/home_main/home/navigator/chat2.png')}
-              style={{
-                width: myHeight(2.38),
-                height: myHeight(2.38),
-                resizeMode: 'contain',
-                tintColor: myColors.primaryT
-              }}
-            />
-            <Spacer paddingEnd={myWidth(3)} />
-            <Text style={[
-              styles.textCommon,
-              {
-                fontSize: myFontSize.body2,
-                fontFamily: myFonts.heading,
-                color: myColors.text
-              }
-            ]}>CHAT</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Spacer paddingT={myHeight(1.5)} />
 
         {/* Details */}
         <View style={{ paddingHorizontal: myWidth(4) }}>
@@ -461,14 +231,7 @@ export const DriverDetail = ({ navigation, route }) => {
           <View>
             <Text
 
-              style={{
-                fontSize: myFontSize.body4,
-                fontFamily: myFonts.bodyBold,
-                color: myColors.text,
-                letterSpacing: myLetSpacing.common,
-                includeFontPadding: false,
-                padding: 0,
-              }}>Description</Text>
+              style={styles.heading}>Description</Text>
 
             <Text
 
@@ -481,45 +244,159 @@ export const DriverDetail = ({ navigation, route }) => {
                 padding: 0,
               }}>{driver.description}</Text>
           </View>
+          <Spacer paddingT={myHeight(2)} />
 
-          <Spacer paddingT={myHeight(1.5)} />
+          {/* Photos */}
+          <View>
+            <Text
+
+              style={styles.heading}>Photos</Text>
+            <Spacer paddingT={myHeight(0.5)} />
+
+            <View style={{
+              width: '100%',
+              height: myHeight(28),
+
+              borderRadius: myWidth(4),
+              overflow: 'hidden',
+            }} >
+              <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={driver.vehicleImage} />
+
+            </View>
+
+          </View>
+
+          <Spacer paddingT={myHeight(2.5)} />
+
+          {/* Aminities */}
+          <View style={{}}>
+            <Text
+
+              style={styles.heading}>Amenities</Text>
+
+            <Spacer paddingT={myHeight(0.8)} />
+            <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
+              {
+                driver.ac ?
+                  <>
+                    <View style={styles.backItem}>
+
+
+                      <Image style={{
+                        width: myHeight(2), height: myHeight(2),
+                        resizeMode: 'contain', marginTop: myHeight(0), tintColor: myColors.textL4
+                      }}
+                        source={require('../assets/home_main/home/ac2.png')} />
+                      <Spacer paddingEnd={myWidth(1.5)} />
+
+                      <Text
+
+                        style={{
+                          fontSize: myFontSize.body,
+                          fontFamily: myFonts.bodyBold,
+                          color: myColors.text,
+                          letterSpacing: myLetSpacing.common,
+                          includeFontPadding: false,
+                          padding: 0,
+                        }}>Air Conditioned</Text>
+
+                    </View>
+                    <Spacer paddingEnd={myWidth(2.8)} />
+                  </>
+
+                  : null
+              }
+
+              {
+                driver.isWifi ?
+                  <>
+                    <View style={styles.backItem}>
+
+                      <Image style={{
+                        width: myHeight(2.3), height: myHeight(2.3),
+                        resizeMode: 'contain', marginTop: myHeight(0),
+                        tintColor: myColors.textL4
+                      }}
+                        source={require('../assets/home_main/home/wifi.png')} />
+                      <Spacer paddingEnd={myWidth(1.5)} />
+                      <Text
+
+                        style={{
+                          fontSize: myFontSize.body,
+                          fontFamily: myFonts.bodyBold,
+                          color: myColors.text,
+                          letterSpacing: myLetSpacing.common,
+                          includeFontPadding: false,
+                          padding: 0,
+                        }}>Wifi</Text>
+                    </View>
+                    <Spacer paddingEnd={myWidth(2.8)} />
+                  </>
+
+                  : null
+              }
+
+              <View style={styles.backItem}>
+                <Image style={{
+                  width: myHeight(1.75), height: myHeight(1.75),
+                  resizeMode: 'contain', marginTop: -myHeight(0.2), tintColor: myColors.textL4
+                }}
+                  source={require('../assets/home_main/home/seatSF.png')} />
+                <Spacer paddingEnd={myWidth(1.8)} />
+
+                <Text
+
+                  style={{
+                    fontSize: myFontSize.body,
+                    fontFamily: myFonts.bodyBold,
+                    color: myColors.text,
+                    letterSpacing: myLetSpacing.common,
+                    includeFontPadding: false,
+                    padding: 0,
+                  }}>{driver.vehicleSeats}</Text>
+              </View>
+
+
+            </View>
+          </View>
+          <Spacer paddingT={myHeight(2.5)} />
 
           {/* Paid */}
           <View style={{}}>
             <Text
 
-              style={{
-                fontSize: myFontSize.body4,
-                fontFamily: myFonts.bodyBold,
-                color: myColors.text,
-                letterSpacing: myLetSpacing.common,
-                includeFontPadding: false,
-                padding: 0,
-              }}>Paid Options</Text>
+              style={styles.heading}>Paid Options</Text>
 
-            <Spacer paddingT={myHeight(0.4)} />
+            <Spacer paddingT={myHeight(0.8)} />
             <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
               {
                 driver.packages.map((it, i) => (
+                  <>
+                    <View style={styles.backItem}>
+                      <Text numberOfLines={1}
 
-                  <Text numberOfLines={1}
+                        style={{
 
-                    style={{
+                          fontSize: myFontSize.body2,
+                          fontFamily: myFonts.bodyBold,
+                          color: myColors.text,
+                          letterSpacing: myLetSpacing.common,
+                          includeFontPadding: false,
+                          padding: 0,
+                        }}>{it} </Text>
+                    </View>
+                    <Spacer paddingEnd={myWidth(4)} />
 
-                      fontSize: myFontSize.body3,
-                      fontFamily: myFonts.bodyBold,
-                      color: myColors.primaryT,
-                      letterSpacing: myLetSpacing.common,
-                      includeFontPadding: false,
-                      padding: 0,
-                    }}>{`● ${it}     `}</Text>
+                  </>
+
+
                 ))
               }
             </View>
           </View>
 
 
-          <Spacer paddingT={myHeight(1.5)} />
+          <Spacer paddingT={myHeight(2.5)} />
           {/* Daily */}
           <View style={{}}>
             <Text
@@ -776,6 +653,368 @@ export const DriverDetail = ({ navigation, route }) => {
 
 
         </View>
+        <View style={{
+          width: '100%',
+          height: myHeight(28),
+
+          borderBottomLeftRadius: myWidth(4),
+          borderBottomRightRadius: myWidth(4),
+          overflow: 'hidden',
+        }} >
+          <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={driver.vehicleImage} />
+
+          {/* Back */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: myColors.background,
+              padding: myHeight(1),
+              borderRadius: myHeight(5),
+              position: 'absolute',
+              top: StatusBar.currentHeight + myHeight(0.6),
+              left: myWidth(4),
+            }}
+            activeOpacity={0.8}
+            onPress={back}>
+            <Image
+              style={{
+                width: myHeight(2.6),
+                height: myHeight(2.6),
+                resizeMode: 'contain',
+              }}
+              source={require('../assets/home_main/home/back.png')}
+            />
+          </TouchableOpacity>
+
+          <View style={{
+            backgroundColor: 'transparent',
+            position: 'absolute',
+            top: StatusBar.currentHeight + myHeight(0.6),
+            right: myWidth(4),
+            flexDirection: 'row'
+          }}>
+
+            {/* Search */}
+            {/* <TouchableOpacity
+            style={{
+              backgroundColor: myColors.background,
+              padding: myHeight(1),
+              borderRadius: myHeight(5),
+
+            }}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('ItemSearch', { items: allItems, driver })}>
+            <Image
+              style={{
+                width: myHeight(2.6),
+                height: myHeight(2.6),
+                resizeMode: 'contain',
+              }}
+              source={require('../assets/home_main/home/search.png')}
+            />
+          </TouchableOpacity> */}
+
+          </View>
+
+        </View>
+
+        {/* Content */}
+        {/* Restuarant Info */}
+        <TouchableOpacity disabled activeOpacity={0.96} onPress={() => navigation.navigate('RestaurantMoreDetails', { driver: driver })}
+          style={{
+            // height:'100%',
+            //    position:'absolute', left:0,
+            backgroundColor: myColors.background,
+            marginTop: -myHeight(5.5),
+            borderRadius: myHeight(3),
+            borderTopStartRadius: myHeight(3),
+            borderTopEndRadius: myHeight(3),
+            marginHorizontal: myWidth(3.5),
+            elevation: 10,
+            paddingHorizontal: myWidth(4),
+
+            //    backgroundColor:'#ffffff30'
+          }}>
+          {/* Icon */}
+          <View
+            style={{
+              width: myHeight(6.5),
+              height: myHeight(6.5),
+              borderRadius: myHeight(6),
+              borderWidth: myHeight(0.15),
+              marginTop: -myHeight(3),
+              borderColor: myColors.primaryT,
+              alignSelf: 'center',
+              overflow: 'hidden',
+              backgroundColor: myColors.background
+
+            }}>
+            <Image style={{
+              width: '100%', height: '100%',
+              resizeMode: 'contain', marginTop: myHeight(0.0), tintColor: myColors.text
+            }}
+              source={require('../assets/home_main/home/driver.png')} />
+            {/* <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={driver.vehicleImage} borderRadius={5000} /> */}
+          </View>
+
+
+          {/* Heart */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: myColors.background,
+              padding: myHeight(2.5),
+              paddingTop: myHeight(1.5),
+              borderRadius: myHeight(5),
+              top: myHeight(0),
+              right: myWidth(0),
+              position: 'absolute'
+            }}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('DriverDetailEdit',
+
+            )}>
+            <Image style={{
+              height: myHeight(2.7),
+              width: myHeight(2.7),
+              resizeMode: 'contain',
+              tintColor: myColors.text,
+
+            }}
+              source={require('../assets/home_main/home/edit.png')} />
+          </TouchableOpacity>
+          <Spacer paddingT={myHeight(0.3)} />
+          {/* name */}
+          <Text
+            numberOfLines={2}
+            style={[
+              styles.textCommon,
+              {
+                textAlign: 'center',
+                fontSize: myFontSize.medium0,
+                fontFamily: myFonts.heading,
+              },
+            ]}>
+            {driver.name}
+          </Text>
+          <Spacer paddingT={myHeight(1)} />
+
+          {/* Rating & Rate Us */}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Image style={{
+              width: myHeight(2.6), height: myHeight(2.6),
+              marginLeft: -myWidth(0.5), marginTop: -myHeight(0.2),
+              resizeMode: 'contain', tintColor: myColors.primaryT
+            }}
+              source={require('../assets/home_main/home/navigator/van2.png')} />
+            <Spacer paddingEnd={myWidth(0.8)} />
+
+            {/* Name */}
+            <Text numberOfLines={1}
+              style={{
+                flex: 1,
+                fontSize: myFontSize.xBody,
+                color: myColors.text, fontFamily: myFonts.heading
+              }}>{driver.vehicleName} <Text style={{
+                fontSize: myFontSize.body4,
+                color: myColors.text, fontFamily: myFonts.body
+              }}>({driver.vehicleModal})</Text></Text>
+
+
+
+            <Spacer paddingEnd={myWidth(1.5)} />
+
+            <Image style={{
+              width: myHeight(3.5), height: myHeight(3.5),
+              resizeMode: 'contain', marginTop: myHeight(0.5), tintColor: myColors.primaryT
+            }}
+              source={require('../assets/home_main/home/ac.png')} />
+            <Spacer paddingEnd={myWidth(2.5)} />
+
+            <Text
+
+              style={{
+                fontSize: myFontSize.xBody,
+                fontFamily: myFonts.heading,
+                color: myColors.text,
+                letterSpacing: myLetSpacing.common,
+                includeFontPadding: false,
+                padding: 0,
+              }}>{driver.ac ? 'AC' : 'Non AC'}</Text>
+            <Spacer paddingEnd={myWidth(2.5)} />
+
+            <Image style={{
+              width: myHeight(2.8), height: myHeight(2.8),
+              resizeMode: 'contain', marginTop: myHeight(0),
+              tintColor: driver.isWifi ? myColors.primaryT : myColors.offColor
+            }}
+              source={driver.isWifi ? require('../assets/home_main/home/wifi.png') : require('../assets/home_main/home/wifiO.png')} />
+
+          </View>
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              alignSelf: 'center',
+              justifyContent: 'space-between',
+            }}>
+            {/* Rating */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              {/* Star */}
+              <Image
+                style={{
+                  width: myHeight(2.1),
+                  height: myHeight(2.1),
+                  resizeMode: 'contain',
+                  // tintColor: myColors.primaryT
+                }}
+                source={require('../assets/home_main/home/star.png')}
+              />
+              <Spacer paddingEnd={myWidth(1.4)} />
+              {/* Rating */}
+              <Text
+                numberOfLines={2}
+                style={[
+                  styles.textCommon,
+                  {
+                    fontSize: myFontSize.body2,
+                    fontFamily: myFonts.heading,
+                    color: myColors.text,
+                  },
+                ]}>
+                {`${driver.rating} `}
+              </Text>
+              {/* Rate us */}
+              <TouchableOpacity disabled activeOpacity={1} onPress={() => null}>
+                <Text
+                  numberOfLines={2}
+                  style={[
+                    styles.textCommon,
+                    {
+                      fontSize: myFontSize.body2,
+                      fontFamily: myFonts.heading,
+                      color: myColors.textL4,
+                    },
+                  ]}>
+                  {`(${driver.noOfRatings})`}
+                </Text>
+              </TouchableOpacity>
+
+              {/* <TouchableOpacity style={{ paddingHorizontal: myWidth(2) }} activeOpacity={1} onPress={() => setRatinModal(true)}>
+              <Text
+                numberOfLines={2}
+                style={[
+                  styles.textCommon,
+                  {
+                    fontSize: myFontSize.xBody,
+                    fontFamily: myFonts.heading,
+                    color: myColors.primaryT,
+                  },
+                ]}> {myReview ? 'Edit Rating' : 'Rate'} </Text>
+            </TouchableOpacity> */}
+            </View>
+
+            {/*more */}
+            {/* <TouchableOpacity activeOpacity={0.8} onPress={() => null}> 
+            </TouchableOpacity>
+            */}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+              <Image style={{
+                width: myHeight(2), height: myHeight(2),
+                resizeMode: 'contain', marginTop: myHeight(0.0), tintColor: myColors.primaryT
+              }}
+                source={require('../assets/home_main/home/seatSF.png')} />
+              <Spacer paddingEnd={myWidth(1.5)} />
+
+              <Text
+
+                style={{
+                  fontSize: myFontSize.body3,
+                  fontFamily: myFonts.bodyBold,
+                  color: myColors.text,
+                  letterSpacing: myLetSpacing.common,
+                  includeFontPadding: false,
+                  padding: 0,
+                }}>{driver.vehicleSeats} Seater</Text>
+              <Spacer paddingEnd={myWidth(1.5)} />
+            </View>
+          </View>
+
+
+          <Spacer paddingT={myHeight(1.5)} />
+        </TouchableOpacity>
+
+
+        <Spacer paddingT={myHeight(1)} />
+        <Spacer paddingT={myHeight(1)} />
+
+        {/*Phone &  Chat */}
+        <View style={{
+          flexDirection: 'row',
+          borderTopWidth: myWidth(0.2), borderWidth: myWidth(0.2),
+          borderColor: myColors.textL, marginHorizontal: myWidth(4),
+          borderRadius: myWidth(50)
+        }}>
+          {/* Phone */}
+          <TouchableOpacity activeOpacity={0.7} onPress={() => { Linking.openURL(`tel:${driver.contact}`); }}
+            style={{
+              width: '50%', flexDirection: 'row', paddingVertical: myHeight(1.2),
+              alignItems: 'center', justifyContent: 'center', borderEndWidth: myWidth(0.2),
+              borderColor: myColors.textL,
+            }}>
+            <Image source={require('../assets/home_main/home/phone.png')}
+              style={{
+                width: myHeight(2.28),
+                height: myHeight(2.28),
+                resizeMode: 'contain',
+                tintColor: myColors.primaryT
+              }}
+            />
+            <Spacer paddingEnd={myWidth(3)} />
+            <Text style={[
+              styles.textCommon,
+              {
+                fontSize: myFontSize.body2,
+                fontFamily: myFonts.heading,
+                color: myColors.text
+              }
+            ]}>CALL</Text>
+          </TouchableOpacity>
+
+          {/* Chat */}
+          <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Chat',
+            { user2: driver }
+          )}
+            style={{
+              width: '50%', flexDirection: 'row', paddingVertical: myHeight(1.2),
+              alignItems: 'center', justifyContent: 'center'
+            }}>
+            <Image source={require('../assets/home_main/home/navigator/chat2.png')}
+              style={{
+                width: myHeight(2.38),
+                height: myHeight(2.38),
+                resizeMode: 'contain',
+                tintColor: myColors.primaryT
+              }}
+            />
+            <Spacer paddingEnd={myWidth(3)} />
+            <Text style={[
+              styles.textCommon,
+              {
+                fontSize: myFontSize.body2,
+                fontFamily: myFonts.heading,
+                color: myColors.text
+              }
+            ]}>CHAT</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Spacer paddingT={myHeight(1.5)} />
+
+
       </ScrollView>
 
 
@@ -800,6 +1039,19 @@ const styles = StyleSheet.create({
   //Text
   textCommon: {
     color: myColors.text,
+    letterSpacing: myLetSpacing.common,
+    includeFontPadding: false,
+    padding: 0,
+  },
+  backItem: {
+    paddingHorizontal: myWidth(5), paddingVertical: myHeight(0.75), borderRadius: myWidth(100),
+    backgroundColor: myColors.background, borderWidth: myHeight(0.1), borderColor: myColors.divider,
+    flexDirection: 'row', alignItems: 'center'
+  },
+  heading: {
+    fontSize: myFontSize.body4,
+    fontFamily: myFonts.bodyBold,
+    color: myColors.textL4,
     letterSpacing: myLetSpacing.common,
     includeFontPadding: false,
     padding: 0,
