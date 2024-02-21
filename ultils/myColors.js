@@ -18,6 +18,9 @@ export const myColors = {
     star: '#FFC700',
     orange: '#FF7A00',
     green: '#2aa85e',
+    green2: '#00A86B',
+
+    greenL: '#99EDCE',
 
     textL0: '#525252',
     textL: '#8F8F8F',
