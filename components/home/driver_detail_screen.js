@@ -97,7 +97,7 @@ export const DriverDetail = ({ navigation, route }) => {
 
               <>
                 <View key={i} style={[styles.backItem, {
-                  backgroundColor: is ? myColors.primaryT : myColors.background, width: myWidth(11.82), paddingVertical: myHeight(0.6),
+                  backgroundColor: is ? myColors.primaryT : myColors.divider, width: myWidth(11.82), paddingVertical: myHeight(0.6),
                   paddingHorizontal: myWidth(0), justifyContent: 'center'
                 }]}>
 
@@ -116,7 +116,7 @@ export const DriverDetail = ({ navigation, route }) => {
                 </View>
                 {
                   i != 6 &&
-                  <Spacer paddingEnd={myWidth(1.5)} />
+                  <Spacer key={i} paddingEnd={myWidth(1.5)} />
                 }
               </>
 
@@ -308,7 +308,7 @@ export const DriverDetail = ({ navigation, route }) => {
 
           </View>
 
-          <Spacer paddingT={myHeight(2.5)} />
+          <Spacer paddingT={myHeight(3.5)} />
 
           {/* Aminities */}
           <View style={{}}>
@@ -401,7 +401,7 @@ export const DriverDetail = ({ navigation, route }) => {
 
             </View>
           </View>
-          <Spacer paddingT={myHeight(2.5)} />
+          <Spacer paddingT={myHeight(3.5)} />
 
           {/* Paid */}
           <View style={{}}>
@@ -414,18 +414,18 @@ export const DriverDetail = ({ navigation, route }) => {
               {
                 driver.packages.map((it, i) => (
                   <>
-                    <View key={i} style={styles.backItem}>
+                    <View key={i} style={[styles.backItem, { paddingHorizontal: 0, width: myWidth(20), justifyContent: 'center', }]}>
                       <Text numberOfLines={1}
 
                         style={{
 
-                          fontSize: myFontSize.body2,
+                          fontSize: myFontSize.xxSmall,
                           fontFamily: myFonts.bodyBold,
                           color: myColors.text,
                           letterSpacing: myLetSpacing.common,
                           includeFontPadding: false,
                           padding: 0,
-                        }}>{it} </Text>
+                        }}>{it}</Text>
                     </View>
                     <Spacer paddingEnd={myWidth(4)} />
 
@@ -438,7 +438,7 @@ export const DriverDetail = ({ navigation, route }) => {
           </View>
 
 
-          <Spacer paddingT={myHeight(2.5)} />
+          <Spacer paddingT={myHeight(3.5)} />
           {/* Daily */}
           <View style={{}}>
             <Text
@@ -449,17 +449,17 @@ export const DriverDetail = ({ navigation, route }) => {
             <DaysShow list={driver.dailyDays} />
           </View>
 
-          <Spacer paddingT={myHeight(2.5)} />
+          <Spacer paddingT={myHeight(3.5)} />
           {/* Event Book */}
           <View>
-            <Text
-
-              style={styles.heading}>Availability for Events</Text>
-
-            <Spacer paddingT={myHeight(1)} />
             {
               driver.isOneRide ?
                 <>
+                  <Text
+
+                    style={styles.heading}>Availability for Events</Text>
+
+                  <Spacer paddingT={myHeight(1)} />
                   <DaysShow list={driver.oneRideDays} />
                   <Spacer paddingT={myHeight(2.5)} />
 
@@ -552,77 +552,82 @@ export const DriverDetail = ({ navigation, route }) => {
           </View>
 
           {/* Reviews */}
-          <View style={{}}>
-            <Text
+          {
+            reviews.length ?
+              <View style={{}}>
+                <Text
 
-              style={styles.heading}>Reviews</Text>
+                  style={styles.heading}>Reviews</Text>
 
-            <Spacer paddingT={myHeight(1)} />
+                <Spacer paddingT={myHeight(1)} />
 
-            <FlashList
-              showsVerticalScrollIndicator={false}
-              scrollEnabled={false}
-              data={reviews}
+                <FlashList
+                  showsVerticalScrollIndicator={false}
+                  scrollEnabled={false}
+                  data={reviews}
 
-              contentContainerStyle={{ flexGrow: 1 }}
-              ItemSeparatorComponent={() =>
-                <View style={{ borderTopWidth: myHeight(0.08), borderColor: myColors.offColor, width: "100%" }} />
-              }
-              estimatedItemSize={myHeight(10)}
-              renderItem={({ item, index }) => {
-                // const item = data
+                  contentContainerStyle={{ flexGrow: 1 }}
+                  ItemSeparatorComponent={() =>
+                    <View style={{ borderTopWidth: myHeight(0.08), borderColor: myColors.offColor, width: "100%" }} />
+                  }
+                  estimatedItemSize={myHeight(10)}
+                  renderItem={({ item, index }) => {
+                    // const item = data
 
-                return (
-                  <View key={index} style={{ borderWidth: myHeight(0.1), backgroundColor: myColors.background, elevation: 1, borderColor: myColors.divider, borderRadius: myWidth(2), paddingHorizontal: myWidth(2) }}>
-                    <Spacer paddingT={myHeight(0.8)} />
-
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {/* <Spacer paddingEnd={myWidth(2)} /> */}
-                      <Text style={[styles.textCommon, {
-                        flex: 1,
-                        fontSize: myFontSize.body3,
-                        fontFamily: myFonts.heading,
-                        paddingEnd: myWidth(3)
-                      }]}>{item.name}</Text>
+                    return (
+                      <View key={index} style={{ borderWidth: myHeight(0.1), backgroundColor: myColors.background, elevation: 1, borderColor: myColors.divider, borderRadius: myWidth(2), paddingHorizontal: myWidth(2) }}>
+                        <Spacer paddingT={myHeight(0.8)} />
 
 
-                      {item.rating &&
-                        <Stars num={item.rating} />
-                      }
-
-                    </View>
-                    <Spacer paddingT={myHeight(0.5)} />
-                    <Text style={[styles.textCommon, {
-                      fontSize: myFontSize.body,
-                      fontFamily: myFonts.body,
-                      paddingEnd: myWidth(3),
-                      color: myColors.textL4,
-
-                    }]}>{item.review}</Text>
-
-                    <Spacer paddingT={myHeight(1.5)} />
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                      <Text style={[styles.textCommon, {
-                        flex: 1,
-                        textAlign: 'right',
-                        fontSize: myFontSize.xSmall,
-                        fontFamily: myFonts.bodyBold,
-                        color: myColors.textL4,
-                      }]}><Text style={{ fontSize: myFontSize.small3, color: myColors.textL4, fontFamily: myFonts.body, }}>{item.edited ? 'Edited' : ''}</Text>  {item.date} </Text>
-
-                    </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          {/* <Spacer paddingEnd={myWidth(2)} /> */}
+                          <Text style={[styles.textCommon, {
+                            flex: 1,
+                            fontSize: myFontSize.body3,
+                            fontFamily: myFonts.heading,
+                            paddingEnd: myWidth(3)
+                          }]}>{item.name}</Text>
 
 
-                    <Spacer paddingT={myHeight(0.7)} />
+                          {item.rating &&
+                            <Stars num={item.rating} />
+                          }
 
-                  </View>
-                )
-              }
-              } />
+                        </View>
+                        <Spacer paddingT={myHeight(0.5)} />
+                        <Text style={[styles.textCommon, {
+                          fontSize: myFontSize.body,
+                          fontFamily: myFonts.body,
+                          paddingEnd: myWidth(3),
+                          color: myColors.textL4,
 
-          </View>
+                        }]}>{item.review}</Text>
+
+                        <Spacer paddingT={myHeight(1.5)} />
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                          <Text style={[styles.textCommon, {
+                            flex: 1,
+                            textAlign: 'right',
+                            fontSize: myFontSize.xSmall,
+                            fontFamily: myFonts.bodyBold,
+                            color: myColors.textL4,
+                          }]}><Text style={{ fontSize: myFontSize.small3, color: myColors.textL4, fontFamily: myFonts.body, }}>{item.edited ? 'Edited' : ''}</Text>  {item.date} </Text>
+
+                        </View>
+
+
+                        <Spacer paddingT={myHeight(0.7)} />
+
+                      </View>
+                    )
+                  }
+                  } />
+
+              </View>
+              :
+              null
+          }
 
 
 

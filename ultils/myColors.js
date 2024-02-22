@@ -8,6 +8,8 @@ export const myColors = {
     primaryL3: '#e2ccff',
     primaryL4: '#e5d4fc ', //50%
     primaryL5: '#eadefa', //30%
+    primaryL6: '#F4EDFF', //30%
+
     // primary: '#32B768',
     //   primaryT: '#2aa85e',
     // primaryL: '#a7faa5',

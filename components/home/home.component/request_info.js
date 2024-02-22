@@ -202,130 +202,119 @@ export const RequestInfo = ({ item, navigation, code }) => {
             style={{
                 backgroundColor: myColors.background, elevation: 5,
                 borderRadius: myWidth(1.5), paddingHorizontal: myWidth(3),
-                marginBottom: myHeight(1), marginTop: myHeight(1),
-                borderBottomWidth: myHeight(0.1),
-                borderColor: item.unread ? myColors.green : myColors.divider
+                marginBottom: myHeight(1), marginTop: myHeight(4),
+                borderWidth: myHeight(0.1), borderColor: item.unread ? myColors.green : myColors.divider
             }}>
-            <Spacer paddingT={myHeight(1)} />
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+            <View style={{
+                paddingVertical: myHeight(0.6), paddingHorizontal: myWidth(4),
+                marginTop: -myHeight(2),
+                backgroundColor: myColors.text, alignSelf: 'center',
+                borderRadius: myWidth(100), flexDirection: 'row', alignItems: 'center'
+            }}>
                 <Image
                     style={{
-                        width: myHeight(2.3),
-                        height: myHeight(2.3),
+                        width: myHeight(2),
+                        height: myHeight(2),
                         resizeMode: 'contain',
-                        tintColor: myColors.primaryT
+                        tintColor: myColors.divider
                     }} source={item.twoWay ? require('../../assets/home_main/home/twoArrow.png') : require('../../assets/home_main/home/oneArrow.png')}
                 />
 
-                <Spacer paddingEnd={myWidth(2.4)} />
+                <Spacer paddingEnd={myWidth(2.2)} />
+                <Text
+                    style={[
+                        styles.textCommon,
+                        {
+
+                            fontSize: myFontSize.xxSmall,
+                            fontFamily: myFonts.body,
+                            color: myColors.background
+                        },
+                    ]}
+                >ID: {item.id} </Text>
+            </View>
+            <Spacer paddingT={myHeight(1)} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+
                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
 
-                    <Text
-                        style={[
-                            styles.textCommon,
-                            {
 
-                                fontSize: myFontSize.body,
-                                fontFamily: myFonts.body,
-                            },
-                        ]}
-                    >ID: {item.id} </Text>
-                    <Spacer paddingEnd={myWidth(2)} />
+                    <Spacer paddingEnd={myWidth(0.3)} />
 
                     <Image
                         style={{
+
                             width: myHeight(2),
                             height: myHeight(2),
                             resizeMode: 'contain',
-                            tintColor: myColors.textL4
-                        }} source={require('../../assets/home_main/home/distance.png')}
-                    />
-                    <Spacer paddingEnd={myWidth(1.2)} />
-
-                    <Text
-                        style={[
-                            styles.textCommon,
-                            {
-
-                                fontSize: myFontSize.xSmall,
-                                fontFamily: myFonts.bodyBold,
-                            },
-                        ]}
-                    >{item.distance} </Text>
-                    <Spacer paddingEnd={myWidth(2.5)} />
-
-                    <Image
-                        style={{
-
-                            width: myHeight(1.6),
-                            height: myHeight(1.6),
-                            resizeMode: 'contain',
-                            tintColor: myColors.textL4
+                            tintColor: myColors.primaryT
                         }}
-                        source={require('../../assets/home_main/home/seatSF.png')}
+                        source={require('../../assets/home_main/home/profile.png')}
                     />
-                    <Spacer paddingEnd={myWidth(1)} />
+                    <Spacer paddingEnd={myWidth(2.5)} />
                     <Text
                         style={[
                             styles.textCommon,
                             {
                                 flex: 1,
-                                fontSize: myFontSize.body,
+                                fontSize: myFontSize.body2,
                                 fontFamily: myFonts.bodyBold,
                             },
                         ]}
-                    >{item.seats}
+                    >{item.name}
                     </Text>
+
                 </View>
-
                 {
-                    !code == 3 &&
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <TouchableOpacity activeOpacity={0.85} style={{
-                            padding: myHeight(0.8), backgroundColor: myColors.background,
-                            elevation: 3,
-                            borderRadius: 100
-                        }}
-                            onPress={() => { Linking.openURL(`tel:${item.contact}`); }}
-                        >
-                            <Image source={require('../../assets/home_main/home/phone.png')}
-                                style={{
-                                    width: myHeight(1.8),
-                                    height: myHeight(1.8),
-                                    resizeMode: 'contain',
-                                    tintColor: myColors.text
-                                }}
-                            />
-
-                        </TouchableOpacity>
-                        <Spacer paddingEnd={myWidth(3.5)} />
-
-                        <TouchableOpacity activeOpacity={0.85} style={{
-                            padding: myHeight(0.8), backgroundColor: myColors.background,
-                            elevation: 3,
-                            borderRadius: 100
-                        }}
-                            onPress={() => {
-                                navigation.navigate('Chat',
-                                    { user2: item }
-                                )
+                    code == 3 ? null
+                        :
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <TouchableOpacity activeOpacity={0.85} style={{
+                                padding: myHeight(0.8), backgroundColor: myColors.background,
+                                elevation: 3,
+                                borderRadius: 100
                             }}
-                        >
-                            <Image source={require('../../assets/home_main/home/navigator/chat2.png')}
-                                style={{
-                                    width: myHeight(1.8),
-                                    height: myHeight(1.8),
-                                    resizeMode: 'contain',
-                                    tintColor: myColors.text
+                                onPress={() => { Linking.openURL(`tel:${item.contact}`); }}
+                            >
+                                <Image source={require('../../assets/home_main/home/phone.png')}
+                                    style={{
+                                        width: myHeight(1.8),
+                                        height: myHeight(1.8),
+                                        resizeMode: 'contain',
+                                        tintColor: myColors.text
+                                    }}
+                                />
+
+                            </TouchableOpacity>
+                            <Spacer paddingEnd={myWidth(3.5)} />
+
+                            <TouchableOpacity activeOpacity={0.85} style={{
+                                padding: myHeight(0.8), backgroundColor: myColors.background,
+                                elevation: 3,
+                                borderRadius: 100
+                            }}
+                                onPress={() => {
+                                    navigation.navigate('Chat',
+                                        { user2: item }
+                                    )
                                 }}
-                            />
-                        </TouchableOpacity>
-                    </View>
+                            >
+                                <Image source={require('../../assets/home_main/home/navigator/chat2.png')}
+                                    style={{
+                                        width: myHeight(1.8),
+                                        height: myHeight(1.8),
+                                        resizeMode: 'contain',
+                                        tintColor: myColors.text
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        </View>
+
                 }
-
-
-
             </View>
+
             <Spacer paddingT={myHeight(1.7)} />
 
             <View style={{ flexDirection: 'row' }}>
@@ -382,21 +371,22 @@ export const RequestInfo = ({ item, navigation, code }) => {
                             ]}
                         >
                             PickUp</Text>
-                        <Image
+                        {/* <Image
                             style={{
                                 width: myHeight(2),
                                 height: myHeight(2),
                                 resizeMode: 'contain',
                                 tintColor: myColors.textL4
                             }} source={require('../../assets/home_main/home/clock.png')}
-                        />
+                        /> */}
                         <Spacer paddingEnd={myWidth(1.3)} />
 
                         <Text style={[
                             styles.textCommon,
                             {
-                                fontSize: myFontSize.xxSmall,
-                                fontFamily: myFonts.body,
+                                fontSize: myFontSize.xSmall,
+                                fontFamily: myFonts.bodyBold,
+                                color: myColors.textL4
                             },
                         ]}>{item.pickupTime.time}
                         </Text>
@@ -435,20 +425,21 @@ export const RequestInfo = ({ item, navigation, code }) => {
                             {
                                 item.twoWay &&
                                 <>
-                                    <Image
+                                    {/* <Image
                                         style={{
                                             width: myHeight(2),
                                             height: myHeight(2),
                                             resizeMode: 'contain',
                                             tintColor: myColors.textL4
                                         }} source={require('../../assets/home_main/home/clock.png')}
-                                    />
+                                    /> */}
                                     <Spacer paddingEnd={myWidth(1.3)} />
                                     <Text style={[
                                         styles.textCommon,
                                         {
-                                            fontSize: myFontSize.xxSmall,
-                                            fontFamily: myFonts.body,
+                                            fontSize: myFontSize.xSmall,
+                                            fontFamily: myFonts.bodyBold,
+                                            color: myColors.textL4
                                         },
                                     ]}>{item.dropoffTime.time}
                                     </Text>
@@ -470,43 +461,62 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     </View>
                 </View>
             </View>
-            <Spacer paddingT={myHeight(1.5)} />
+            <Spacer paddingT={myHeight(1.6)} />
+
+            <View style={{ height: myHeight(0.15), backgroundColor: myColors.dot }} />
+
+
+            <Spacer paddingT={myHeight(0.7)} />
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                {/* <Text
-                    style={[
-                        styles.textCommon,
-                        {
-                            flex: 1,
-                            fontSize: myFontSize.body,
-                            fontFamily: myFonts.body,
-                            color: item.status == 1 ? 'red' : myColors.text
-                        },
-                    ]}
-                >{item.status == 1 ? 'Not send to any driver yet' : `Send to ${item.sendDrivers.length} drivers yet`}</Text> */}
 
                 <Image
                     style={{
 
+                        width: myHeight(1.6),
+                        height: myHeight(1.6),
+                        resizeMode: 'contain',
+                        tintColor: myColors.text
+                    }}
+                    source={require('../../assets/home_main/home/seatSF.png')}
+                />
+                <Spacer paddingEnd={myWidth(1.8)} />
+                <Text
+                    style={[
+                        styles.textCommon,
+                        {
+
+                            fontSize: myFontSize.body,
+                            fontFamily: myFonts.body,
+                        },
+                    ]}
+                >{item.seats}
+                </Text>
+                <Spacer paddingEnd={myWidth(3)} />
+
+                <View style={{ height: '100%', width: myHeight(0.25), backgroundColor: myColors.dot }} />
+                <Spacer paddingEnd={myWidth(3)} />
+
+                <Image
+                    style={{
                         width: myHeight(2),
                         height: myHeight(2),
                         resizeMode: 'contain',
-                        tintColor: myColors.textL4
-                    }}
-                    source={require('../../assets/home_main/home/profile.png')}
+                        tintColor: myColors.text
+                    }} source={require('../../assets/home_main/home/distance.png')}
                 />
-                <Spacer paddingEnd={myWidth(2.5)} />
+                <Spacer paddingEnd={myWidth(1.8)} />
+
                 <Text
                     style={[
                         styles.textCommon,
                         {
                             flex: 1,
-                            fontSize: myFontSize.body2,
-                            fontFamily: myFonts.bodyBold,
+                            fontSize: myFontSize.xxSmall,
+                            fontFamily: myFonts.body,
                         },
                     ]}
-                >{item.name}
-                </Text>
+                >{item.distance} </Text>
 
                 {
                     load ?
@@ -603,7 +613,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                                                                         color: 'red'
                                                                     },
                                                                 ]}
-                                                            >{isMissed ? 'You Missed' : 'Customer Cancelled'}</Text>
+                                                            >{isMissed ? 'You Missed' : 'Cancelled'}</Text>
                                                             :
                                                             <Text
                                                                 style={[
@@ -626,6 +636,8 @@ export const RequestInfo = ({ item, navigation, code }) => {
                         </>
                 }
             </View>
+
+
             <Spacer paddingT={myHeight(1.5)} />
         </View>
     )
