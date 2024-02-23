@@ -418,7 +418,7 @@ export const HomeScreen = ({ navigation }) => {
                                 <DriverInfoFull navigation={navigation} driver={profile} />
                             </TouchableOpacity>
 
-                            <Spacer paddingT={myHeight(0.5)} />
+                            <Spacer paddingT={myHeight(2.5)} />
                             {/* <Text style={styles.heading}>Settings</Text>
                             <Spacer paddingT={myHeight(1)} /> */}
 
