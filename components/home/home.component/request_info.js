@@ -39,7 +39,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
 
         const update = { did: profile.uid, driverName: profile.name, driverContact: profile.contact, status: 3 }
-        update[profile.uid] = { ...item[profile.uid], status: 2 }
+        update[profile.uid] = { ...item[profile.uid], status: 2, unread: true }
 
         // console.log(update)
         // return
@@ -203,7 +203,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                 backgroundColor: myColors.background, elevation: 5,
                 borderRadius: myWidth(1.5), paddingHorizontal: myWidth(3),
                 marginBottom: myHeight(1), marginTop: myHeight(4),
-                borderWidth: myHeight(0.1), borderColor: item.unread ? myColors.green : myColors.divider
+                borderWidth: myHeight(0.1), borderColor: me.unread ? myColors.green : myColors.divider
             }}>
 
             <View style={{

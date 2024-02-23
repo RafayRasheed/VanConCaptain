@@ -81,9 +81,9 @@ export const DriverDetailEdit = ({ navigation }) => {
     const [licence, setLicence] = useState(profile.licence)
 
     const [packages, setPackages] = useState(profile.packages ? [...profile.packages] : [])
-    const [dailyDays, setDailyDays] = useState(profile.dailyDays ? [...profile.dailyDays] : allDays)
+    const [dailyDays, setDailyDays] = useState(profile.dailyDays ? [...profile.dailyDays] : [])
     const [isOneRide, setOneRide] = useState(profile.isOneRide ? profile.isOneRide : false)
-    const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : allDays)
+    const [oneRideDays, setOneRideDays] = useState(profile.oneRideDays ? [...profile.oneRideDays] : [])
     const [ac, setAc] = useState(profile.ac ? profile.ac : false)
     const [isWifi, setIsWifi] = useState(profile.isWifi ? profile.isWifi : false)
 
@@ -1679,13 +1679,13 @@ export const DriverDetailEdit = ({ navigation }) => {
                         style={{
                             width: myWidth(92), alignSelf: 'center', paddingVertical: myHeight(1.3),
                             borderRadius: myHeight(1.4), alignItems: 'center', justifyContent: 'center',
-                            flexDirection: 'row', backgroundColor: myColors.primaryT,
-                            // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
+                            flexDirection: 'row', backgroundColor: myColors.background,
+                            borderWidth: myHeight(0.15), borderColor: myColors.textL4
                         }}>
                         <Text style={[styles.textCommon, {
                             fontFamily: myFonts.heading,
                             fontSize: myFontSize.body3,
-                            color: myColors.background
+                            color: myColors.text
                         }]}>Save</Text>
                     </TouchableOpacity>
 

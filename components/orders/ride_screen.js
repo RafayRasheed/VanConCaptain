@@ -13,16 +13,17 @@ import { containString } from '../functions/functions';
 
 
 export const RidesScreen = ({ navigation }) => {
+    const { profile } = useSelector(state => state.profile)
+
     const { pending, progress, history } = useSelector(state => state.orders)
-    const pendingUnread = pending.filter(it => it.unread == true)
-    const progressUnread = progress.filter(it => it.unread == true)
-    const historyUnread = history.filter(it => it.unread == true)
+    const pendingUnread = pending.filter(it => it[profile.uid].unread == true)
+    const progressUnread = progress.filter(it => it[profile.uid].unread == true)
+    const historyUnread = history.filter(it => it[profile.uid].unread == true)
     const [i, setI] = useState(0);
     const [pendingL, setPendingL] = useState([]);
     const [progressL, setProgressL] = useState([]);
     const [historyL, setHistoryL] = useState([]);
     const [search, setSearch] = useState(null)
-    const { profile } = useSelector(state => state.profile)
     const dispatch = useDispatch()
     function filter(list) {
         return list.filter(item => containString(item.name, search) || containString(item.id, search) || containString(item.dropoff.name, search) || containString(item.pickup.name, search))
@@ -140,7 +141,7 @@ export const RidesScreen = ({ navigation }) => {
                         renderItem={({ item, index }) => {
                             return (
                                 <TouchableOpacity key={index} activeOpacity={0.95}
-                                    onPress={() => navigation.navigate('OrderDetails', { item, code: i + 1 })}>
+                                    onPress={() => navigation.navigate('RideDetails', { item, code: i + 1 })}>
 
 
 

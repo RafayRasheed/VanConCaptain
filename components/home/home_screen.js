@@ -30,6 +30,7 @@ import { Search } from './locations_screen';
 import database from '@react-native-firebase/database';
 import { setChats, setTotalUnread } from '../../redux/chat_reducer';
 import { DriverInfoFull } from './home.component/driver_info_full';
+import { Status } from './home.component/status';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -55,6 +56,7 @@ export const HomeScreen = ({ navigation }) => {
     const [RecommendRestaurant, setRecommendRestaurant] = useState([])
     const [startPro, setStartPro] = useState({})
 
+    const { pending, progress, history } = useSelector(state => state.orders)
 
 
     const dispatch = useDispatch()
@@ -416,7 +418,7 @@ export const HomeScreen = ({ navigation }) => {
                                 </View>
 
                         }
-                        <Spacer paddingT={myHeight(20)} />
+                        <Spacer paddingT={myHeight(50)} />
 
                         <View style={{ width: '100%', alignItems: 'center' }}>
 
@@ -443,6 +445,7 @@ export const HomeScreen = ({ navigation }) => {
                                 }]}>Send</Text>
                             </TouchableOpacity>
                         </View>
+
                         {/* New Arrival  Complete*/}
                         {/* <View>
                             <View style={{ paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -486,13 +489,20 @@ export const HomeScreen = ({ navigation }) => {
                             </ScrollView>
                         </View> */}
 
+                        <Spacer paddingT={progress.length ? myHeight(25) : 0} />
 
-                        {/* <Spacer paddingT={myHeight(3)} /> */}
                     </ScrollView>
 
             }
 
+            {
+                progress.length ? <>
 
+
+                    <Status notifications={progress} />
+                </>
+                    : null
+            }
         </SafeAreaView>
     )
 }

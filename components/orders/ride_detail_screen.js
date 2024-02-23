@@ -16,9 +16,12 @@ export const RideDetails = ({ navigation, route }) => {
     const code = route.params.code
     const [errorMsg, setErrorMsg] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
+    const [sendDrivers, setSendDrivers] = useState([])
+    const [statusMessages, setStatusMessages] = useState(null)
 
     const { allRequest } = useSelector(State => State.orders)
     const [item, setRequest] = useState(null)
+    const item2 = item
 
     // const driver = item?.sendDrivers[0]
 
@@ -28,6 +31,36 @@ export const RideDetails = ({ navigation, route }) => {
             setRequest(allRequest.find(it => it.id == req.id))
         }
     }, [allRequest])
+    useEffect(() => {
+        if (item) {
+            const statusMessages = code == 1 ? 'Active' : code == 2 ? 'Pending' : item.status < 0 ?
+                'Cancelled' : 'Completed'
+
+            setStatusMessages(statusMessages)
+            // const ind = item.sendDrivers.findIndex(it => item[it.did].status >= 2)
+            // if(ind!=-1){
+            //     driver.push(item[item.sendDrivers[ind].did])
+            // }
+            let driver = []
+
+            let dri = null
+            item.sendDrivers?.map((it, i) => {
+                const d = item[it.did]
+                console.log('sefsegfsfsfsefsfse', d)
+                if (d.status >= 2) {
+                    dri = d
+                }
+                else {
+                    driver.push(d)
+                }
+            })
+            if (dri) {
+                driver = [dri, ...driver]
+            }
+            console.log(driver.length)
+            setSendDrivers(driver)
+        }
+    }, [item])
     useEffect(() => {
 
         if (errorMsg) {
@@ -42,7 +75,49 @@ export const RideDetails = ({ navigation, route }) => {
     if (!item) {
         return
     }
+    const CommonItem = ({ text, text2, items = [], color = null }) => {
+        return (
+            <View style={{}}>
+                <Text style={styles.heading}>{text}</Text>
+                <View style={{ marginHorizontal: myWidth(2) }}>
 
+                    {
+                        text2 ?
+                            <Text style={styles.tesxH}>{text2}</Text>
+                            : null
+                    }
+
+                    <Spacer paddingT={myHeight(1)} />
+
+                    {
+                        items.map((item, i) => {
+                            if (item == null) {
+                                return
+                            }
+                            return (
+
+                                <View key={i} style={styles.backItem}>
+
+                                    <Text
+
+                                        style={{
+                                            fontSize: myFontSize.body,
+                                            fontFamily: myFonts.bodyBold,
+                                            color: color ? color : myColors.text,
+                                            letterSpacing: myLetSpacing.common,
+                                            includeFontPadding: false,
+                                            padding: 0,
+                                        }}>{item}</Text>
+                                </View>
+                            )
+                        })
+                    }
+
+                </View>
+                <Spacer paddingT={myHeight(2.5)} />
+            </View>
+        )
+    }
     return (
         <>
             {/* <StatusBar backgroundColor={orderModal ? '#00000030' : myColors.background} /> */}
@@ -59,21 +134,24 @@ export const RideDetails = ({ navigation, route }) => {
                     alignItems: 'center'
                 }}>
                     {/* Back */}
-                    <TouchableOpacity
-                        style={{
-                            paddingEnd: myWidth(4)
-                        }}
-                        activeOpacity={0.8}
-                        onPress={() => navigation.goBack()}>
-                        <Image
-                            style={{
-                                width: myHeight(2.6),
-                                height: myHeight(2.6),
-                                resizeMode: 'contain',
-                            }}
-                            source={require('../assets/home_main/home/back.png')}
-                        />
+
+                    <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7} style={{
+                        backgroundColor: myColors.primaryT,
+                        height: myHeight(4),
+                        width: myHeight(4),
+                        borderRadius: myHeight(3),
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}  >
+                        <Image style={
+                            {
+                                height: myHeight(2),
+                                width: myHeight(2),
+                                resizeMode: 'contain'
+                            }
+                        } source={require('../assets/startup/goL.png')} />
                     </TouchableOpacity>
+                    <Spacer paddingEnd={myWidth(5)} />
 
 
                     <Text numberOfLines={1} style={[styles.textCommon, {
@@ -82,344 +160,43 @@ export const RideDetails = ({ navigation, route }) => {
                     }]}>Request Details</Text>
 
                 </View>
-                <Spacer paddingT={myHeight(1.2)} />
+                <Spacer paddingT={myHeight(1.8)} />
 
                 {/* Content */}
                 <ScrollView bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={{
-                    backgroundColor: myColors.background, flexGrow: 1
+                    backgroundColor: myColors.background, flexGrow: 1, paddingHorizontal: myWidth(4)
                 }}>
                     <Spacer paddingT={myHeight(1)} />
+                    <CommonItem text={'Status'} text2={'The status of the request.'}
+                        items={[statusMessages]} color={(item.status < 0 || item.status == 1) ? myColors.red : myColors.green} />
 
 
-                    <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row' }}>
-                        {/* Circles & Line*/}
-                        <View
-                            style={{
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                paddingVertical: myHeight(0.5),
-                                marginBottom: 0
-                            }}
-                        >
-                            <View
-                                style={{
-                                    height: myHeight(2.7),
-                                    width: myHeight(2.7),
-                                    borderRadius: myHeight(3),
-                                    borderWidth: myHeight(0.07),
-                                    borderColor: myColors.primaryT,
-                                    backgroundColor: myColors.background,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    flex: 1,
-                                    width: myWidth(0.5),
-                                    backgroundColor: myColors.primaryT,
-                                    marginVertical: myHeight(0.4),
-                                }}
-                            />
-                            <View
-                                style={{
-                                    height: myHeight(2.7),
-                                    width: myHeight(2.7),
-                                    borderRadius: myHeight(3),
-                                    backgroundColor: myColors.primaryT,
-                                }}
-                            />
-                        </View>
+                    <CommonItem text={'Pickup'} text2={'Pickup location and timing.'}
+                        items={[item.pickup.name, item.pickupTime.time]} />
 
-                        <Spacer paddingEnd={myWidth(3)} />
-                        {/* Text Pick & Desti */}
-                        <View style={{ flex: 1 }}>
-                            {/* Pick */}
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text
-                                    style={[
-                                        styles.textCommon,
-                                        {
-                                            flex: 1,
-                                            fontSize: myFontSize.body4,
-                                            fontFamily: myFonts.bodyBold,
-                                        },
-                                    ]}
-                                >
-                                    PickUp</Text>
-                                <Image
-                                    style={{
-                                        width: myHeight(2.2),
-                                        height: myHeight(2.2),
-                                        resizeMode: 'contain',
-                                        tintColor: myColors.primaryT
-                                    }} source={require('../assets/home_main/home/clock.png')}
-                                />
-                                <Spacer paddingEnd={myWidth(1.3)} />
-
-                                <Text style={[
-                                    styles.textCommon,
-                                    {
-                                        fontSize: myFontSize.body,
-                                        fontFamily: myFonts.body,
-                                    },
-                                ]}>{item.pickupTime.time}
-                                </Text>
-                            </View>
-                            <Text numberOfLines={2}
-                                style={[
-                                    styles.textCommon,
-                                    {
-                                        fontSize: myFontSize.xxSmall,
-                                        fontFamily: myFonts.body,
-                                    },
-                                ]}
-                            >{item.pickup.name}</Text>
-
-                            <Spacer paddingT={myHeight(1.8)} />
-
-                            {/* Destination */}
-                            <View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                                    <Text
-                                        style={[
-                                            styles.textCommon,
-                                            {
-                                                flex: 1,
-                                                fontSize: myFontSize.body4,
-                                                fontFamily: myFonts.bodyBold,
-                                            },
-                                        ]}
-                                    >
-                                        DropOff
-                                    </Text>
+                    <CommonItem text={'Dropoff'} text2={'Dropoff location and timing.'}
+                        items={[item.dropoff.name, item.twoWay ? item.dropoffTime.time : null]} />
 
 
 
-                                    {
-                                        item.twoWay &&
-                                        <>
-                                            <Image
-                                                style={{
-                                                    width: myHeight(2.2),
-                                                    height: myHeight(2.2),
-                                                    resizeMode: 'contain',
-                                                    tintColor: myColors.primaryT
-                                                }} source={require('../assets/home_main/home/clock.png')}
-                                            />
-                                            <Spacer paddingEnd={myWidth(1.3)} />
-                                            <Text style={[
-                                                styles.textCommon,
-                                                {
-                                                    fontSize: myFontSize.xxSmall,
-                                                    fontFamily: myFonts.body,
-                                                },
-                                            ]}>{item.dropoffTime.time}
-                                            </Text>
-                                        </>
-
-                                    }
-                                </View>
-                                <Text
-                                    numberOfLines={2}
-                                    style={[
-                                        styles.textCommon,
-                                        {
-                                            fontSize: myFontSize.xxSmall,
-                                            fontFamily: myFonts.body,
-                                        },
-                                    ]}
-                                >{item.dropoff.name} </Text>
-                            </View>
-                        </View>
-                    </View>
-
-                    <Spacer paddingT={myHeight(2)} />
-
-                    <View>
-                        {item.instruction ?
-
-
-                            <>
-
-
-                                <Text numberOfLines={1} style={[styles.textCommon, {
-
-                                    paddingHorizontal: myWidth(4),
-                                    fontFamily: myFonts.bodyBold, fontSize: myFontSize.xBody
-                                }]}>Instructions</Text>
-                                <Spacer paddingT={myHeight(0.3)} />
-                                <Text numberOfLines={1} style={[styles.textCommon, {
-
-                                    paddingHorizontal: myWidth(4),
-                                    fontFamily: myFonts.bodyBold, fontSize: myFontSize.body, color: myColors.textL5
-                                }]}>{item.instruction}</Text>
-
-                                <Spacer paddingT={myHeight(2)} />
-                            </>
-                            :
-                            null
-                        }
-                    </View>
-
-                    <View>
-                        {item.sendDrivers ?
-
-
-                            <>
-
-
-                                <Text numberOfLines={1} style={[styles.textCommon, {
-                                    flex: 1,
-                                    paddingHorizontal: myWidth(4),
-                                    fontFamily: myFonts.bodyBold, fontSize: myFontSize.xBody
-                                }]}>Drivers</Text>
-                                <Spacer paddingT={myHeight(0.3)} />
-
-                                <FlashList
-                                    showsVerticalScrollIndicator={false}
-                                    scrollEnabled={false}
-                                    data={item.sendDrivers}
-                                    extraData={null}
-                                    // extraData={[ac, wifi, topRated, search]}
-                                    // contentContainerStyle={{ flexGrow: 1 }}
-                                    // ItemSeparatorComponent={() =>
-                                    //     <View style={{ borderTopWidth: myHeight(0.08), borderColor: myColors.offColor, width: "100%" }} />
-                                    // }
-                                    estimatedItemSize={myHeight(10)}
-                                    renderItem={({ item, index }) => {
-                                        const driver = item
-                                        return (
-                                            <TouchableOpacity disabled key={index} activeOpacity={0.85}
-                                                onPress={() => navigation.navigate('DriverDetail', { driver: item })}>
-                                                <View style={{
-                                                    elevation: 5, backgroundColor: myColors.background,
-                                                    flexDirection: 'row', alignItems: 'center',
-                                                    paddingHorizontal: myWidth(2.5), borderRadius: myWidth(2),
-                                                    paddingVertical: myHeight(1),
-                                                    marginVertical: myHeight(1),
-                                                    marginHorizontal: myWidth(4),
+                    <CommonItem text={'Seats'} text2={'Amount of seats booked.'}
+                        items={[item.seats]} />
 
 
 
-                                                }}>
+                    <CommonItem text={'Distance Traveled '} text2={'The distance traveled from the pickup to dropoff'}
+                        items={[item.distance]} />
 
-                                                    <View style={{ flex: 1 }}>
+                    {item.instruction ?
+                        <CommonItem text={'Instruction '} items={[item.instruction]} />
+                        :
 
-                                                        <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-                                                            <Image style={{
-                                                                width: myHeight(2), height: myHeight(2),
-                                                                marginLeft: -myWidth(0.3),
-                                                                resizeMode: 'contain', marginTop: myHeight(0.2), tintColor: myColors.primaryT
-                                                            }}
-                                                                source={require('../assets/home_main/home/navigator/van2.png')} />
-                                                            <Spacer paddingEnd={myWidth(1.5)} />
-                                                            {/* Name */}
-                                                            <Text numberOfLines={1}
-                                                                style={[
-                                                                    styles.textCommon,
-                                                                    {
+                        null
+                    }
 
-                                                                        fontSize: myFontSize.body2,
-                                                                        fontFamily: myFonts.heading,
-                                                                    },
-                                                                ]}>{driver.vehicleName}</Text>
-                                                        </View>
-                                                        <Spacer paddingT={myHeight(0.4)} />
 
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                            <Image style={{
-                                                                width: myHeight(2), height: myHeight(2),
-                                                                resizeMode: 'contain', marginTop: myHeight(0.0), tintColor: myColors.primaryT
-                                                            }}
-                                                                source={require('../assets/home_main/home/driver.png')} />
-                                                            <Spacer paddingEnd={myWidth(1)} />
+                    <Spacer paddingT={myHeight(5.6)} />
 
-                                                            {/* Name */}
-                                                            <Text numberOfLines={1}
-                                                                style={{
-
-                                                                    fontSize: myFontSize.body,
-                                                                    fontFamily: myFonts.bodyBold,
-                                                                    color: myColors.text,
-                                                                    letterSpacing: myLetSpacing.common,
-                                                                    includeFontPadding: false,
-                                                                    padding: 0,
-                                                                }}>{driver.name}</Text>
-                                                        </View>
-                                                    </View>
-                                                    <View style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                                                        <Text numberOfLines={1}
-                                                            style={[
-                                                                styles.textCommon,
-                                                                {
-
-                                                                    fontSize: myFontSize.xxSmall,
-                                                                    fontFamily: myFonts.heading,
-
-                                                                    color: driver.status < 0 ? myColors.red : myColors.primaryT
-                                                                },
-                                                            ]}>{driver.status < 0 ? 'Rejected' : driver.status == 1 ? 'Sended' : 'Accepted'}</Text>
-                                                        <Spacer paddingT={myHeight(0.6)} />
-
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                            <TouchableOpacity activeOpacity={0.85} style={{
-                                                                padding: myHeight(0.8), backgroundColor: myColors.background,
-                                                                elevation: 3,
-                                                                borderRadius: 100
-                                                            }}
-                                                                onPress={() => { Linking.openURL(`tel:${driver.contact}`); }}
-                                                            >
-                                                                <Image source={require('../assets/home_main/home/phone.png')}
-                                                                    style={{
-                                                                        width: myHeight(1.8),
-                                                                        height: myHeight(1.8),
-                                                                        resizeMode: 'contain',
-                                                                        tintColor: myColors.primaryT
-                                                                    }}
-                                                                />
-
-                                                            </TouchableOpacity>
-                                                            <Spacer paddingEnd={myWidth(2.5)} />
-
-                                                            <TouchableOpacity activeOpacity={0.85} style={{
-                                                                padding: myHeight(0.8), backgroundColor: myColors.background,
-                                                                elevation: 3,
-                                                                borderRadius: 100
-                                                            }}
-                                                                onPress={() => {
-                                                                    console.log(driver)
-                                                                    navigation.navigate('Chat',
-                                                                        { user2: { ...driver, uid: driver.did } }
-                                                                    )
-                                                                }}
-                                                            >
-                                                                <Image source={require('../assets/home_main/home/navigator/chat2.png')}
-                                                                    style={{
-                                                                        width: myHeight(1.8),
-                                                                        height: myHeight(1.8),
-                                                                        resizeMode: 'contain',
-                                                                        tintColor: myColors.primaryT
-                                                                    }}
-                                                                />
-                                                            </TouchableOpacity>
-                                                        </View>
-                                                    </View>
-                                                    {/* <View style={{
-                        position: 'absolute', zIndex: 2,
-                        height: '100%', width: '100%', backgroundColor: '#00000010'
-                    }} /> */}
-                                                </View>
-
-                                            </TouchableOpacity>
-                                        )
-                                    }
-                                    }
-                                />
-                            </>
-                            :
-                            null
-                        }
-                    </View>
                 </ScrollView>
 
 
@@ -446,4 +223,27 @@ const styles = StyleSheet.create({
         padding: 0,
     },
 
+    backItem: {
+        paddingHorizontal: myWidth(4), width: '100%',
+        paddingVertical: myHeight(1), borderRadius: myWidth(2),
+        backgroundColor: myColors.background,
+        borderWidth: myHeight(0.1), borderColor: myColors.dot,
+        flexDirection: 'row', alignItems: 'center', marginVertical: myHeight(0.5)
+    },
+    heading: {
+        fontSize: myFontSize.body4,
+        fontFamily: myFonts.bodyBold,
+        color: myColors.textL4,
+        letterSpacing: myLetSpacing.common,
+        includeFontPadding: false,
+        padding: 0,
+    },
+    tesxH: {
+        fontSize: myFontSize.xxSmall,
+        fontFamily: myFonts.bodyBold,
+        color: myColors.textL4,
+        letterSpacing: myLetSpacing.common,
+        includeFontPadding: false,
+        padding: 0,
+    },
 })
