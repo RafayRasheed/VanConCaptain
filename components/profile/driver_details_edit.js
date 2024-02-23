@@ -1653,7 +1653,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                 includeFontPadding: false,
                                 fontFamily: myFonts.body,
                                 paddingHorizontal: myWidth(3),
-                                backgroundColor: myColors.primaryL6,
+                                backgroundColor: myColors.background,
                                 borderWidth: myHeight(0.1),
                                 borderColor: myColors.dot,
                             }}

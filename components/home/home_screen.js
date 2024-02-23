@@ -50,7 +50,7 @@ export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
     const { profile } = useSelector(state => state.profile)
 
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [categories, setCategories] = useState([])
     const [nearbyRestaurant, setNearbyRestaurant] = useState([])
     const [RecommendRestaurant, setRecommendRestaurant] = useState([])
@@ -198,6 +198,10 @@ export const HomeScreen = ({ navigation }) => {
     }, [])
     useEffect(() => {
         if (profile.city) {
+            setTimeout(() => {
+
+                setIsLoading(false)
+            }, 1000)
             getAreasLocations(profile.city)
         }
 
@@ -349,77 +353,45 @@ export const HomeScreen = ({ navigation }) => {
 
         <SafeAreaView style={styles.container}>
             <StatusbarH />
-            {
-                isLoading ? <HomeSkeleton />
-                    :
-                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
 
-                        <Spacer paddingT={myHeight(2)} />
-                        {/* <Text style={[styles.textCommon, {
+
+
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
+
+                <Spacer paddingT={myHeight(2)} />
+                {/* <Text style={[styles.textCommon, {
                             fontSize: myFontSize.medium2,
                             fontFamily: myFonts.heading,
                             alignSelf: 'center',
 
                         }]}>VanCon<Text style={{ color: myColors.primaryT }}> Captain</Text></Text> */}
 
-                        <View style={{ paddingHorizontal: myWidth(6) }}>
-                            <Text
-                                numberOfLines={1}
-                                style={{
-                                    color: myColors.text, fontSize: myFontSize.xBody,
-                                    fontFamily: myFonts.bodyBold
-                                }}>
+                <View style={{ paddingHorizontal: myWidth(6) }}>
+                    <Text
+                        numberOfLines={1}
+                        style={{
+                            color: myColors.text, fontSize: myFontSize.xBody,
+                            fontFamily: myFonts.bodyBold
+                        }}>
 
-                                {Greeting()}, <Text style={{ color: myColors.primaryT }}>{profile.name}</Text>
-                            </Text>
-                        </View>
+                        {Greeting()}, <Text style={{ color: myColors.primaryT }}>{profile.name}</Text>
+                    </Text>
+                </View>
 
-                        <Spacer paddingT={myHeight(1.5)} />
+                <Spacer paddingT={myHeight(1.5)} />
 
-                        {/* Banner */}
-                        <Banners />
+                {/* Banner */}
+                <Banners />
 
 
 
-                        <Spacer paddingT={myHeight(3)} />
+                <Spacer paddingT={myHeight(3)} />
 
-                        {
-                            profile.ready ? <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DriverDetail', { driver: profile })}>
+                {
+                    profile.ready ? <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DriverDetail', { driver: profile })}>
 
-                                <DriverInfoFull navigation={navigation} driver={profile} />
-                            </TouchableOpacity> :
-                                <View style={{ width: '100%', alignItems: 'center' }}>
-
-                                    <Text style={[styles.textCommon,
-                                    {
-                                        color: myColors.text, fontSize: myFontSize.body,
-                                        fontFamily: myFonts.bodyBold
-                                    }]
-                                    }>Click on Apply & fill the form to get rides</Text>
-                                    <Spacer paddingT={myHeight(1.5)} />
-
-                                    <TouchableOpacity
-                                        onPress={() => navigation.navigate('DriverDetailEdit',
-
-                                        )}
-                                        activeOpacity={0.8}
-                                        style={{
-                                            width: myWidth(50), alignSelf: 'center', paddingVertical: myHeight(1.2),
-                                            borderRadius: myHeight(0.8), alignItems: 'center', justifyContent: 'center',
-                                            flexDirection: 'row', backgroundColor: myColors.primary,
-                                            // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
-                                        }}>
-                                        <Text style={[styles.textCommon, {
-                                            fontFamily: myFonts.heading,
-                                            fontSize: myFontSize.body,
-                                            color: myColors.background
-                                        }]}>Apply</Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                        }
-                        <Spacer paddingT={myHeight(50)} />
-
+                        <DriverInfoFull navigation={navigation} driver={profile} />
+                    </TouchableOpacity> :
                         <View style={{ width: '100%', alignItems: 'center' }}>
 
                             <Text style={[styles.textCommon,
@@ -427,10 +399,13 @@ export const HomeScreen = ({ navigation }) => {
                                 color: myColors.text, fontSize: myFontSize.body,
                                 fontFamily: myFonts.bodyBold
                             }]
-                            }>Test Notification</Text>
+                            }>Click on Apply & fill the form to get rides</Text>
                             <Spacer paddingT={myHeight(1.5)} />
 
-                            <TouchableOpacity onPress={sendNotificationToAll}
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('DriverDetailEdit',
+
+                                )}
                                 activeOpacity={0.8}
                                 style={{
                                     width: myWidth(50), alignSelf: 'center', paddingVertical: myHeight(1.2),
@@ -442,12 +417,40 @@ export const HomeScreen = ({ navigation }) => {
                                     fontFamily: myFonts.heading,
                                     fontSize: myFontSize.body,
                                     color: myColors.background
-                                }]}>Send</Text>
+                                }]}>Apply</Text>
                             </TouchableOpacity>
                         </View>
 
-                        {/* New Arrival  Complete*/}
-                        {/* <View>
+                }
+
+                {/* <View style={{ width: '100%', alignItems: 'center' }}>
+
+                    <Text style={[styles.textCommon,
+                    {
+                        color: myColors.text, fontSize: myFontSize.body,
+                        fontFamily: myFonts.bodyBold
+                    }]
+                    }>Test Notification</Text>
+                    <Spacer paddingT={myHeight(1.5)} />
+
+                    <TouchableOpacity onPress={sendNotificationToAll}
+                        activeOpacity={0.8}
+                        style={{
+                            width: myWidth(50), alignSelf: 'center', paddingVertical: myHeight(1.2),
+                            borderRadius: myHeight(0.8), alignItems: 'center', justifyContent: 'center',
+                            flexDirection: 'row', backgroundColor: myColors.primary,
+                            // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
+                        }}>
+                        <Text style={[styles.textCommon, {
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.body,
+                            color: myColors.background
+                        }]}>Send</Text>
+                    </TouchableOpacity>
+                </View> */}
+
+                {/* New Arrival  Complete*/}
+                {/* <View>
                             <View style={{ paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={[styles.textCommon, {
                                     fontSize: myFontSize.xxBody,
@@ -489,11 +492,11 @@ export const HomeScreen = ({ navigation }) => {
                             </ScrollView>
                         </View> */}
 
-                        <Spacer paddingT={progress.length ? myHeight(25) : 0} />
+                <Spacer paddingT={progress.length ? myHeight(25) : 0} />
 
-                    </ScrollView>
+            </ScrollView>
 
-            }
+
 
             {
                 progress.length ? <>
@@ -503,6 +506,8 @@ export const HomeScreen = ({ navigation }) => {
                 </>
                     : null
             }
+
+            {isLoading && <HomeSkeleton />}
         </SafeAreaView>
     )
 }

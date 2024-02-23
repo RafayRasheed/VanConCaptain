@@ -60,7 +60,7 @@ export const DriverInfoFull = ({ driver, navigation }) => {
                             style={styles.containerHeart}>
                             <Image style={styles.imageHeart}
 
-                                source={require('../../assets/home_main/home/edit.png')} />
+                                source={require('../../assets/home_main/home/edit2.png')} />
                         </TouchableOpacity>
                     </View>
 

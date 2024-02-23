@@ -23,8 +23,14 @@ export const AccScreen = ({ navigation }) => {
     const [errorMsg, setErrorMsg] = useState(null)
     const [loading, setLoading] = useState(false)
 
+    const [name, setName] = useState(null)
+
     const [city, setCity] = useState(null)
     const [showCityModal, setShowCityModal] = useState(false)
+
+
+    const [email, setEmail] = useState(null)
+    const [password, setPass] = useState(null)
 
     function showError(message) {
         setLoading(false)
@@ -190,7 +196,7 @@ export const AccScreen = ({ navigation }) => {
                         <Text style={{ color: 'black' }}>Hi, I am here.</Text>
                     </SafeAreaView>
                 </ActionSheet> */}
-
+                {console.log(email)}
                 <ActionSheet zIndex={10} indicatorStyle={{ height: myHeight(0.8), width: myWidth(28), marginTop: myHeight(1) }}
                     gestureEnabled snapPoints={[95]} ref={actionSheetRef}
                     closeOnPressBack={true} onClose={() => { console.log('chalaaaaa') }} closable={true} containerStyle={{}}
@@ -220,9 +226,14 @@ export const AccScreen = ({ navigation }) => {
                         </View>
                         {/* <Spacer paddingT={myHeight(4.4)}/> */}
                         {onLogin ?
-                            <Login navigation={navigation} showError={showError} showLoading={setLoading} />
+                            <Login navigation={navigation} showError={showError} showLoading={setLoading}
+                                email={email} setEmail={setEmail} password={password} setPass={setPass} onClose={onClose}
+                            />
                             :
-                            <CreateAcc navigate={navigation.navigate} showError={showError} showLoading={setLoading} city={city} setShowCityModal={setShowCityModal} />}
+                            <CreateAcc navigate={navigation.navigate} showError={showError} showLoading={setLoading} city={city} setShowCityModal={setShowCityModal}
+
+                                email={email} setEmail={setEmail} password={password} setPass={setPass} name={name} setName={setName} onClose={onClose}
+                            />}
                         <Spacer paddingT={myHeight(4.4)} />
 
                     </TouchableOpacity>

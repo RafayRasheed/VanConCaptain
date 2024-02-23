@@ -13,11 +13,11 @@ import { SelectCity } from "../select_city";
 import { FirebaseUser } from "../../functions/firebase";
 
 
-export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityModal }) => {
-    const [name, setName] = useState(null)
+export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityModal, email, setEmail, password, setPass, name, setName, onClose }) => {
+    // const [name, setName] = useState(null)
     // const [email, setEmail] = useState('shaheerkhan777.rr@gmail.com')
-    const [email, setEmail] = useState(null)
-    const [password, setPass] = useState()
+    // const [email, setEmail] = useState(null)
+    // const [password, setPass] = useState()
     const [hidePass, setHidePass] = useState(true);
 
     function onGoogle() {
@@ -80,6 +80,11 @@ export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityM
 
     function goToVerification(profile, code) {
         navigate('Verification', { code, profile, reset: false })
+
+        setTimeout(() => {
+            onClose()
+
+        }, 1000)
     }
     function sendEmail() {
         const dateData = dataFullData()
@@ -216,12 +221,12 @@ export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityM
                 <View style={{ width: myWidth(75), height: 0.8, backgroundColor: myColors.divider }} />
                 <Spacer paddingT={myHeight(1.2)} />
 
-                <TouchableOpacity onPress={onGoogle} activeOpacity={0.8} style={[styles.button, { backgroundColor: myColors.offColor4 }]}>
+                {/* <TouchableOpacity onPress={onGoogle} activeOpacity={0.8} style={[styles.button, { backgroundColor: myColors.offColor4 }]}>
                     <Image style={{ resizeMode: 'contain', width: myWidth(5.3), height: myWidth(5.3) }}
                         source={require('../../assets/account/google.png')} />
                     <Spacer paddingEnd={myWidth(6.4)} />
                     <Text style={styles.textGoogle}>Sign up with Google</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
 
         </View>

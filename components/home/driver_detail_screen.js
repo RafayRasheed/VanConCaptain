@@ -164,9 +164,9 @@ export const DriverDetail = ({ navigation, route }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={{
-                backgroundColor: myColors.primaryL5,
-                padding: myHeight(1.2),
-                borderRadius: myHeight(5),
+                // backgroundColor: myColors.primaryL5,
+                // padding: myHeight(1.2),
+                // borderRadius: myHeight(5),
 
               }}
               activeOpacity={0.8}
@@ -174,13 +174,13 @@ export const DriverDetail = ({ navigation, route }) => {
 
               )}>
               <Image style={{
-                height: myHeight(2.3),
-                width: myHeight(2.3),
+                height: myHeight(3),
+                width: myHeight(3),
                 resizeMode: 'contain',
-                tintColor: myColors.textL0,
+                tintColor: myColors.background,
 
               }}
-                source={require('../assets/home_main/home/edit.png')} />
+                source={require('../assets/home_main/home/edit2.png')} />
             </TouchableOpacity>
           </View>
           {/* image */}
