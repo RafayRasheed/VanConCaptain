@@ -583,7 +583,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                             <>
                                 <TouchableOpacity key={i} activeOpacity={0.8} onPress={() =>
-                                    setList(is ? dailyDays.filter(it2 => it2 != it) : [it, ...dailyDays])
+                                    setList(is ? list.filter(it2 => it2 != it) : [it, ...list])
                                 } style={[styles.backItem, {
                                     backgroundColor: is ? myColors.primaryT : myColors.divider, width: myWidth(11.82), paddingVertical: myHeight(0.6),
                                     paddingHorizontal: myWidth(0), justifyContent: 'center'

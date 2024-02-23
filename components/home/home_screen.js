@@ -31,6 +31,7 @@ import database from '@react-native-firebase/database';
 import { setChats, setTotalUnread } from '../../redux/chat_reducer';
 import { DriverInfoFull } from './home.component/driver_info_full';
 import { Status } from './home.component/status';
+import { CustomToggleButton } from './home.component/toggle';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -49,9 +50,10 @@ function Greeting() {
 export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
     const { profile } = useSelector(state => state.profile)
+    const [online, setOnline] = useState(false)
 
     const [isLoading, setIsLoading] = useState(true)
-    const [categories, setCategories] = useState([])
+    const [availableSeats, setAvailableSeats] = useState(profile.availableSeats)
     const [nearbyRestaurant, setNearbyRestaurant] = useState([])
     const [RecommendRestaurant, setRecommendRestaurant] = useState([])
     const [startPro, setStartPro] = useState({})
@@ -137,7 +139,9 @@ export const HomeScreen = ({ navigation }) => {
                 console.log('Error on Get all Restaurant', er)
             })
     }
-
+    useEffect(() => {
+        console.log(online)
+    }, [online]);
     useEffect(() => {
         const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
             console.log('Message handled in the foreground:');
@@ -359,6 +363,7 @@ export const HomeScreen = ({ navigation }) => {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
 
                 <Spacer paddingT={myHeight(2)} />
+
                 {/* <Text style={[styles.textCommon, {
                             fontSize: myFontSize.medium2,
                             fontFamily: myFonts.heading,
@@ -366,7 +371,7 @@ export const HomeScreen = ({ navigation }) => {
 
                         }]}>VanCon<Text style={{ color: myColors.primaryT }}> Captain</Text></Text> */}
 
-                <View style={{ paddingHorizontal: myWidth(6) }}>
+                <View style={{ paddingStart: myWidth(6), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Text
                         numberOfLines={1}
                         style={{
@@ -376,6 +381,21 @@ export const HomeScreen = ({ navigation }) => {
 
                         {Greeting()}, <Text style={{ color: myColors.primaryT }}>{profile.name}</Text>
                     </Text>
+
+                    <View style={{
+                        flexDirection: 'row', alignItems: 'center', backgroundColor: online ? myColors.greenL : myColors.greenL,
+                        paddingHorizontal: myWidth(4),
+                        paddingVertical: myHeight(0.7), borderTopStartRadius: myWidth(100), borderBottomStartRadius: myWidth(100)
+                    }}>
+                        <Text
+                            numberOfLines={1}
+                            style={[styles.textCommon, {
+                                color: myColors.text, fontSize: myFontSize.body2,
+                                fontFamily: myFonts.heading
+                            }]}>Vanpool</Text>
+                        <Spacer paddingEnd={myWidth(3)} />
+                        <CustomToggleButton online={online} setOnline={setOnline} />
+                    </View>
                 </View>
 
                 <Spacer paddingT={myHeight(1.5)} />
@@ -388,10 +408,125 @@ export const HomeScreen = ({ navigation }) => {
                 <Spacer paddingT={myHeight(3)} />
 
                 {
-                    profile.ready ? <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DriverDetail', { driver: profile })}>
+                    profile.ready ?
+                        <View style={{ paddingHorizontal: myWidth(4) }}>
+                            <Text style={styles.heading}>Your Services</Text>
+                            <Spacer paddingT={myHeight(0.5)} />
 
-                        <DriverInfoFull navigation={navigation} driver={profile} />
-                    </TouchableOpacity> :
+                            <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DriverDetail', { driver: profile })}>
+
+                                <DriverInfoFull navigation={navigation} driver={profile} />
+                            </TouchableOpacity>
+
+                            <Spacer paddingT={myHeight(0.5)} />
+                            {/* <Text style={styles.heading}>Settings</Text>
+                            <Spacer paddingT={myHeight(1)} /> */}
+
+                            <View style={{
+                                paddingHorizontal: myWidth(3), width: '100%',
+                                paddingVertical: myHeight(1), borderRadius: myWidth(2),
+                                backgroundColor: '#F4EDFF',
+                                borderWidth: myHeight(0.1), borderColor: myColors.dot,
+
+                            }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                                    <Text style={{
+                                        flex: 1,
+                                        fontSize: myFontSize.body2,
+                                        fontFamily: myFonts.heading,
+                                        color: myColors.offColor,
+                                        letterSpacing: myLetSpacing.common,
+                                        includeFontPadding: false,
+                                        padding: 0,
+                                    }}>Set Available Seats</Text>
+                                    {
+                                        (availableSeats != profile.availableSeats) ?
+                                            <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DriverDetail', { driver: profile })}>
+                                                <Text style={{
+                                                    fontSize: myFontSize.body2,
+                                                    fontFamily: myFonts.heading,
+                                                    color: myColors.primaryT,
+                                                    letterSpacing: myLetSpacing.common,
+                                                    includeFontPadding: false,
+                                                    padding: 0,
+                                                }}>Save</Text>
+                                            </TouchableOpacity>
+                                            : null
+                                    }
+                                </View>
+
+                                <Spacer paddingT={myHeight(2)} />
+
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                    <TouchableOpacity onPress={() => {
+                                        if (availableSeats != 0) {
+                                            setAvailableSeats(availableSeats - 1)
+                                        }
+                                    }} activeOpacity={0.7} style={{
+                                        backgroundColor: myColors.primaryT,
+                                        height: myHeight(3),
+                                        width: myHeight(3),
+                                        borderRadius: myHeight(3),
+                                        marginTop: myHeight(3),
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}  >
+                                        <Image style={
+                                            {
+                                                height: myHeight(1.5),
+                                                width: myHeight(1.5),
+                                                resizeMode: 'contain',
+                                                transform: [{ rotate: '270deg' }]
+                                            }
+                                        } source={require('../assets/startup/goL.png')} />
+                                    </TouchableOpacity>
+
+                                    <View style={{
+                                        width: myWidth(20), marginHorizontal: myWidth(3), borderBottomWidth: myHeight(0.2),
+                                        borderColor: myColors.primaryT, justifyContent: 'center', alignItems: 'center',
+                                    }}>
+
+                                        <Text style={{
+                                            fontSize: myFontSize.body4,
+                                            fontFamily: myFonts.heading,
+                                            color: myColors.text,
+                                            letterSpacing: myLetSpacing.common,
+                                            includeFontPadding: false,
+                                            padding: 0,
+                                        }}>{availableSeats}</Text>
+                                    </View>
+
+                                    <TouchableOpacity onPress={() => {
+                                        setAvailableSeats(availableSeats + 1)
+                                    }} activeOpacity={0.7} style={{
+                                        backgroundColor: myColors.primaryT,
+                                        height: myHeight(3),
+                                        width: myHeight(3),
+                                        borderRadius: myHeight(3),
+                                        marginTop: myHeight(3),
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}  >
+                                        <Image style={
+                                            {
+                                                height: myHeight(1.5),
+                                                width: myHeight(1.5),
+                                                resizeMode: 'contain',
+                                                marginTop: -myHeight(0.2),
+                                                transform: [{ rotate: '90deg' }]
+                                            }
+                                        } source={require('../assets/startup/goL.png')} />
+                                    </TouchableOpacity>
+
+                                </View>
+                                <Spacer paddingT={myHeight(2)} />
+
+                            </View>
+
+                        </View>
+                        :
                         <View style={{ width: '100%', alignItems: 'center' }}>
 
                             <Text style={[styles.textCommon,
@@ -523,7 +658,14 @@ const styles = StyleSheet.create({
         backgroundColor: myColors.background
     },
 
-
+    heading: {
+        fontSize: myFontSize.medium2,
+        fontFamily: myFonts.heading,
+        color: myColors.text,
+        letterSpacing: myLetSpacing.common,
+        includeFontPadding: false,
+        padding: 0,
+    },
     //Text
     textCommon: {
         color: myColors.text,

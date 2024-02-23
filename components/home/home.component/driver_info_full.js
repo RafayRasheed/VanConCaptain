@@ -68,7 +68,7 @@ export const DriverInfoFull = ({ driver, navigation }) => {
                 <Spacer paddingT={myHeight(0.5)} />
 
                 {/* Detals */}
-                <View style={{ paddingHorizontal: myWidth(2) }}>
+                <View style={{ paddingHorizontal: myWidth(5) }}>
                     <Text numberOfLines={1}
                         style={{
                             flex: 1,
@@ -81,12 +81,12 @@ export const DriverInfoFull = ({ driver, navigation }) => {
                         }}>{driver.vehicleName}</Text>
                     <Spacer paddingT={myHeight(0.5)} />
 
-                    <View style={{ height: myHeight(0.15), backgroundColor: myColors.dot }} />
+                    <View style={{ height: myHeight(0.15), backgroundColor: myColors.offColor }} />
 
                     <Spacer paddingT={myHeight(1)} />
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', }}>
 
                             <Image style={{
                                 width: myHeight(1.65), height: myHeight(1.65),
@@ -105,70 +105,72 @@ export const DriverInfoFull = ({ driver, navigation }) => {
                                     includeFontPadding: false,
                                     padding: 0,
                                 }}>{driver.vehicleSeats} Seats</Text>
-                            <Spacer paddingEnd={myWidth(3.5)} />
-
-                            {
-                                driver.ac ?
-                                    <>
-                                        <Image style={{
-                                            width: myHeight(2), height: myHeight(2),
-                                            resizeMode: 'contain', marginTop: myHeight(0), tintColor: myColors.textL0
-                                        }}
-                                            source={require('../../assets/home_main/home/ac2.png')} />
-                                        <Spacer paddingEnd={myWidth(1.5)} />
-
-                                        <Text
-
-                                            style={{
-                                                fontSize: myFontSize.xxSmall,
-                                                fontFamily: myFonts.bodyBold,
-                                                color: myColors.text,
-                                                letterSpacing: myLetSpacing.common,
-                                                includeFontPadding: false,
-                                                padding: 0,
-                                            }}>Air Conditioned</Text>
-                                        <Spacer paddingEnd={myWidth(3)} />
-                                    </>
-                                    : null
-                            }
-
-
-                            {
-                                driver.isWifi ?
-                                    <>
-                                        <Image style={{
-                                            width: myHeight(2.3), height: myHeight(2.3),
-                                            resizeMode: 'contain', marginTop: myHeight(0),
-                                            tintColor: myColors.textL0
-                                        }}
-                                            source={require('../../assets/home_main/home/wifi.png')} />
-                                        <Spacer paddingEnd={myWidth(1.5)} />
-                                        <Text
-
-                                            style={{
-                                                fontSize: myFontSize.xxSmall,
-                                                fontFamily: myFonts.bodyBold,
-                                                color: myColors.text,
-                                                letterSpacing: myLetSpacing.common,
-                                                includeFontPadding: false,
-                                                padding: 0,
-                                            }}>Wifi</Text>
-                                        <Spacer paddingEnd={myWidth(3)} />
-
-                                    </>
-                                    : null
-                            }
-                            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                <Image style={styles.imageStar} source={require('../../assets/home_main/home/star.png')} />
-
-                                <Spacer paddingEnd={myWidth(1.6)} />
-                                <Text style={styles.textRating}>{driver.rating}</Text>
-                            </View>
-
+                            {/* <Spacer paddingEnd={myWidth(3.5)} /> */}
                         </View>
 
+                        {
+                            driver.ac ?
+                                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                    <Image style={{
+                                        width: myHeight(2), height: myHeight(2),
+                                        resizeMode: 'contain', marginTop: myHeight(0), tintColor: myColors.textL0
+                                    }}
+                                        source={require('../../assets/home_main/home/ac2.png')} />
+                                    <Spacer paddingEnd={myWidth(1.5)} />
+
+                                    <Text
+
+                                        style={{
+                                            fontSize: myFontSize.xxSmall,
+                                            fontFamily: myFonts.bodyBold,
+                                            color: myColors.text,
+                                            letterSpacing: myLetSpacing.common,
+                                            includeFontPadding: false,
+                                            padding: 0,
+                                        }}>Air Conditioned</Text>
+                                    {/* <Spacer paddingEnd={myWidth(3)} /> */}
+                                </View>
+
+                                : null
+                        }
+
+
+                        {
+                            driver.isWifi ?
+                                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                    <Image style={{
+                                        width: myHeight(2.3), height: myHeight(2.3),
+                                        resizeMode: 'contain', marginTop: myHeight(0),
+                                        tintColor: myColors.textL0
+                                    }}
+                                        source={require('../../assets/home_main/home/wifi.png')} />
+                                    <Spacer paddingEnd={myWidth(1.5)} />
+                                    <Text
+
+                                        style={{
+                                            fontSize: myFontSize.xxSmall,
+                                            fontFamily: myFonts.bodyBold,
+                                            color: myColors.text,
+                                            letterSpacing: myLetSpacing.common,
+                                            includeFontPadding: false,
+                                            padding: 0,
+                                        }}>Wifi</Text>
+                                    {/* <Spacer paddingEnd={myWidth(3)} /> */}
+
+                                </View>
+                                : null
+                        }
+                        <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                            <Image style={styles.imageStar} source={require('../../assets/home_main/home/star.png')} />
+
+                            <Spacer paddingEnd={myWidth(1.6)} />
+                            <Text style={styles.textRating}>{driver.rating}</Text>
+                        </View>
 
                     </View>
+
+
+
 
 
 

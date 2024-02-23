@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 export const RideDetails = ({ navigation, route }) => {
     const req = route.params.item
     const code = route.params.code
+    const { profile } = useSelector(state => state.profile)
     const [errorMsg, setErrorMsg] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
     const [sendDrivers, setSendDrivers] = useState([])
@@ -33,8 +34,11 @@ export const RideDetails = ({ navigation, route }) => {
     }, [allRequest])
     useEffect(() => {
         if (item) {
-            const statusMessages = code == 1 ? 'Active' : code == 2 ? 'Pending' : item.status < 0 ?
-                'Cancelled' : 'Completed'
+            const me = item[profile.uid]
+            const isMissed = item.status >= 3 && item.did != profile.uid
+
+            const statusMessages = code == 1 ? 'Active' : code == 2 ? 'Pending' : me.status == 1 ? isMissed ? 'You Missed' : 'Cancelled' :
+                me.status < 0 ? 'Rejected' : `Completed`
 
             setStatusMessages(statusMessages)
             // const ind = item.sendDrivers.findIndex(it => item[it.did].status >= 2)
@@ -168,7 +172,7 @@ export const RideDetails = ({ navigation, route }) => {
                 }}>
                     <Spacer paddingT={myHeight(1)} />
                     <CommonItem text={'Status'} text2={'The status of the request.'}
-                        items={[statusMessages]} color={(item.status < 0 || item.status == 1) ? myColors.red : myColors.green} />
+                        items={[statusMessages]} color={(item.status < 0 || (code == 3 && item[profile.uid].status == 1)) ? myColors.red : myColors.green} />
 
 
                     <CommonItem text={'Pickup'} text2={'Pickup location and timing.'}
@@ -195,7 +199,88 @@ export const RideDetails = ({ navigation, route }) => {
                     }
 
 
-                    <Spacer paddingT={myHeight(5.6)} />
+                    {/* <Spacer paddingT={myHeight(2.6)} /> */}
+                    <Text style={{
+                        fontSize: myFontSize.body4,
+                        fontFamily: myFonts.bodyBold,
+                        color: myColors.text,
+                        letterSpacing: myLetSpacing.common,
+                        includeFontPadding: false,
+                        padding: 0,
+                    }}>{'Customer'}</Text>
+                    <View style={{
+                        backgroundColor: myColors.background,
+                        // flexDirection: 'row', alignItems: 'center',
+                        paddingHorizontal: myWidth(3), borderRadius: myWidth(2),
+                        marginVertical: myHeight(1),
+                        borderWidth: myHeight(0.1), borderColor: myColors.dot
+                    }}>
+
+                        <Spacer paddingT={myHeight(1.5)} />
+
+
+                        <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                            <Text numberOfLines={1}
+                                style={{
+                                    flex: 1,
+
+                                    fontSize: myFontSize.body2,
+                                    fontFamily: myFonts.heading,
+                                }}>{item.name}</Text>
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+
+                                <TouchableOpacity activeOpacity={0.85} style={{
+                                    padding: myHeight(0.8), backgroundColor: myColors.primaryT,
+                                    elevation: 1,
+                                    borderRadius: myWidth(1.5),
+
+                                }}
+                                    onPress={() => { Linking.openURL(`tel:${item.contact}`); }}
+                                >
+                                    <Image source={require('../assets/home_main/home/phone.png')}
+                                        style={{
+                                            width: myHeight(1.8),
+                                            height: myHeight(1.8),
+                                            resizeMode: 'contain',
+                                            tintColor: myColors.background
+                                        }}
+                                    />
+
+                                </TouchableOpacity>
+                                <Spacer paddingEnd={myWidth(2.5)} />
+
+                                <TouchableOpacity activeOpacity={0.85} style={{
+                                    padding: myHeight(0.8), backgroundColor: myColors.primaryT,
+                                    elevation: 1,
+                                    borderRadius: myWidth(1.5),
+                                }}
+                                    onPress={() => {
+                                        navigation.navigate('Chat',
+                                            { user2: { name: item.name, uid: item.uid } }
+                                        )
+                                    }}
+                                >
+                                    <Image source={require('../assets/home_main/home/navigator/chat2.png')}
+                                        style={{
+                                            width: myHeight(1.8),
+                                            height: myHeight(1.8),
+                                            resizeMode: 'contain',
+                                            tintColor: myColors.background
+                                        }}
+                                    />
+                                </TouchableOpacity>
+
+                            </View>
+                        </View>
+
+
+
+
+                        <Spacer paddingT={myHeight(1.5)} />
+
+                    </View>
+                    <Spacer paddingT={myHeight(1.5)} />
 
                 </ScrollView>
 
