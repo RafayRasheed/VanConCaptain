@@ -1264,7 +1264,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                         <Spacer paddingT={myHeight(1)} />
                         <View style={styles.inputCont}>
 
-                            <TextInput placeholder="Contact - e.g 03343534343"
+                            <TextInput placeholder="Contact - e.g 03XXXXXXXXX"
                                 autoCorrect={false}
                                 maxLength={11}
                                 keyboardType='numeric'

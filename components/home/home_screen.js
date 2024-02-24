@@ -114,7 +114,7 @@ export const HomeScreen = ({ navigation }) => {
             const from = history ? history : { latitude: 0, longitude: 0 }
             const { distance } = getDistanceFromRes(from, current)
             const { actualDate } = dataFullData()
-            const data = { lastUpdate: actualDate.toString(), distance, location: current ? current : { latitude: 0, longitude: 0 } }
+            const data = { lastUpdate: actualDate.toString(), distance, location: current ? current : { latitude: 0, longitude: 0 }, ...profile }
             database()
                 .ref(reff).update(data).then(() => {
                     console.log('updateOnline Successfullly')
@@ -153,7 +153,7 @@ export const HomeScreen = ({ navigation }) => {
                 getCurrentLocations()
             }
 
-        }, 20000);
+        }, 40000);
         return () => clearInterval(interval);
 
     }, [])

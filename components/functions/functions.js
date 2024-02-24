@@ -1347,7 +1347,9 @@ export const getAreasLocations = () => {
         AllAreas.push(value)
       }
 
-      storeRedux.dispatch(setAreasLocation(AllAreas))
+      storeRedux.dispatch(setAreasLocation(AllAreas.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      })))
       getCurrentLocations()
 
     }
