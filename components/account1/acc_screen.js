@@ -17,6 +17,7 @@ import ActionSheet from "react-native-actions-sheet";
 export const AccScreen = ({ navigation }) => {
     const modalizeRef = useRef();
     const actionSheetRef = useRef(null);
+    const actionSheetRef2 = useRef(null);
 
     const [onLogin, setOnLogin] = useState(null)
 
@@ -49,10 +50,18 @@ export const AccScreen = ({ navigation }) => {
     // };
     useEffect(() => {
         if (showCityModal) {
+            // actionSheetRef2?.current?.show()
+
             onClose()
-        } else if (onLogin != null) {
-            onOpen()
+
+        } else {
+            // actionSheetRef2?.current?.hide()
+            // console.log('hn')
+            if (onLogin != null) {
+                onOpen()
+            }
         }
+
     }, [showCityModal])
 
 
@@ -103,7 +112,7 @@ export const AccScreen = ({ navigation }) => {
                         }}>
                         <Text style={{
                             color: myColors.background, fontSize: myFontSize.large2, fontFamily: myFonts.heading
-                        }}>Get {'\n'}Started<Text style={{ color: myColors.primaryT }}>,</Text></Text>
+                        }}>Get {'\n'}Started<Text style={{ color: myColors.primaryT }}>.</Text></Text>
 
                     </View>
 
@@ -123,8 +132,7 @@ export const AccScreen = ({ navigation }) => {
                         <Text style={styles.textWel}>Welcome</Text>
 
                         <Spacer paddingT={myHeight(1)} />
-                        <Text style={styles.textDetail}>
-                            Before enjoying Food media services Please register first</Text>
+                        <Text style={styles.textDetail}></Text>
 
                         <Spacer paddingT={myHeight(3)} />
 
@@ -196,10 +204,12 @@ export const AccScreen = ({ navigation }) => {
                         <Text style={{ color: 'black' }}>Hi, I am here.</Text>
                     </SafeAreaView>
                 </ActionSheet> */}
-                {console.log(email)}
                 <ActionSheet zIndex={10} indicatorStyle={{ height: myHeight(0.8), width: myWidth(28), marginTop: myHeight(1) }}
                     gestureEnabled snapPoints={[95]} ref={actionSheetRef}
-                    closeOnPressBack={true} onClose={() => { console.log('chalaaaaa') }} closable={true} containerStyle={{}}
+                    closeOnPressBack={true} onClose={() => {
+                        // setShowCityModal(false)
+                        console.log('chalaaaaa')
+                    }} closable={true} containerStyle={{}}
                 >
 
                     <TouchableOpacity activeOpacity={1} style={{ zIndex: 8, height: '100%', alignItems: 'center' }}>
@@ -243,8 +253,16 @@ export const AccScreen = ({ navigation }) => {
 
                 </ActionSheet>
 
+                {/* <ActionSheet zIndex={20} indicatorStyle={{ height: myHeight(0), width: myWidth(28), marginTop: myHeight(1) }}
+                    gestureEnabled snapPoints={[100]} ref={actionSheetRef2}
+                    closable={true} onClose={() => { setShowCityModal(false) }} containerStyle={{}}
+                >
 
 
+                    <SelectCity showCityModal={setShowCityModal} setCity={setCity} city={city} />
+
+
+                </ActionSheet> */}
 
 
 

@@ -19,7 +19,7 @@ import { ImageUri } from '../common/image_uri';
 import storage from '@react-native-firebase/storage';
 import { setAllItems, setAllRest, setNearby, setRecommend } from '../../redux/data_reducer';
 import { setAllRequest, setAllUnread, setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
-import { SetErrorAlertToFunction, deccodeInfo, getAreasLocations, getCurrentLocations, statusDate } from '../functions/functions';
+import { SetErrorAlertToFunction, dataFullData, deccodeInfo, getAreasLocations, getCurrentLocations, getDistanceFromRes, getProfileFromFirebase, statusDate, updateProfileToFirebase } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import { FirebaseUser, getDeviceToken, sendPushNotification, updateDeviceTokenToFireBase } from '../functions/firebase';
@@ -32,6 +32,8 @@ import { setChats, setTotalUnread } from '../../redux/chat_reducer';
 import { DriverInfoFull } from './home.component/driver_info_full';
 import { Status } from './home.component/status';
 import { CustomToggleButton } from './home.component/toggle';
+import { setOnline } from '../../redux/online_reducer';
+import storeRedux from '../../redux/store_redux';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -50,60 +52,23 @@ function Greeting() {
 export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
     const { profile } = useSelector(state => state.profile)
-    const [online, setOnline] = useState(false)
-
+    const { online } = useSelector(state => state.online)
+    const { current, history } = useSelector(state => state.location)
     const [isLoading, setIsLoading] = useState(true)
     const [availableSeats, setAvailableSeats] = useState(profile.availableSeats)
     const [nearbyRestaurant, setNearbyRestaurant] = useState([])
     const [RecommendRestaurant, setRecommendRestaurant] = useState([])
     const [startPro, setStartPro] = useState({})
 
-    const { pending, progress, history } = useSelector(state => state.orders)
+    const { pending, progress } = useSelector(state => state.orders)
 
 
     const dispatch = useDispatch()
 
 
-
-    function getAllRestuarant() {
-        firestore().collection('restaurants')
-            .where('update', '==', true)
-            .where('city', '==', profile.city)
-            .get().then((result) => {
-                if (!result.empty) {
-                    let rest = []
-                    let items = []
-
-                    result.forEach((res, i) => {
-                        const restaurant = res.data()
-                        rest.push(restaurant)
-                        restaurant.foodCategory.map((subCat, ind) => {
-                            subCat.items?.map((item, i) => {
-                                items.push(item)
-                            })
-
-                        })
-                        // catArray.push(cat.data())
-
-                    })
-
-                    dispatch(setAllRest(rest))
-
-                }
-                else {
-
-                    console.log('empty')
-
-
-                    // setCategories(catArray)
-                }
-            }).catch((er) => {
-                // Alert.alert(er.toString())
-
-                console.log('Error on Get all Restaurant', er)
-            })
+    function setOnlineRedux(status) {
+        dispatch(setOnline(status))
     }
-
 
     function sendNotificationToAll() {
         firestore().collection('users').get()
@@ -139,9 +104,59 @@ export const HomeScreen = ({ navigation }) => {
                 console.log('Error on Get all Restaurant', er)
             })
     }
+
+    function updateOnline() {
+
+
+        const reff = `/online/${profile.city}/${profile.uid}`
+        if (online) {
+            // const {latitude, longitude} = current
+            const from = history ? history : { latitude: 0, longitude: 0 }
+            const { distance } = getDistanceFromRes(from, current)
+            const { actualDate } = dataFullData()
+            const data = { lastUpdate: actualDate.toString(), distance, location: current ? current : { latitude: 0, longitude: 0 } }
+            database()
+                .ref(reff).update(data).then(() => {
+                    console.log('updateOnline Successfullly')
+
+                }).catch((er) => {
+                    // Alert.alert(er.toString())
+
+                    console.log('Error updateOnline', er)
+                })
+        } else {
+            database()
+                .ref(reff).remove()
+        }
+
+
+    }
     useEffect(() => {
-        console.log(online)
+        if (current) {
+
+            updateOnline()
+
+        }
+    }, [current]);
+
+    useEffect(() => {
+        updateOnline()
     }, [online]);
+
+    useEffect(() => {
+        getProfileFromFirebase()
+        getCurrentLocations()
+        const interval = setInterval(() => {
+            const { online } = storeRedux.getState().online
+            if (online) {
+
+                getCurrentLocations()
+            }
+
+        }, 20000);
+        return () => clearInterval(interval);
+
+    }, [])
     useEffect(() => {
         const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
             console.log('Message handled in the foreground:');
@@ -185,39 +200,23 @@ export const HomeScreen = ({ navigation }) => {
     function generateRandomIntegerInRange(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-    function getProfileFromFirebase() {
-        FirebaseUser.doc(profile.uid).get().then((documentSnapshot) => {
-            const prf = documentSnapshot.data()
-            dispatch(setProfile(prf))
-
-
-        }).catch(err => {
-            console.log('Internal error while  getProfileFrom', err)
-        });
+    function onSaveAvailSeats() {
+        updateProfileToFirebase({ availableSeats })
     }
-    useEffect(() => {
-        getProfileFromFirebase()
 
-
-    }, [])
     useEffect(() => {
         if (profile.city) {
             setTimeout(() => {
 
                 setIsLoading(false)
-            }, 1000)
+            }, 2000)
             getAreasLocations(profile.city)
         }
 
         // updateDeviceTokenToFireBase(profile.uid)
         // sendPushNotification('hi', 'bye',2 )
 
-        // getCurrentLocations()
-        // const interval = setInterval(() => {
-        //     getCurrentLocations()
 
-        // }, 120000);
-        // return () => clearInterval(interval);
 
     }, [profile.city])
 
@@ -382,7 +381,7 @@ export const HomeScreen = ({ navigation }) => {
                         {Greeting()}, <Text style={{ color: myColors.primaryT }}>{profile.name}</Text>
                     </Text>
 
-                    <View style={{
+                    {/* <View style={{
                         flexDirection: 'row', alignItems: 'center', backgroundColor: online ? myColors.greenL : myColors.greenL,
                         paddingHorizontal: myWidth(4),
                         paddingVertical: myHeight(0.7), borderTopStartRadius: myWidth(100), borderBottomStartRadius: myWidth(100)
@@ -395,7 +394,7 @@ export const HomeScreen = ({ navigation }) => {
                             }]}>Vanpool</Text>
                         <Spacer paddingEnd={myWidth(3)} />
                         <CustomToggleButton online={online} setOnline={setOnline} />
-                    </View>
+                    </View> */}
                 </View>
 
                 <Spacer paddingT={myHeight(1.5)} />
@@ -403,9 +402,54 @@ export const HomeScreen = ({ navigation }) => {
                 {/* Banner */}
                 <Banners />
 
+                {
+                    !profile.isOnline ?
+                        <>
+                            <Spacer paddingT={myHeight(2.5)} />
 
+                            <View style={{
+                                paddingStart: myWidth(4), flexDirection: 'row',
+                                alignItems: 'center', justifyContent: 'space-between'
+                            }}>
+                                <View>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[styles.textCommon, {
+                                            color: myColors.text, fontSize: myFontSize.xBody,
+                                            fontFamily: myFonts.heading
+                                        }]}>Vanpool</Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[styles.textCommon, {
+                                            color: myColors.textL4, fontSize: myFontSize.small2,
+                                            fontFamily: myFonts.bodyBold,
 
-                <Spacer paddingT={myHeight(3)} />
+                                        }]}>Onilne to get vanpool Rides</Text>
+                                </View>
+
+                                <View style={{
+                                    flexDirection: 'row', alignItems: 'center',
+                                    backgroundColor: online ? myColors.greenL : myColors.primaryL6,
+                                    paddingStart: myWidth(6),
+                                    paddingVertical: myHeight(1),
+                                    borderTopStartRadius: myWidth(100), borderBottomStartRadius: myWidth(100)
+                                }}>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[styles.textCommon, {
+                                            color: myColors.text, fontSize: myFontSize.body3,
+                                            fontFamily: myFonts.heading
+                                        }]}>{online ? 'Online' : 'Offline'}</Text>
+                                    <Spacer paddingEnd={myWidth(5)} />
+                                    <CustomToggleButton online={online} setOnline={setOnlineRedux} />
+                                    <Spacer paddingEnd={myWidth(3)} />
+
+                                </View>
+                            </View>
+                        </>
+                        : null
+                }
+                <Spacer paddingT={myHeight(1.5)} />
 
                 {
                     profile.ready ?
@@ -442,7 +486,8 @@ export const HomeScreen = ({ navigation }) => {
                                     }}>Set Available Seats</Text>
                                     {
                                         (availableSeats != profile.availableSeats) ?
-                                            <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('DriverDetail', { driver: profile })}>
+                                            <TouchableOpacity activeOpacity={0.8}
+                                                onPress={onSaveAvailSeats}>
                                                 <Text style={{
                                                     fontSize: myFontSize.body2,
                                                     fontFamily: myFonts.heading,
@@ -659,7 +704,7 @@ const styles = StyleSheet.create({
     },
 
     heading: {
-        fontSize: myFontSize.medium2,
+        fontSize: myFontSize.medium0,
         fontFamily: myFonts.heading,
         color: myColors.text,
         letterSpacing: myLetSpacing.common,

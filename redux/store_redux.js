@@ -9,6 +9,7 @@ import { getDefaultMiddleware } from '@reduxjs/toolkit';
 import error_reducer from './error_reducer';
 import areas_reducer from './areas_reducer';
 import chat_reducer from './chat_reducer';
+import online_reducer from './online_reducer';
 
 const storeRedux = configureStore({
     reducer: {
@@ -19,10 +20,11 @@ const storeRedux = configureStore({
         data: data_reducer,
         orders: order_reducer,
 
-        locations: location_reducer,
+        location: location_reducer,
         error: error_reducer,
         areas: areas_reducer,
         chats: chat_reducer,
+        online: online_reducer,
 
     }
 })

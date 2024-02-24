@@ -4,9 +4,10 @@ import { setCurrentLocation } from '../../redux/location_reducer';
 import Geolocation from '@react-native-community/geolocation';
 import { setErrorAlert } from '../../redux/error_reducer';
 import { getDistance } from 'geolib';
-import { FirebaseLocation } from './firebase';
+import { FirebaseLocation, FirebaseUser } from './firebase';
 import { setAreasLocation } from '../../redux/areas_reducer';
 import firestore from '@react-native-firebase/firestore';
+import { setProfile } from '../../redux/profile_reducer';
 
 const karaAreas = [
   {
@@ -1289,7 +1290,7 @@ export function getCurrentLocations() {
       const { latitude, longitude } = coords
       const detail = { latitude, longitude };
       storeRedux.dispatch(setCurrentLocation(detail))
-      updateAndNewLocation(detail)
+      // updateAndNewLocation(detail)
 
     } else {
       console.log('info', 2)
@@ -1302,6 +1303,37 @@ export const SetErrorAlertToFunction = ({ Title, Body, Status }) => {
 
 }
 
+export function getProfileFromFirebase() {
+  const { profile } = storeRedux.getState().profile
+
+  FirebaseUser.doc(profile.uid).get().then((documentSnapshot) => {
+    const prf = documentSnapshot.data()
+    storeRedux.dispatch(setProfile(prf))
+    console.log('Profile Update')
+
+
+  }).catch(err => {
+    console.log('Internal error while  getProfileFrom', err)
+  });
+}
+
+export function updateProfileToFirebase(object) {
+  const { profile } = storeRedux.getState().profile
+
+  FirebaseUser.doc(profile.uid).update(object).then((documentSnapshot) => {
+
+    getProfileFromFirebase()
+    storeRedux.dispatch(setProfile({ ...profile, ...object }))
+
+    console.log('Profile Updated', object)
+
+
+  }).catch(err => {
+    storeRedux.dispatch(setProfile({ ...profile }))
+
+    console.log('Internal error while  updateProfileToFirebase', err)
+  });
+}
 export const getAreasLocations = () => {
   const { profile } = storeRedux.getState().profile
 

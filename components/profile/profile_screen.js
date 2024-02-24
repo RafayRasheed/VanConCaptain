@@ -60,19 +60,39 @@ export const Profile = ({ navigation }) => {
         </View>
     )
     function onLogout() {
+        SetCancelRideLoader(true)
+
         FirebaseUser.doc(profile.uid)
             .update({
                 deviceToken: null
             }).then((data) => {
-                navigation.navigate('AccountNavigator')
+                navigation.replace('AccountNavigator')
                 dispatch(deleteProfile())
+                SetCancelRideLoader(false)
+
 
                 console.log('Token delete To Firebase Succesfully')
             }).catch(err => {
+                SetCancelRideLoader(false)
+
                 console.log('Internal error while Updating a Token', err)
             });
     }
+    function onCusSupp() {
+        Linking.openURL('whatsapp://send?text=&phone=923308246728')
+            .then(() => { })
+            .catch(e => {
+                Alert.alert(null, `Whatsapp not installed.`);
+            });
+    }
+    function shareAPP(plat) {
 
+        Linking.openURL(`${plat}${'https://drive.google.com/file/d/16QKcLiA5T7nDzHLAj6IqDVFMoQWIOs6W/view?usp=drive_link'}`)
+            .then(() => { })
+            .catch(e => {
+                Alert.alert(null, `App not installed.`);
+            });
+    }
     return (
         <>
             {/* <StatusBar backgroundColor={orderModal ? '#00000030' : myColors.background} /> */}
@@ -246,18 +266,19 @@ export const Profile = ({ navigation }) => {
                 </ScrollView>
 
 
-                <TouchableOpacity onPress={() => SetCancelRideLoader(true)}
+
+                <TouchableOpacity onPress={() => setCancelRide(true)}
                     activeOpacity={0.8}
                     style={{
                         width: myWidth(92), alignSelf: 'center', paddingVertical: myHeight(1.2),
                         borderRadius: myHeight(1.4), alignItems: 'center', justifyContent: 'center',
-                        flexDirection: 'row', backgroundColor: myColors.red,
-                        // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
+                        flexDirection: 'row', backgroundColor: myColors.background,
+                        borderWidth: myHeight(0.15), borderColor: myColors.offColor
                     }}>
                     <Text style={[styles.textCommon, {
                         fontFamily: myFonts.heading,
                         fontSize: myFontSize.body4,
-                        color: myColors.background
+                        color: myColors.textrL4
                     }]}>Logout</Text>
                 </TouchableOpacity>
                 <Spacer paddingT={myHeight(5)} />

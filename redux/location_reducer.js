@@ -6,15 +6,14 @@ const locationReducer = createSlice({
     name: "location",
     initialState: {
         current: null,
-        history: [],
+        history: null,
 
     },
     reducers: {
 
         setCurrentLocation(state, action) {
-            console.log(state.current)
-            if (state.current && state.current.fullName) {
-                state.history.push(state.current)
+            if (state.current) {
+                state.history = state.current
             }
             state.current = action.payload
 

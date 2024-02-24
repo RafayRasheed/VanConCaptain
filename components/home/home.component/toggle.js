@@ -6,7 +6,7 @@ import { myColors } from '../../../ultils/myColors';
 
 export const CustomToggleButton = ({ online, setOnline }) => {
     const toggleValue = useSharedValue(0);
-    const size = myHeight(2.5)
+    const size = myHeight(3)
     const widt = size + myWidth(6)
     const toggle = () => {
         setOnline(!online)

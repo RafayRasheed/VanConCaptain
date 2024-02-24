@@ -308,7 +308,22 @@ export const DriverDetail = ({ navigation, route }) => {
                   }}>{driver.vehicleModal}</Text>
 
               </View>
+              <Spacer paddingEnd={myWidth(2.8)} />
 
+              <View style={styles.backItem}>
+
+                <Text
+
+                  style={{
+                    fontSize: myFontSize.body,
+                    fontFamily: myFonts.bodyBold,
+                    color: myColors.text,
+                    letterSpacing: myLetSpacing.common,
+                    includeFontPadding: false,
+                    padding: 0,
+                  }}>{driver.vehicleNum}</Text>
+
+              </View>
 
 
             </View>
