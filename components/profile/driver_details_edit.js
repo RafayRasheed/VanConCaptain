@@ -193,14 +193,14 @@ export const DriverDetailEdit = ({ navigation }) => {
                 if (!isNaN(vehicleModal) && vehicleModal.length == 4 && (parseInt(vehicleModal) <= parseInt(date.getFullYear()))) {
                     return true
                 }
-                setErrorMsg('Incorrect Vehicle Modal')
+                setErrorMsg('Incorrect Modal Year')
                 return false
             }
-            setErrorMsg('Please Enter Vehicle Modal')
+            setErrorMsg('Please Enter Modal Year')
             return false
 
         }
-        setErrorMsg('Please Add Vehicle Name')
+        setErrorMsg('Please Add Brand Name')
         return false
     }
     function checkNumAndModal() {
@@ -211,11 +211,11 @@ export const DriverDetailEdit = ({ navigation }) => {
                 return true
 
             }
-            setErrorMsg('Please Enter Vehicle Capacity')
+            setErrorMsg('Please Enter Seats')
             return false
 
         }
-        setErrorMsg('Please Add Vehicle Number')
+        setErrorMsg('Please Add Number Plate')
         return false
     }
     function checkNumber() {
@@ -270,7 +270,7 @@ export const DriverDetailEdit = ({ navigation }) => {
     function checkData() {
 
         if (!vehicleImage) {
-            setErrorMsg('Please Upload Car Image')
+            setErrorMsg('Please Upload Van Photo')
             return false
         }
 
@@ -1402,7 +1402,7 @@ export const DriverDetailEdit = ({ navigation }) => {
 
                                 <View style={[styles.inputCont, { flexDirection: 'row', alignItems: 'center' }]}>
 
-                                    <TextInput placeholder="Charges to Departs"
+                                    <TextInput placeholder="Charges between Departs"
                                         autoCorrect={false}
                                         placeholderTextColor={myColors.text}
                                         selectionColor={myColors.primary}
@@ -1419,7 +1419,7 @@ export const DriverDetailEdit = ({ navigation }) => {
                                             // textAlign: 'center'
                                         }}
                                     />
-                                    <TextInput placeholder="Charges to Departs"
+                                    <TextInput placeholder="Charges between Departs"
                                         maxLength={6}
                                         autoCorrect={false}
                                         placeholderTextColor={myColors.offColor}
