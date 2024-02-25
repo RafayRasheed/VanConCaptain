@@ -9,8 +9,11 @@ export const CustomToggleButton = ({ online, setOnline }) => {
     const size = myHeight(3)
     const widt = size + myWidth(6)
     const toggle = () => {
-        setOnline(!online)
-        toggleValue.value = toggleValue.value === 0 ? 1 : 0;
+        if (setOnline(!online)) {
+
+            toggleValue.value = toggleValue.value === 0 ? 1 : 0;
+        }
+
     };
     const animatedStyle = useAnimatedStyle(() => ({
         width: size, // Adjust width and height according to your toggle button handle size

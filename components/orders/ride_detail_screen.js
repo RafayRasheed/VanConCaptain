@@ -171,6 +171,9 @@ export const RideDetails = ({ navigation, route }) => {
                     backgroundColor: myColors.background, flexGrow: 1, paddingHorizontal: myWidth(4)
                 }}>
                     <Spacer paddingT={myHeight(1)} />
+                    <CommonItem text={'Ride ID'} text2={'The ride id of the request.'}
+                        items={[item.id]} />
+
                     <CommonItem text={'Status'} text2={'The status of the request.'}
                         items={[statusMessages]} color={(item.status < 0 || (code == 3 && item[profile.uid].status == 1)) ? myColors.red : myColors.green} />
 

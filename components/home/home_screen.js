@@ -34,6 +34,7 @@ import { Status } from './home.component/status';
 import { CustomToggleButton } from './home.component/toggle';
 import { setOnline } from '../../redux/online_reducer';
 import storeRedux from '../../redux/store_redux';
+import { setErrorAlert } from '../../redux/error_reducer';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -55,6 +56,8 @@ export const HomeScreen = ({ navigation }) => {
     const { online } = useSelector(state => state.online)
     const { current, history } = useSelector(state => state.location)
     const [isLoading, setIsLoading] = useState(true)
+    const [onlineReq, setOnlineReq] = useState(true)
+
     const [availableSeats, setAvailableSeats] = useState(profile.availableSeats)
     const [nearbyRestaurant, setNearbyRestaurant] = useState([])
     const [RecommendRestaurant, setRecommendRestaurant] = useState([])
@@ -67,7 +70,12 @@ export const HomeScreen = ({ navigation }) => {
 
 
     function setOnlineRedux(status) {
+        if (!status && onlineReq) {
+            dispatch(setErrorAlert({ Title: 'Action Not Perform', Body: 'You have vanpool requests in progress finish to get offline', Status: 0 }))
+            return false
+        }
         dispatch(setOnline(status))
+        return true
     }
 
     function sendNotificationToAll() {
@@ -108,13 +116,26 @@ export const HomeScreen = ({ navigation }) => {
     function updateOnline() {
 
 
-        const reff = `/online/${profile.city}/${profile.uid}`
+        const reff = `/online/${profile.city}/drivers/${profile.uid}`
         if (online) {
             // const {latitude, longitude} = current
-            const from = history ? history : { latitude: 0, longitude: 0 }
-            const { distance } = getDistanceFromRes(from, current)
+            // const from = history ? history : { latitude: 0, longitude: 0 }
+            // const { distance } = getDistanceFromRes(from, current)
             const { actualDate } = dataFullData()
-            const data = { lastUpdate: actualDate.toString(), distance, location: current ? current : { latitude: 0, longitude: 0 }, ...profile }
+
+            const data = {
+                lastUpdate: actualDate.toString(),
+                // distance,
+                lastUpdate: actualDate.toString(),
+                did: profile.uid,
+                // uid: profile.uid,
+                // name: profile.name,
+                // contact: profile.contact,
+                // vehicleName: profile.vehicleName,
+                token: profile.deviceToken,
+                location: current ? current : { latitude: 0, longitude: 0 },
+                ...profile
+            }
             database()
                 .ref(reff).update(data).then(() => {
                     console.log('updateOnline Successfullly')
@@ -125,8 +146,11 @@ export const HomeScreen = ({ navigation }) => {
                     console.log('Error updateOnline', er)
                 })
         } else {
+
+
             database()
                 .ref(reff).remove()
+
         }
 
 
@@ -294,7 +318,8 @@ export const HomeScreen = ({ navigation }) => {
                     let History = []
                     let all = []
                     const unread = []
-
+                    let onl = false
+                    const pool = []
                     snapshot.forEach((documentSnapshot1, i) => {
                         const val2 = documentSnapshot1.val()
                         Object.entries(val2).forEach(([key, value]) => {
@@ -304,22 +329,45 @@ export const HomeScreen = ({ navigation }) => {
 
 
                                 all.push(val)
-                                if (val.status == 2 && me.status == 1) {
-                                    Pending.push(val)
-                                    if (me.unread) {
-                                        unread.push({ id: val.id, code: 2 })
+                                if (val.isOnline) {
+                                    if (val.status == 2 && (me.status == 1 || me.status == 1.5)) {
+                                        Pending.push(val)
+                                        if (me.unread) {
+                                            unread.push({ id: val.id, code: 2 })
+                                        }
                                     }
-                                }
-                                else if (val.status == 3 && val.did == profile.uid) {
-                                    InProgress.push(val)
-                                    if (me.unread) {
-                                        unread.push({ id: val.id, code: 1 })
+                                    else if (val.status == 3 && val.did == profile.uid) {
+                                        onl = true
+                                        pool.push(val)
+                                        if (me.unread) {
+                                            unread.push({ id: val.id, code: 1 })
+                                        }
+                                    }
+                                    else {
+                                        History.push(val)
+                                        if (me.unread) {
+                                            unread.push({ id: val.id, code: 3 })
+                                        }
                                     }
                                 }
                                 else {
-                                    History.push(val)
-                                    if (me.unread) {
-                                        unread.push({ id: val.id, code: 3 })
+                                    if (val.status == 2 && me.status == 1) {
+                                        Pending.push(val)
+                                        if (me.unread) {
+                                            unread.push({ id: val.id, code: 2 })
+                                        }
+                                    }
+                                    else if (val.status == 3 && val.did == profile.uid) {
+                                        InProgress.push(val)
+                                        if (me.unread) {
+                                            unread.push({ id: val.id, code: 1 })
+                                        }
+                                    }
+                                    else {
+                                        History.push(val)
+                                        if (me.unread) {
+                                            unread.push({ id: val.id, code: 3 })
+                                        }
                                     }
                                 }
                             }
@@ -327,6 +375,10 @@ export const HomeScreen = ({ navigation }) => {
 
 
                     });
+
+                    setOnlineReq(onl)
+                    InProgress = [...InProgress, ...pool]
+
                     console.log('unread', unread)
                     Pending.reverse()
                     InProgress.reverse()
@@ -338,6 +390,8 @@ export const HomeScreen = ({ navigation }) => {
                     dispatch(setAllUnread(unread))
 
                 } else {
+                    setOnlineReq(false)
+
                     dispatch(setPendingOrderse([]))
                     dispatch(setProgressOrderse([]))
                     dispatch(setHistoryOrderse([]))
@@ -424,7 +478,7 @@ export const HomeScreen = ({ navigation }) => {
                                             color: myColors.textL4, fontSize: myFontSize.small2,
                                             fontFamily: myFonts.bodyBold,
 
-                                        }]}>Onilne to get vanpool Rides</Text>
+                                        }]}>When Onilne you get vanpool Rides</Text>
                                 </View>
 
                                 <View style={{

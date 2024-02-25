@@ -10,15 +10,16 @@ import firestore, { Filter } from '@react-native-firebase/firestore';
 import { RequestInfo } from '../home/home.component/request_info';
 import { FlashList } from '@shopify/flash-list';
 import { containString } from '../functions/functions';
+import { RequestInfo2 } from '../home/home.component/request_info2';
 
 
 export const RidesScreen = ({ navigation }) => {
     const { profile } = useSelector(state => state.profile)
 
     const { pending, progress, history } = useSelector(state => state.orders)
-    const pendingUnread = pending.filter(it => it[profile.uid].unread == true)
-    const progressUnread = progress.filter(it => it[profile.uid].unread == true)
-    const historyUnread = history.filter(it => it[profile.uid].unread == true)
+    const pendingUnread = pending.filter(it => it[profile.uid]?.unread == true)
+    const progressUnread = progress.filter(it => it[profile.uid]?.unread == true)
+    const historyUnread = history.filter(it => it[profile.uid]?.unread == true)
     const [i, setI] = useState(0);
     const [pendingL, setPendingL] = useState([]);
     const [progressL, setProgressL] = useState([]);
@@ -139,6 +140,17 @@ export const RidesScreen = ({ navigation }) => {
 
                         estimatedItemSize={myHeight(10)}
                         renderItem={({ item, index }) => {
+                            if (item.isOnline) {
+                                return (
+                                    <TouchableOpacity key={index} activeOpacity={0.95}
+                                        onPress={() => navigation.navigate('RideDetails2', { item, code: i + 1 })}>
+
+
+
+                                        <RequestInfo2 item={item} navigation={navigation} code={i + 1} />
+                                    </TouchableOpacity>
+                                )
+                            }
                             return (
                                 <TouchableOpacity key={index} activeOpacity={0.95}
                                     onPress={() => navigation.navigate('RideDetails', { item, code: i + 1 })}>

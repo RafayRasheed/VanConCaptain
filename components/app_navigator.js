@@ -25,6 +25,7 @@ import { Chat } from "./home/chat_screen"
 import { DriverDetailEdit } from "./profile/driver_details_edit"
 import { DriverDetail } from "./home/driver_detail_screen"
 import { RideDetails } from "./orders/ride_detail_screen"
+import { RideDetails2 } from "./orders/ride_detail_screen2"
 
 const AppTAB = createStackNavigator()
 
@@ -64,6 +65,7 @@ export const AppNavigator = () => {
                 <AppTAB.Screen component={Favourite} name="Favourite" />
                 <AppTAB.Screen component={Checkout} name="Checkout" />
                 <AppTAB.Screen component={RideDetails} name="RideDetails" />
+                <AppTAB.Screen component={RideDetails2} name="RideDetails2" />
                 <AppTAB.Screen component={DriverDetailEdit} name="DriverDetailEdit" />
 
 

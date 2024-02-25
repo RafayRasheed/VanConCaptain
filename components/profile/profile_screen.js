@@ -13,6 +13,7 @@ import { deleteProfile } from '../../redux/profile_reducer';
 import { FirebaseUser } from '../functions/firebase';
 
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
+import { ImageUri } from '../common/image_uri';
 
 export const Profile = ({ navigation }) => {
     const { profile } = useSelector(state => state.profile)
@@ -127,17 +128,26 @@ export const Profile = ({ navigation }) => {
                     {/* image */}
                     <View style={{
                         borderRadius: myWidth(100), overflow: 'hidden',
+                        width: myHeight(13),
+                        height: myHeight(13),
                         // backgroundColor: myColors.primaryL5, padding: myHeight(1.3),
                         // borderWidth: myWidth(0.1), borderColor: myColors.textL4, 
                     }}>
-                        <Image source={require('../assets/profile/profile.png')}
-                            style={{
-                                width: myHeight(13),
-                                height: myHeight(13),
-                                resizeMode: 'contain',
-                                // tintColor: myColors.primaryT
-                            }}
-                        />
+                        {
+                            profile.image ?
+
+                                <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={profile.image} />
+                                :
+                                <Image source={require('../assets/profile/profile.png')}
+                                    style={{
+                                        width: myHeight(13),
+                                        height: myHeight(13),
+                                        resizeMode: 'contain',
+                                        // tintColor: myColors.primaryT
+                                    }}
+                                />
+                        }
+
 
                     </View>
                     <Spacer paddingT={myHeight(1)} />
