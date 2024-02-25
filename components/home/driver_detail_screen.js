@@ -31,7 +31,7 @@ export const DriverDetail = ({ navigation, route }) => {
   const [review, setReview] = useState(null)
   const [errorMsg, setErrorMsg] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [reviews, setReviews] = useState(driver.reviews)
+  const [reviews, setReviews] = useState(driver.reviews ? driver.reviews : [])
   const [myReview, setMyRewiew] = useState()
 
   const dispatch = useDispatch()
@@ -624,7 +624,7 @@ export const DriverDetail = ({ navigation, route }) => {
 
           {/* Reviews */}
           {
-            reviews.length ?
+            reviews?.length ?
               <View style={{}}>
                 <Text
 
