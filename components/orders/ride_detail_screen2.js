@@ -56,7 +56,7 @@ export const RideDetails2 = ({ navigation, route }) => {
             setMe(me)
             const isMissed = item.status >= 3 && item.did != profile.uid
 
-            const statusMessages = code == 1 ? 'Active' : code == 2 ? 'Pending' : me.status == 1 ? isMissed ? 'You Missed' : 'Cancelled' :
+            const statusMessages = code == 1 ? 'In Progress' : code == 2 ? me.status == 1.5 ? 'Wait for customer response' : 'Pending' : me.status == 1 ? isMissed ? 'You Missed' : 'Cancelled' :
                 me.status < 0 ? 'Rejected' : `Completed`
 
             setStatusMessages(statusMessages)
