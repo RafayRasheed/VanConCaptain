@@ -264,7 +264,20 @@ export const Chat = ({ navigation, route }) => {
         const dddT = actualDate.toLocaleTimeString()
         const fSpace = dddT.split(' ')
         const fDot = fSpace[0].split(':')
-        const timeFor = `${fDot[0]}:${fDot[1]} ${fSpace[1]}`
+
+
+        function formatAMPM(date) {
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
+
+        const timeFor = formatAMPM(actualDate)
         const mssss = {
 
             date: actualDate.toLocaleDateString(),

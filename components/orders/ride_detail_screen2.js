@@ -112,13 +112,13 @@ export const RideDetails2 = ({ navigation, route }) => {
             .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
             .then(() => {
                 console.log('To accept user successfully')
-                dispatch(setErrorAlert({ Title: 'Request Accept Successfully', Body: 'Wait for customer conformation', Status: 2 }))
+                dispatch(setErrorAlert({ Title: 'Request Accepted Successfully', Body: "Wait for customer's conformation", Status: 2 }))
                 setLoad(false)
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
 
-                    sendPushNotification('Vanpool Request Accepted', `Your vanpool request is accepted by ${profile.name} and waiting for your response`, 2, [token])
+                    sendPushNotification('Vanpool Request Accepted', `Your vanpool request is accepted by ${profile.name}, awaiting for your response`, 2, [token])
                 }).catch((err) => { console.log(err) })
 
             })

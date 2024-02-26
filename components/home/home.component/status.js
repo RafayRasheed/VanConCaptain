@@ -97,7 +97,7 @@ export const Status = ({ notifications = [], }) => {
       <TouchableOpacity
         activeOpacity={0.9}
 
-        onPress={() => navigation.navigate('RideDetails', { item, code: 1 })}
+        onPress={() => navigation.navigate(item.isOnline ? 'RideDetails2' : 'RideDetails', { item, code: 1 })}
 
         style={[
           styles.containerNotiItem,

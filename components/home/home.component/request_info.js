@@ -47,13 +47,13 @@ export const RequestInfo = ({ item, navigation, code }) => {
             .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
             .then(() => {
                 console.log('To accept user successfully')
-                dispatch(setErrorAlert({ Title: 'Request Accept Successfully', Body: null, Status: 2 }))
+                dispatch(setErrorAlert({ Title: 'Request Accepted Successfully', Body: null, Status: 2 }))
                 setLoad(false)
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
 
-                    sendPushNotification('Request Accepted', `Your request ${item.id} is accepted by ${profile.name}`, 2, [token])
+                    sendPushNotification('Request Accepted', `Your request is accepted by ${profile.name}`, 2, [token])
                 }).catch((err) => { console.log(err) })
 
             })
@@ -76,7 +76,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     const captain = data.data()
                     const token = captain.deviceToken
 
-                    sendPushNotification('Request Rejected', `Your request ${item.id} is rejected by ${profile.name}`, 0, [token])
+                    sendPushNotification('Request Rejected', `Your request is rejected by ${profile.name}`, 0, [token])
                 }).catch((err) => { console.log(err) })
 
                 console.log('To Unread successfully')
@@ -137,7 +137,7 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     const captain = data.data()
                     const token = captain.deviceToken
 
-                    sendPushNotification('Ride End', `Your ride ${item.id} is ended by ${profile.name}`, 2, [token])
+                    sendPushNotification('Ride Ended', `Your ride is ended by ${profile.name}`, 2, [token])
                 }).catch((err) => { console.log(err) })
             })
             .catch((err) => {

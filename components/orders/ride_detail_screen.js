@@ -122,6 +122,51 @@ export const RideDetails = ({ navigation, route }) => {
             </View>
         )
     }
+    const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+    // const driver = item?.sendDrivers[0]
+    const DaysShow = ({ list = [] }) => {
+        return (
+            <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
+                {
+                    allDays.map((it, i) => {
+                        const is = list.findIndex(li => li == it) != -1
+
+                        return (
+
+                            <>
+                                <View key={i} style={[styles.backItem2, {
+                                    backgroundColor: is ? myColors.primaryT : myColors.divider, width: myWidth(11), paddingVertical: myHeight(0.6),
+                                    paddingHorizontal: myWidth(0), justifyContent: 'center'
+                                }]}>
+
+
+                                    <Text numberOfLines={1}
+
+                                        style={{
+                                            fontSize: myFontSize.small3,
+                                            fontFamily: myFonts.bodyBold,
+                                            color: is ? myColors.background : myColors.text,
+                                            letterSpacing: myLetSpacing.common,
+                                            includeFontPadding: false,
+                                            padding: 0,
+                                        }}>{it}</Text>
+
+                                </View>
+                                {
+                                    i != 6 &&
+                                    <Spacer key={i} paddingEnd={myWidth(1.5)} />
+                                }
+                            </>
+
+                        )
+                    }
+                    )
+                }
+            </View>
+        )
+    }
+
     return (
         <>
             {/* <StatusBar backgroundColor={orderModal ? '#00000030' : myColors.background} /> */}
@@ -191,6 +236,23 @@ export const RideDetails = ({ navigation, route }) => {
 
 
 
+                    <CommonItem text={'Billing & Offer'} text2={'The billing & offer of the request by customer.'}
+                        items={[item.packages, `${item.offer} Rs`]} />
+
+
+                    <View style={{}}>
+                        <Text style={styles.heading}>{'Ride Days'}</Text>
+                        <View style={{ marginHorizontal: myWidth(2) }}>
+                            <Text style={styles.tesxH}>The ride days of the request</Text>
+                            <Spacer paddingT={myHeight(0.8)} />
+
+
+
+                            <DaysShow list={item.selectedDays} />
+
+                        </View>
+                    </View>
+                    <Spacer paddingT={myHeight(2.8)} />
                     <CommonItem text={'Distance Traveled '} text2={'The distance traveled from the pickup to dropoff'}
                         items={[item.distance]} />
 
@@ -325,6 +387,11 @@ const styles = StyleSheet.create({
         letterSpacing: myLetSpacing.common,
         includeFontPadding: false,
         padding: 0,
+    },
+    backItem2: {
+        paddingHorizontal: myWidth(5), paddingVertical: myHeight(0.75), borderRadius: myWidth(100),
+        backgroundColor: myColors.background, borderWidth: myHeight(0.1), borderColor: myColors.divider,
+        flexDirection: 'row', alignItems: 'center'
     },
     tesxH: {
         fontSize: myFontSize.xxSmall,
