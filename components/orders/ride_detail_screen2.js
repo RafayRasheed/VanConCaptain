@@ -389,6 +389,9 @@ export const RideDetails2 = ({ navigation, route }) => {
 
                     <CommonItem text={'Status'} text2={'The status of the request.'}
                         items={[statusMessages]} color={(item.status < 0 || (code == 3 && item[profile.uid].status == 1)) ? myColors.red : myColors.green} />
+                    <CommonItem text={'Offer'} text2={'The offer of the request by customer.'}
+                        items={[`${item.offer} Rs`]} />
+
 
                     <CommonItem text={'Date'} text2={'The date of the request.'}
                         items={[`${item.date}`]} />

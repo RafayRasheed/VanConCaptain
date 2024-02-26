@@ -1206,7 +1206,7 @@ export function getDistanceFromRes(from, to) {
 
     }
     else if (d < 1000) {
-      d = d + ' M'
+      d = Math.round(d) + ' M'
     }
     else {
       d = 0 + ' KM'

@@ -88,7 +88,7 @@ export const Profile = ({ navigation }) => {
     }
     function shareAPP(plat) {
 
-        Linking.openURL(`${plat}${'https://drive.google.com/file/d/16QKcLiA5T7nDzHLAj6IqDVFMoQWIOs6W/view?usp=drive_link'}`)
+        Linking.openURL(`${plat}${'https://drive.google.com/drive/folders/10LR2rVpEYdve7IGN5Db6SkEAvj6m2fKO?usp=drive_link'}`)
             .then(() => { })
             .catch(e => {
                 Alert.alert(null, `App not installed.`);

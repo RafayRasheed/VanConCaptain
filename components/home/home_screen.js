@@ -286,7 +286,7 @@ export const HomeScreen = ({ navigation }) => {
                                     user2: val.user,
                                     statusTime: statusDate(latest.date, latest.time),
                                     allMessages, allUnreadMessagesToRead,
-                                    colorC: getAvatarColor(val.captain.name)
+                                    colorC: getAvatarColor(val.user.name)
 
                                 }
                                 Chats.push(chat)
