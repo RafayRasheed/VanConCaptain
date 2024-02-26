@@ -465,7 +465,7 @@ export const HomeScreen = ({ navigation }) => {
                     profile.ready ?
                         <>
                             {
-                                !profile.isOnline ?
+                                profile.isOnline ?
                                     <>
                                         <Spacer paddingT={myHeight(2.5)} />
 

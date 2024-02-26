@@ -308,7 +308,7 @@ export const Profile = ({ navigation }) => {
                     } style={{ flex: 1 }} />
                     <Animated.View entering={SlideInDown} exiting={SlideOutDown}
                         style={{
-                            height: myHeight(37),
+                            height: myHeight(30),
                             backgroundColor: '#fff',
                             borderTopStartRadius: myWidth(4),
                             borderTopEndRadius: myWidth(4),
@@ -317,14 +317,15 @@ export const Profile = ({ navigation }) => {
                             width: '100%',
                         }}
                     >
-                        <Spacer paddingT={myHeight(1.5)} />
+                        <Spacer paddingT={myHeight(3)} />
 
                         <Text
                             style={[
                                 styles.textCommon,
                                 {
-                                    fontSize: myFontSize.xMedium,
+                                    fontSize: myFontSize.xBody,
                                     fontFamily: myFonts.bodyBold,
+                                    textAlign: 'center'
                                 },
                             ]}
                         >
@@ -349,7 +350,7 @@ export const Profile = ({ navigation }) => {
                                     activeOpacity={0.8}
                                     style={{
                                         backgroundColor: myColors.primaryT,
-                                        borderRadius: myHeight(0.5),
+                                        borderRadius: myWidth(4),
                                         paddingVertical: myHeight(1.4),
                                         width: '100%',
                                         justifyContent: 'center',
@@ -378,7 +379,7 @@ export const Profile = ({ navigation }) => {
                                     activeOpacity={0.8}
                                     style={{
                                         borderColor: myColors.primaryT,
-                                        borderRadius: myHeight(0.5),
+                                        borderRadius: myWidth(4),
                                         borderWidth: myHeight(0.2),
                                         paddingVertical: myHeight(1.4),
                                         width: '100%',
