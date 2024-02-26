@@ -381,7 +381,7 @@ export const HomeScreen = ({ navigation }) => {
                     InProgress = InProgress.sort(function (a, b) { return b.dateInt - a.dateInt })
                     History = History.sort(function (a, b) { return b.dateInt - a.dateInt })
 
-                    InProgress = [...InProgress, ...pool]
+                    InProgress = [...pool, ...InProgress]
 
                     console.log('unread', unread)
                     // Pending.reverse()
