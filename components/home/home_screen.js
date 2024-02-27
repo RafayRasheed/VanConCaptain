@@ -229,6 +229,18 @@ export const HomeScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
+
+        if (profile) {
+
+            setAvailableSeats(profile.availableSeats)
+        }
+        // updateDeviceTokenToFireBase(profile.uid)
+        // sendPushNotification('hi', 'bye',2 )
+
+
+
+    }, [profile.availableSeats])
+    useEffect(() => {
         if (profile.city) {
             setTimeout(() => {
 
@@ -604,7 +616,11 @@ export const HomeScreen = ({ navigation }) => {
                                         </View>
 
                                         <TouchableOpacity onPress={() => {
-                                            setAvailableSeats(availableSeats + 1)
+                                            if (profile.vehicleSeats > availableSeats) {
+                                                console.log('h')
+                                                // return
+                                                setAvailableSeats(availableSeats + 1)
+                                            }
                                         }} activeOpacity={0.7} style={{
                                             backgroundColor: myColors.primaryT,
                                             height: myHeight(3),

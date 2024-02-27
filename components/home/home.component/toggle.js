@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, withTiming, Easing, interpolate, useAnimatedStyle, Extrapolation } from 'react-native-reanimated';
 import { myHeight, myWidth } from '../../common';
@@ -8,10 +8,15 @@ export const CustomToggleButton = ({ online, setOnline }) => {
     const toggleValue = useSharedValue(0);
     const size = myHeight(3)
     const widt = size + myWidth(6)
+
+    useEffect(() => {
+        toggleValue.value = online ? 1 : 0;
+
+    }, [online])
     const toggle = () => {
         if (setOnline(!online)) {
 
-            toggleValue.value = toggleValue.value === 0 ? 1 : 0;
+            // toggleValue.value = toggleValue.value === 0 ? 1 : 0;
         }
 
     };

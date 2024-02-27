@@ -164,7 +164,7 @@ export const DriverInfoFull = ({ driver, navigation }) => {
                             <Image style={styles.imageStar} source={require('../../assets/home_main/home/star.png')} />
 
                             <Spacer paddingEnd={myWidth(1.6)} />
-                            <Text style={styles.textRating}>{driver.rating}</Text>
+                            <Text style={styles.textRating}>{driver.rating} <Text style={{ color: myColors.textL4 }}>({driver.noOfRatings})</Text></Text>
                         </View>
 
                     </View>

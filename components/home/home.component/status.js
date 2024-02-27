@@ -106,6 +106,33 @@ export const Status = ({ notifications = [], }) => {
         ]}
       >
         <View style={{ flex: 1 }}>
+          {
+            item.isOnline ?
+
+              <View style={{
+                paddingVertical: myHeight(0.1), paddingHorizontal: myWidth(2.5),
+                marginEnd: myWidth(1), marginStart: -myWidth(2.5),
+                marginBottom: myHeight(0.8),
+                backgroundColor: myColors.background, alignSelf: 'flex-start',
+                borderRadius: myWidth(100), flexDirection: 'row', alignItems: 'center'
+              }}>
+                <Text
+                  style={[
+                    styles.textCommon,
+                    {
+
+                      fontSize: myFontSize.xxSmall,
+                      fontFamily: myFonts.heading,
+                      color: myColors.text
+                    },
+                  ]}
+                >Vanpool</Text>
+              </View>
+              :
+              null
+          }
+
+
           <View style={{ flexDirection: 'row' }}>
             <Text
               style={[
@@ -124,7 +151,6 @@ export const Status = ({ notifications = [], }) => {
           </View>
 
 
-
           <View style={{ flexDirection: 'row' }}>
             <Text
               style={[
@@ -141,20 +167,30 @@ export const Status = ({ notifications = [], }) => {
               {item.name}
             </Text>
           </View>
-          <View style={{ flexDirection: 'row' }}>
-            <Text
-              style={[
-                styles.textNotiItem,
-                { fontFamily: myFonts.heading },
-              ]}
-            >
-              Status:{' '}
-            </Text>
-            <Text
-              style={[styles.textNotiItem, { flex: 1 }]}
-              numberOfLines={1}
-            >Active</Text>
-          </View>
+
+
+          {
+            item.isOnline ?
+
+              null
+              :
+
+              <View style={{ flexDirection: 'row' }}>
+                <Text
+                  style={[
+                    styles.textNotiItem,
+                    { fontFamily: myFonts.heading },
+                  ]}
+                >
+                  Status:{' '}
+                </Text>
+                <Text
+                  style={[styles.textNotiItem, { flex: 1 }]}
+                  numberOfLines={1}
+                >Active</Text>
+              </View>
+          }
+
         </View>
 
         <TouchableOpacity disabled activeOpacity={0.6} onPress={() => null}>

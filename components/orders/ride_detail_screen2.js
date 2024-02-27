@@ -7,7 +7,7 @@ import firestore, { Filter } from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database';
 import { ImageUri } from '../common/image_uri';
 import { FlashList } from '@shopify/flash-list';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setErrorAlert } from '../../redux/error_reducer';
 import { sendPushNotification } from '../functions/firebase';
 import { getDistanceFromRes } from '../functions/functions';
@@ -16,7 +16,7 @@ import { getDistanceFromRes } from '../functions/functions';
 
 export const RideDetails2 = ({ navigation, route }) => {
     const req = route.params.item
-    const code = route.params.code
+    const code2 = route.params.code
     const { profile } = useSelector(state => state.profile)
     const [errorMsg, setErrorMsg] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -24,6 +24,7 @@ export const RideDetails2 = ({ navigation, route }) => {
     const [statusMessages, setStatusMessages] = useState(null)
     const [load, setLoad] = useState(false)
     const [distance, setDistance] = useState(false)
+    const [code, setCode] = useState(code2)
     const { current } = useSelector(state => state.location)
 
     const { allRequest } = useSelector(State => State.orders)
@@ -31,7 +32,7 @@ export const RideDetails2 = ({ navigation, route }) => {
     const [me, setMe] = useState(null)
     const item2 = item
     // const driver = item?.sendDrivers[0]
-
+    const dispatch = useDispatch()
     useEffect(() => {
         if (allRequest.length) {
 
@@ -48,16 +49,36 @@ export const RideDetails2 = ({ navigation, route }) => {
             setDistance(string)
             console.log('updated Distance', string)
         }
+        else {
+            setDistance(null)
+        }
     }, [current, item])
     useEffect(() => {
         if (item) {
 
             const me = item[profile.uid]
             setMe(me)
+
+            if (item.status == 2 && (me.status == 1 || me.status == 1.5)) {
+                setCode(2)
+            }
+            else if (item.status == 3 && item.did == profile.uid) {
+                setCode(1)
+
+            }
+            else {
+                setCode(3)
+
+            }
+
             const isMissed = item.status >= 3 && item.did != profile.uid
 
             const statusMessages = code == 1 ? 'In Progress' : code == 2 ? me.status == 1.5 ? 'Wait for customer response' : 'Pending' : me.status == 1 ? isMissed ? 'You Missed' : 'Cancelled' :
                 me.status < 0 ? 'Rejected' : `Completed`
+
+
+            // const ss = (code == 3 && (me.status < 0 || (me.status == 1 && isMissed)))
+            // console.log('ppppp', ss)
 
             setStatusMessages(statusMessages)
             // const ind = item.sendDrivers.findIndex(it => item[it.did].status >= 2)
@@ -83,7 +104,7 @@ export const RideDetails2 = ({ navigation, route }) => {
             console.log(driver.length)
             setSendDrivers(driver)
         }
-    }, [item])
+    }, [item, code])
     useEffect(() => {
 
         if (errorMsg) {
@@ -99,9 +120,63 @@ export const RideDetails2 = ({ navigation, route }) => {
         return
     }
 
+    function onAcceptSpecific() {
+        // return
+        setLoad(true)
+
+        const dr = me
+
+        const update = { did: dr.did, driverName: dr.name, driverContact: dr.contact, status: 3 }
+        update[dr.did] = { ...dr, status: 2, unread: true }
+
+
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
+            .then(() => {
+                console.log('To accept user successfully')
+                dispatch(setErrorAlert({ Title: 'Request Accepted Successfully', Body: null, Status: 2 }))
+                sendPushNotification('Ride Accepted', `Vanpool ride is accepted by ${profile.name}`, 2, [item.token])
+                setLoad(false)
+                setCode(1)
+
+
+            })
+            .catch((err) => {
+                setLoad(false)
+
+                console.log('error on accept unread err', err)
+
+            })
+
+    }
+    function onRejectSpecific() {
+        // return
+        setLoad(true)
+        const update = { status: -1 }
+        update[me.did] = { ...me, status: -1, unread: true }
+
+
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
+            .then(() => {
+                console.log('To accept user successfully')
+                dispatch(setErrorAlert({ Title: 'Request Rejected Successfully', Body: null, Status: 2 }))
+                sendPushNotification('Ride Rejected', `Vanpool ride is rejected by ${profile.name}`, 0, [item.token])
+                setLoad(false)
+                navigation.goBack()
+
+            })
+            .catch((err) => {
+                setLoad(false)
+
+                console.log('error on accept unread err', err)
+
+            })
+
+    }
     function onAccept() {
 
-        setLoad(false)
+        setLoad(true)
         const update = {}
 
         update[profile.uid] = { ...item[profile.uid], status: 1.5, }
@@ -169,6 +244,7 @@ export const RideDetails2 = ({ navigation, route }) => {
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
+                    navigation.goBack()
 
                     sendPushNotification('Vanpool Ride Is Ended', `Your vanpool ride is ended`, 2, [token])
                 }).catch((err) => { console.log(err) })
@@ -388,7 +464,7 @@ export const RideDetails2 = ({ navigation, route }) => {
                         items={[item.id]} />
 
                     <CommonItem text={'Status'} text2={'The status of the request.'}
-                        items={[statusMessages]} color={(item.status < 0 || (code == 3 && item[profile.uid].status == 1)) ? myColors.red : myColors.green} />
+                        items={[statusMessages]} color={(code == 3 && (me.status < 0 || (me.status == 1 && isMissed))) ? myColors.red : myColors.green} />
                     <CommonItem text={'Offer'} text2={'The offer of the request by customer.'}
                         items={[`${item.offer} Rs`]} />
 
@@ -430,6 +506,10 @@ export const RideDetails2 = ({ navigation, route }) => {
                     (code == 2 && me.status == 1) ?
                         <>
                             <TouchableOpacity activeOpacity={0.7} onPress={() => {
+                                if (item.isSpecific) {
+                                    onAcceptSpecific()
+                                    return
+                                }
                                 onAccept()
                             }
 
@@ -518,6 +598,10 @@ export const RideDetails2 = ({ navigation, route }) => {
                                 if (code == 1) {
                                     onEnd()
                                 } else {
+                                    if (item.isSpecific && me.status == 1) {
+                                        onRejectSpecific()
+                                        return
+                                    }
 
                                     onReject()
                                 }

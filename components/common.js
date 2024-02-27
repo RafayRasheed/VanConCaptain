@@ -119,6 +119,7 @@ export const NotiAlertNew = () => {
         return null
     }
     const { Title, Body, Status } = error
+    console.log(error)
     return (
         <View style={{ position: 'absolute', zIndex: 10, width: '100%', backgroundColor: 'transparent' }}>
             <Animated.View entering={SlideInUp.duration(500)} exiting={SlideOutUp}>

@@ -31,6 +31,59 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
             }, 3000)
         }
     }, [item])
+
+
+    function onAcceptSpecific() {
+        const dr = me
+        setLoad(true)
+
+        const update = { did: dr.did, driverName: dr.name, driverContact: dr.contact, status: 3 }
+        update[dr.did] = { ...dr, status: 2, unread: true }
+
+
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
+            .then(() => {
+                console.log('To accept user successfully')
+                dispatch(setErrorAlert({ Title: 'Request Accepted Successfully', Body: null, Status: 2 }))
+                sendPushNotification('Ride Accepted', `Vanpool ride is accepted by ${profile.name}`, 2, [item.token])
+                setLoad(false)
+
+
+            })
+            .catch((err) => {
+                setLoad(false)
+
+                console.log('error on accept unread err', err)
+
+            })
+
+    }
+    function onRejectSpecific() {
+
+        setLoad(true)
+        const update = { status: -1 }
+        update[me.did] = { ...me, status: -1, unread: true }
+
+
+        database()
+            .ref(`/requests/${item.uid}/${item.id}`).update({ ...update, unread: true })
+            .then(() => {
+                console.log('To accept user successfully')
+                dispatch(setErrorAlert({ Title: 'Request Rejected Successfully', Body: null, Status: 2 }))
+                sendPushNotification('Ride Rejected', `Vanpool ride is rejected by ${profile.name}`, 0, [item.token])
+                setLoad(false)
+
+
+            })
+            .catch((err) => {
+                setLoad(false)
+
+                console.log('error on accept unread err', err)
+
+            })
+
+    }
     function onAccept() {
 
         setLoad(false)
@@ -63,6 +116,7 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
 
 
     }
+
     function onReject() {
         setLoad(true)
         database()
@@ -192,6 +246,10 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
 
             })
 
+    }
+
+    if (!me) {
+        return null
     }
     return (
         <View
@@ -588,7 +646,13 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
                                                 </>
                                                 :
                                                 <>
-                                                    <TouchableOpacity activeOpacity={0.7} onPress={() => onReject()}>
+                                                    <TouchableOpacity activeOpacity={0.7} onPress={() => {
+                                                        if (item.isSpecific) {
+                                                            onRejectSpecific()
+                                                            return
+                                                        }
+                                                        onReject()
+                                                    }}>
                                                         <Text
                                                             style={[
                                                                 styles.textCommon,
@@ -601,7 +665,13 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
                                                         >{'Reject'}</Text>
                                                     </TouchableOpacity>
                                                     <Spacer paddingEnd={myWidth(4)} />
-                                                    <TouchableOpacity activeOpacity={0.7} onPress={() => onAccept()}>
+                                                    <TouchableOpacity activeOpacity={0.7} onPress={() => {
+                                                        if (item.isSpecific) {
+                                                            onAcceptSpecific()
+                                                            return
+                                                        }
+                                                        onAccept()
+                                                    }}>
                                                         <Text
                                                             style={[
                                                                 styles.textCommon,

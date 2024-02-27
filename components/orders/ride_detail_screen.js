@@ -13,7 +13,8 @@ import { useSelector } from 'react-redux';
 
 export const RideDetails = ({ navigation, route }) => {
     const req = route.params.item
-    const code = route.params.code
+    const code2 = route.params.code
+    const [code, setCode] = useState(code2)
     const { profile } = useSelector(state => state.profile)
     const [errorMsg, setErrorMsg] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -34,7 +35,20 @@ export const RideDetails = ({ navigation, route }) => {
     }, [allRequest])
     useEffect(() => {
         if (item) {
+
             const me = item[profile.uid]
+
+            if (item.status == 2 && me.status == 1) {
+                setCode(2)
+            }
+            else if (item.status == 3 && item.did == profile.uid) {
+
+                setCode(1)
+            }
+            else {
+                setCode(3)
+            }
+
             const isMissed = item.status >= 3 && item.did != profile.uid
 
             const statusMessages = code == 1 ? 'Active' : code == 2 ? 'Pending' : me.status == 1 ? isMissed ? 'You Missed' : 'Cancelled' :
@@ -64,7 +78,7 @@ export const RideDetails = ({ navigation, route }) => {
             console.log(driver.length)
             setSendDrivers(driver)
         }
-    }, [item])
+    }, [item, code])
     useEffect(() => {
 
         if (errorMsg) {
@@ -220,7 +234,8 @@ export const RideDetails = ({ navigation, route }) => {
                         items={[item.id]} />
 
                     <CommonItem text={'Status'} text2={'The status of the request.'}
-                        items={[statusMessages]} color={(item.status < 0 || (code == 3 && item[profile.uid].status == 1)) ? myColors.red : myColors.green} />
+                        // items={[statusMessages]} color={(item.status < 0 || (code == 3 && item[profile.uid].status == 1)) ? myColors.red : myColors.green} />
+                        items={[statusMessages]} color={(code == 3 && (item[profile.uid].status < 0 || (item[profile.uid].status == 1 && isMissed))) ? myColors.red : myColors.green} />
 
 
                     <CommonItem text={'Pickup'} text2={'Pickup location and timing.'}

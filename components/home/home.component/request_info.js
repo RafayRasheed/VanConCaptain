@@ -11,6 +11,7 @@ import database from '@react-native-firebase/database';
 import { FirebaseUser, sendPushNotification } from '../../functions/firebase'
 import { setErrorAlert } from '../../../redux/error_reducer'
 import firestore from '@react-native-firebase/firestore';
+import { updateProfileToFirebase } from '../../functions/functions'
 
 export const RequestInfo = ({ item, navigation, code }) => {
     const { profile } = useSelector(state => state.profile)
@@ -31,6 +32,9 @@ export const RequestInfo = ({ item, navigation, code }) => {
         }
     }, [item])
     function onAccept() {
+
+
+
         if (profile.availableSeats < item.seats) {
             dispatch(setErrorAlert({ Title: 'Seats Not Available', Body: null, Status: 0 }))
             return
@@ -53,6 +57,19 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     const captain = data.data()
                     const token = captain.deviceToken
 
+                    const seats = profile.availableSeats - item.seats
+                    updateProfileToFirebase({ availableSeats: seats < 0 ? 0 : seats })
+                    // FirebaseUser.doc(profile.uid)
+                    //     .update({  })
+                    //     .then(() => {
+
+                    //         console.log('To accept me successfully')
+
+                    //     }).catch(err => {
+
+                    //         console.log('Internal error while Updating a Restaurant', err)
+                    //     });
+
                     sendPushNotification('Request Accepted', `Your request is accepted by ${profile.name}`, 2, [token])
                 }).catch((err) => { console.log(err) })
 
@@ -67,6 +84,9 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
     }
     function onReject() {
+
+
+
         setLoad(true)
         database()
             .ref(`/requests/${item.uid}/${item.id}/${profile.uid}`).update({ status: -1 }).
@@ -77,6 +97,8 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     const token = captain.deviceToken
 
                     sendPushNotification('Request Rejected', `Your request is rejected by ${profile.name}`, 0, [token])
+
+
                 }).catch((err) => { console.log(err) })
 
                 console.log('To Unread successfully')
@@ -137,7 +159,10 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     const captain = data.data()
                     const token = captain.deviceToken
 
-                    sendPushNotification('Ride Ended', `Your ride is ended by ${profile.name}`, 2, [token])
+                    const seats = profile.availableSeats + item.seats
+
+                    updateProfileToFirebase({ availableSeats: profile.vehicleSeats > seats ? seats : profile.availableSeats })
+                    sendPushNotification('Ride Ended', `Your ride is ended`, 2, [token])
                 }).catch((err) => { console.log(err) })
             })
             .catch((err) => {
@@ -195,6 +220,10 @@ export const RequestInfo = ({ item, navigation, code }) => {
 
             })
 
+    }
+
+    if (!me) {
+        return null
     }
     return (
         <View
