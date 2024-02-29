@@ -23,6 +23,7 @@ export const RideDetails2 = ({ navigation, route }) => {
     const [sendDrivers, setSendDrivers] = useState([])
     const [statusMessages, setStatusMessages] = useState(null)
     const [load, setLoad] = useState(false)
+    const [load2, setLoad2] = useState(false)
     const [distance, setDistance] = useState(false)
     const [code, setCode] = useState(code2)
     const { current } = useSelector(state => state.location)
@@ -121,8 +122,8 @@ export const RideDetails2 = ({ navigation, route }) => {
     }
 
     function onAcceptSpecific() {
-        // return
-        setLoad(true)
+        setLoad2(true)
+
 
         const dr = me
 
@@ -136,13 +137,13 @@ export const RideDetails2 = ({ navigation, route }) => {
                 console.log('To accept user successfully')
                 dispatch(setErrorAlert({ Title: 'Request Accepted Successfully', Body: null, Status: 2 }))
                 sendPushNotification('Ride Accepted', `Vanpool ride is accepted by ${profile.name}`, 2, [item.token])
-                setLoad(false)
+                setLoad2(false)
                 setCode(1)
 
 
             })
             .catch((err) => {
-                setLoad(false)
+                setLoad2(false)
 
                 console.log('error on accept unread err', err)
 
@@ -176,7 +177,8 @@ export const RideDetails2 = ({ navigation, route }) => {
     }
     function onAccept() {
 
-        setLoad(true)
+        setLoad2(true)
+
         const update = {}
 
         update[profile.uid] = { ...item[profile.uid], status: 1.5, }
@@ -188,7 +190,7 @@ export const RideDetails2 = ({ navigation, route }) => {
             .then(() => {
                 console.log('To accept user successfully')
                 dispatch(setErrorAlert({ Title: 'Request Accepted Successfully', Body: "Wait for customer's conformation", Status: 2 }))
-                setLoad(false)
+                setLoad2(false)
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
@@ -199,7 +201,7 @@ export const RideDetails2 = ({ navigation, route }) => {
             })
             .catch((err) => {
                 console.log('error on accept unread err', err)
-                setLoad(false)
+                setLoad2(false)
 
             })
 
@@ -505,6 +507,8 @@ export const RideDetails2 = ({ navigation, route }) => {
                 {
                     (code == 2 && me.status == 1) ?
                         <>
+                            <Spacer paddingT={myHeight(1.5)} />
+
                             <TouchableOpacity activeOpacity={0.7} onPress={() => {
                                 if (item.isSpecific) {
                                     onAcceptSpecific()
@@ -517,12 +521,12 @@ export const RideDetails2 = ({ navigation, route }) => {
                                 style={{
                                     width: myWidth(92), alignSelf: 'center', paddingVertical: myHeight(1.2),
                                     borderRadius: myHeight(1.4), alignItems: 'center', justifyContent: 'center',
-                                    flexDirection: 'row', backgroundColor: myColors.green,
+                                    flexDirection: 'row', backgroundColor: myColors.background,
                                     borderWidth: myHeight(0.15), borderColor: myColors.green, marginTop: myHeight(1)
                                 }}>
                                 <>
                                     {
-                                        load ?
+                                        load2 ?
                                             <Text
                                                 style={[
                                                     styles.textCommon,
@@ -530,7 +534,7 @@ export const RideDetails2 = ({ navigation, route }) => {
 
                                                         fontSize: myFontSize.body,
                                                         fontFamily: myFonts.bodyBold,
-                                                        color: myColors.background
+                                                        color: myColors.green
                                                     },
                                                 ]}
                                             >Loading...</Text>
@@ -544,7 +548,7 @@ export const RideDetails2 = ({ navigation, route }) => {
                                                             {
                                                                 fontSize: myFontSize.body,
                                                                 fontFamily: myFonts.heading,
-                                                                color: myColors.background
+                                                                color: myColors.green
                                                             },
                                                         ]}
                                                     >{'Accept'}</Text>

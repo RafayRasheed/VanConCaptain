@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     ScrollView, StyleSheet, TouchableOpacity, Image,
     View, Text, StatusBar, TextInput,
-    Linking, Platform, ImageBackground, SafeAreaView, ActivityIndicator, Alert,
+    Linking, Platform, ImageBackground, SafeAreaView, ActivityIndicator, Alert, BackHandler,
 } from 'react-native';
 import { MyError, Spacer, StatusbarH, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
@@ -15,6 +15,7 @@ import { FirebaseUser } from '../functions/firebase';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { ImageUri } from '../common/image_uri';
 import { setErrorAlert } from '../../redux/error_reducer';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const Profile = ({ navigation }) => {
     const { profile } = useSelector(state => state.profile)
@@ -22,6 +23,36 @@ export const Profile = ({ navigation }) => {
     const [shareModal, setShareModal] = useState(false)
     const [cancelRide, setCancelRide] = useState(false)
     const [cancelRideLoader, SetCancelRideLoader] = useState(false)
+
+
+
+    const onBackPress = () => {
+        if (cancelRide) {
+            setCancelRide(false)
+            return true
+        }
+        if (shareModal) {
+            setShareModal(false)
+            return true
+        }
+        navigation.goBack()
+
+        return true
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+
+            BackHandler.addEventListener(
+                'hardwareBackPress', onBackPress
+            );
+            return () =>
+                BackHandler.removeEventListener(
+                    'hardwareBackPress', onBackPress
+                );
+        }, [cancelRide, shareModal])
+    );
+
 
     const Common = ({ navigate, iconSize, icon, tind = myColors.primaryT, name }) => (
         <View onPress={() => navigation.navigate(navigate)}
