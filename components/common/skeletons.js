@@ -3,6 +3,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { MyError, Spacer, StatusbarH, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
+import { View } from "react-native";
 
 
 export const RestaurantInfoSkeleton = ({ isFull = true }) => (
@@ -45,8 +46,12 @@ export const CategorySkeleton = () => (
 export const SpaceBetweenSkeleton = () => (
     <SkeletonPlaceholder>
         <SkeletonPlaceholder.Item flexDirection='row' justifyContent='space-between' marginHorizontal={myWidth(4)}>
-            <SkeletonPlaceholder.Item width={myWidth(35)} height={myHeight(3)} borderRadius={500} />
-            <SkeletonPlaceholder.Item width={myWidth(16)} height={myHeight(3)} borderRadius={500} />
+            <View>
+
+                <SkeletonPlaceholder.Item width={myWidth(27)} height={myHeight(2)} marginTop={myHeight(0.3)} borderRadius={0} />
+                <SkeletonPlaceholder.Item width={myWidth(42)} height={myHeight(1.25)} marginTop={myHeight(0.9)} borderRadius={500} />
+            </View>
+            <SkeletonPlaceholder.Item width={myWidth(35)} height={myHeight(4.7)} borderRadius={500} />
         </SkeletonPlaceholder.Item>
     </SkeletonPlaceholder>
 )

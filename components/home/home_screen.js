@@ -245,7 +245,7 @@ export const HomeScreen = ({ navigation }) => {
             setTimeout(() => {
 
                 setIsLoading(false)
-            }, 2000)
+            }, 1200)
             getAreasLocations(profile.city)
         }
 

@@ -15,14 +15,19 @@ export const HomeSkeleton = ({ navigation }) => {
 
         <View style={styles.container}>
             <StatusbarH />
-            <Spacer paddingT={myHeight(1.4)} />
+            <Spacer paddingT={myHeight(2.8)} />
 
-            <Spacer paddingT={myHeight(3)} />
+            <SkeletonPlaceholder>
+
+                <SkeletonPlaceholder.Item marginStart={myWidth(4)} width={myWidth(50)} height={myHeight(2.2)} borderRadius={0} />
+            </SkeletonPlaceholder>
+
+            <Spacer paddingT={myHeight(2.2)} />
 
             {/* Banner */}
             <SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item width={myWidth(90)} height={myHeight(20)} borderRadius={myHeight(1)} alignSelf='center' />
-                <SkeletonPlaceholder.Item width={myWidth(13)} height={myHeight(1.5)} marginTop={myHeight(1)} borderRadius={myHeight(1)} alignSelf='center' />
+                <SkeletonPlaceholder.Item width={myWidth(92)} height={myWidth(49)} borderRadius={myHeight(1)} alignSelf='center' />
+                {/* <SkeletonPlaceholder.Item width={myWidth(13)} height={myHeight(1.5)} marginTop={myHeight(1)} borderRadius={myHeight(1)} alignSelf='center' /> */}
             </SkeletonPlaceholder>
 
 
@@ -30,37 +35,31 @@ export const HomeSkeleton = ({ navigation }) => {
             <Spacer paddingT={myHeight(3)} />
             {/* Heading */}
             <SpaceBetweenSkeleton />
-            <Spacer paddingT={myHeight(2)} />
+
+            <Spacer paddingT={myHeight(3.5)} />
+
+            <SkeletonPlaceholder>
+
+                <SkeletonPlaceholder.Item marginStart={myWidth(4)} width={myWidth(30)} height={myHeight(2.8)} borderRadius={myHeight(100)} />
+            </SkeletonPlaceholder>
+            <Spacer paddingT={myHeight(0.5)} />
+
             {/* Restuarant */}
             <View style={{
-                flexDirection: 'row', paddingHorizontal: myWidth(4)
+                flexDirection: 'row',
             }}>
-                <RestaurantInfoSkeleton isFull={false} />
-                <RestaurantInfoSkeleton isFull={false} />
+                <RestaurantInfoSkeleton isFull={true} />
 
             </View>
 
-            <Spacer paddingT={myHeight(3)} />
-            {/* Heading */}
-            <SpaceBetweenSkeleton />
-            <Spacer paddingT={myHeight(2)} />
-            {/* Restuarant */}
-            <View style={{
-                flexDirection: 'row', paddingHorizontal: myWidth(4)
-            }}>
-                <RestaurantInfoSkeleton isFull={false} />
-                <RestaurantInfoSkeleton isFull={false} />
+            <Spacer paddingT={myHeight(2.5)} />
 
-            </View>
-            <Spacer paddingT={myHeight(2)} />
             {/* Restuarant */}
-            <View style={{
-                flexDirection: 'row', paddingHorizontal: myWidth(4)
-            }}>
-                <RestaurantInfoSkeleton isFull={false} />
-                <RestaurantInfoSkeleton isFull={false} />
+            <SkeletonPlaceholder>
+                <SkeletonPlaceholder.Item width={myWidth(90)} height={myHeight(17)} borderRadius={myHeight(1)} alignSelf='center' />
+                {/* <SkeletonPlaceholder.Item width={myWidth(13)} height={myHeight(1.5)} marginTop={myHeight(1)} borderRadius={myHeight(1)} alignSelf='center' /> */}
+            </SkeletonPlaceholder>
 
-            </View>
         </View>
     )
 }
