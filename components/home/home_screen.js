@@ -666,6 +666,7 @@ export const HomeScreen = ({ navigation }) => {
                         </>
                         :
                         <View style={{ width: '100%', alignItems: 'center' }}>
+                            <Spacer paddingT={myHeight(3)} />
 
                             <Text style={[styles.textCommon,
                             {
