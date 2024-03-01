@@ -342,13 +342,24 @@ export const HomeScreen = ({ navigation }) => {
 
                                 all.push(val)
                                 if (val.isOnline) {
+                                    const item = val
+                                    const isMissed = item.status >= 3 && item.did != profile.uid
+
                                     if (val.status == 2 && (me.status == 1 || me.status == 1.5)) {
+                                        const onlineStatus = me.status == 1.5 ? 'Wait for customer response' : 'Pending'
+                                        const onlineStatusColor = myColors.green
+                                        val.onlineStatus = onlineStatus
+                                        val.onlineStatusColor = onlineStatusColor
                                         Pending.push(val)
                                         if (me.unread) {
                                             unread.push({ id: val.id, code: 2 })
                                         }
                                     }
                                     else if (val.status == 3 && val.did == profile.uid) {
+                                        const onlineStatus = 'In Progress'
+                                        const onlineStatusColor = myColors.green
+                                        val.onlineStatus = onlineStatus
+                                        val.onlineStatusColor = onlineStatusColor
                                         onl = true
                                         pool.push(val)
                                         if (me.unread) {
@@ -357,6 +368,12 @@ export const HomeScreen = ({ navigation }) => {
                                     }
                                     else {
                                         History.push(val)
+                                        const onlineStatus = me.status == 1 ?
+                                            isMissed ? 'You Missed' : 'Cancelled'
+                                            : me.status < 0 ? 'Rejected' : `Completed`
+                                        const onlineStatusColor = onlineStatus == 'Completed' ? myColors.green : myColors.red
+                                        val.onlineStatus = onlineStatus
+                                        val.onlineStatusColor = onlineStatusColor
                                         if (me.unread) {
                                             unread.push({ id: val.id, code: 3 })
                                         }

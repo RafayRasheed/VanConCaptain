@@ -22,6 +22,8 @@ export const RideDetails2 = ({ navigation, route }) => {
     const [isLoading, setIsLoading] = useState(false)
     const [sendDrivers, setSendDrivers] = useState([])
     const [statusMessages, setStatusMessages] = useState(null)
+    const [isMissed, setIsMissed] = useState(null)
+
     const [load, setLoad] = useState(false)
     const [load2, setLoad2] = useState(false)
     const [distance, setDistance] = useState(false)
@@ -73,7 +75,7 @@ export const RideDetails2 = ({ navigation, route }) => {
             }
 
             const isMissed = item.status >= 3 && item.did != profile.uid
-
+            setIsMissed(isMissed)
             const statusMessages = code == 1 ? 'In Progress' : code == 2 ? me.status == 1.5 ? 'Wait for customer response' : 'Pending' : me.status == 1 ? isMissed ? 'You Missed' : 'Cancelled' :
                 me.status < 0 ? 'Rejected' : `Completed`
 
@@ -466,7 +468,8 @@ export const RideDetails2 = ({ navigation, route }) => {
                         items={[item.id]} />
 
                     <CommonItem text={'Status'} text2={'The status of the request.'}
-                        items={[statusMessages]} color={(code == 3 && (me.status < 0 || (me.status == 1 && isMissed))) ? myColors.red : myColors.green} />
+                        items={[item.onlineStatus]} color={item.onlineStatusColor} />
+                    {/* items={[statusMessages]} color={(code == 3 && (me.status < 0 || (me.status == 1 && isMissed))) ? myColors.red : myColors.green} /> */}
                     <CommonItem text={'Offer'} text2={'The offer of the request by customer.'}
                         items={[`${item.offer} Rs`]} />
 
