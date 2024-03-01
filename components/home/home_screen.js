@@ -17,7 +17,6 @@ import { RestaurantInfoSkeleton } from '../common/skeletons';
 import { HomeSkeleton } from './home.component/home_skeleton';
 import { ImageUri } from '../common/image_uri';
 import storage from '@react-native-firebase/storage';
-import { setAllItems, setAllRest, setNearby, setRecommend } from '../../redux/data_reducer';
 import { setAllRequest, setAllUnread, setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
 import { SetErrorAlertToFunction, dataFullData, deccodeInfo, getAreasLocations, getCurrentLocations, getDistanceFromRes, getProfileFromFirebase, statusDate, updateProfileToFirebase } from '../functions/functions';
 import messaging from '@react-native-firebase/messaging';

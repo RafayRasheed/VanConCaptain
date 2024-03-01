@@ -8,7 +8,7 @@ import { MyError, Spacer, StatusbarH, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteLogin } from '../functions/storageMMKV';
+import { deleteCommonStorage, deleteLogin } from '../functions/storageMMKV';
 import { deleteProfile } from '../../redux/profile_reducer';
 import { FirebaseUser } from '../functions/firebase';
 
@@ -93,6 +93,7 @@ export const Profile = ({ navigation }) => {
         </View>
     )
     function onLogout() {
+        const removeKeys = ['areas', 'totalUnread', 'chats', 'pending', 'progress', 'history', 'allRequest', 'unread',]
         SetCancelRideLoader(true)
 
         FirebaseUser.doc(profile.uid)
@@ -100,6 +101,9 @@ export const Profile = ({ navigation }) => {
                 deviceToken: null
             }).then((data) => {
                 navigation.replace('AccountNavigator')
+                removeKeys.map((key) => {
+                    deleteCommonStorage(key)
+                })
                 setTimeout(() => {
 
                     dispatch(deleteProfile())

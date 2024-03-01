@@ -10,6 +10,7 @@ import error_reducer from './error_reducer';
 import areas_reducer from './areas_reducer';
 import chat_reducer from './chat_reducer';
 import online_reducer from './online_reducer';
+import storage_keys_reducer from './storage_keys_reducer';
 
 const storeRedux = configureStore({
     reducer: {
@@ -25,6 +26,7 @@ const storeRedux = configureStore({
         areas: areas_reducer,
         chats: chat_reducer,
         online: online_reducer,
+        storage: storage_keys_reducer,
 
     }
 })
