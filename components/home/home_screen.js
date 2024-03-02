@@ -155,6 +155,7 @@ export const HomeScreen = ({ navigation }) => {
 
     }
     useEffect(() => {
+
         if (current) {
 
             updateOnline()
