@@ -102,7 +102,19 @@ export const Chat = ({ navigation, route }) => {
     const { chats } = useSelector(state => state.chats)
     const chatId = user2.uid + profile.uid
     const [chatss, setChatss] = useState([])
+    const [customer, setCustomer] = useState(null)
+
+
     const dispatch = useDispatch()
+    useEffect(() => {
+        firestore().collection('users').doc(user2.uid).get().then((data) => {
+            const captain = data.data()
+            setCustomer(captain)
+
+        }).catch((err) => { console.log('error on inside message', err) })
+
+
+    }, [])
     function scrollToBottom() {
         setFromTouch(false)
         setShowScrollToLast(false)
@@ -293,30 +305,44 @@ export const Chat = ({ navigation, route }) => {
 
         }
         setMessage(null)
-        Keyboard.dismiss()
+        // Keyboard.dismiss()
+        function updateMor(captain) {
+            const token = captain.deviceToken
+            const otherUpdates = {
+
+                user: {
+                    uid: captain.uid, name: captain.name,
+                },
+                captain: {
+                    uid: profile.uid, name: profile.name,
+                }
+            }
+
+            database()
+                .ref(`/chats/${chatId}`).update(otherUpdates).then(() => { })
+                .catch((er) => { console.log('error on send message333', er) })
+
+            sendPushNotification(profile.name, message, 2, [token])
+        }
+
         const isNew = chatss.length == 0
         database()
             .ref(`/chats/${chatId}`).child('messages').child(msgId)
-            .update(mssss).then(() => {
-                firestore().collection('users').doc(user2.uid).get().then((data) => {
-                    const captain = data.data()
-                    const token = captain.deviceToken
-                    const otherUpdates = {
+            .update(mssss)
+            .then(() => {
+                if (customer) {
+                    updateMor(customer)
+                }
+                else {
 
-                        user: {
-                            uid: captain.uid, name: captain.name,
-                        },
-                        captain: {
-                            uid: profile.uid, name: profile.name,
-                        }
-                    }
-                    if (isNew) {
-                        database()
-                            .ref(`/chats/${chatId}`).update(otherUpdates).then(() => { })
-                            .catch((er) => { console.log('error on send message333', er) })
-                    }
-                    sendPushNotification(profile.name, message, 2, [token])
-                })
+                    firestore().collection('users').doc(user2.uid).get().then((data) => {
+                        const captain = data.data()
+                        updateMor(captain)
+                        setCustomer(captain)
+
+                    }).catch((err) => { console.log('error on inside message', err) })
+                }
+
 
                 // database().ref(`/chats/${chatId}`).child('lastUpdate')
                 //     .update({ dateInt, date, time: timeFor }).then(() => {
@@ -415,13 +441,13 @@ export const Chat = ({ navigation, route }) => {
                     }} />
                 </View>
                 <KeyboardAwareScrollView
-                    keyboardShouldPersistTaps={'handled'} bounces={false}
+                    keyboardShouldPersistTaps={'always'} bounces={false}
                     showsVerticalScrollIndicator={false} contentContainerStyle={{ flex: 1 }}>
                     {/* Chats */}
                     <ImageBackground style={{ flex: 1 }} source={require('../assets/home_main/home/cb3.jpg')}>
 
                         <FlashList
-
+                            keyboardShouldPersistTaps={'always'}
                             ref={scrollRef}
                             onScrollBeginDrag={() => {
                                 setFromTouch(true)

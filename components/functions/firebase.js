@@ -39,9 +39,8 @@ export const sendPushNotification = async (title, body, status, tokens) => {
         'Authorization': `key=${serverKey}`,
         'Content-Type': 'application/json',
     };
-
     const data = {
-        registration_ids: tokens,
+
         notification: {
             title: title,
             body: body,
@@ -51,6 +50,12 @@ export const sendPushNotification = async (title, body, status, tokens) => {
 
         }
     };
+    if (tokens.length == 1) {
+        data.to = tokens[0]
+    } else {
+        data.registration_ids = tokens
+    }
+
     try {
         const response = await fetch(fcmEndpoint, {
             method: 'POST',
