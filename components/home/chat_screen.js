@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, BackHandler, Image, ImageBackground, Keyboard, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, BackHandler, Image, ImageBackground, Keyboard, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -16,6 +16,7 @@ import { sendPushNotification } from '../functions/firebase'
 import { SwipeableItem } from './home.component/drag_commponent'
 import Swipeable from 'react-native-swipeable';
 import Collapsible from 'react-native-collapsible'
+import Clipboard from '@react-native-community/clipboard';
 
 
 
@@ -37,7 +38,7 @@ export const Chat = ({ navigation, route }) => {
     const chatId = user2.uid + profile.uid
     const [chatss, setChatss] = useState([])
     const [customer, setCustomer] = useState(null)
-    const [focusId, setId] = useState(null)
+    const [focusId, setFocusId] = useState(null)
 
     const textInputRef = useRef(null);
 
@@ -68,7 +69,10 @@ export const Chat = ({ navigation, route }) => {
     const MyMessage = ({ item }) => {
 
         return (
-            <View style={{ width: myWidth(100), alignSelf: 'flex-end' }}>
+            <View style={{
+                width: myWidth(100), marginVertical: myHeight(0.7), paddingHorizontal: myWidth(2),
+                backgroundColor: item.msgId == focusId ? myColors.primaryL3 : 'transparent', alignSelf: 'flex-end'
+            }}>
                 <Swipeable
                     onLeftActionRelease={() => handleSwipeRelease(item)}
                     leftButtonWidth={0} rightButtonWidth={0}
@@ -81,7 +85,7 @@ export const Chat = ({ navigation, route }) => {
                         paddingEnd: myWidth(1),
                         paddingStart: myWidth(1),
                         backgroundColor: myColors.primary, maxWidth: myWidth(80),
-                        alignSelf: 'flex-end', marginVertical: myHeight(0.7),
+                        alignSelf: 'flex-end',
                         // borderWidth: myHeight(0.1),
                         // borderColor: myColors.primaryT,
                     }}>
@@ -94,8 +98,11 @@ export const Chat = ({ navigation, route }) => {
                                 </>
                                 : null
                         }
-                        <View style={{
+                        < TouchableOpacity activeOpacity={0.9} style={{
                             paddingStart: myWidth(0.5), paddingEnd: myWidth(2)
+                        }} onLongPress={() => {
+                            Clipboard.setString(item.message)
+                            ToastAndroid.show('Message Copied', ToastAndroid.SHORT)
                         }}>
 
                             <Text style={[styles.textCommon, {
@@ -123,7 +130,7 @@ export const Chat = ({ navigation, route }) => {
                             </View>
 
                             <Spacer paddingT={myHeight(0.5)} />
-                        </View>
+                        </TouchableOpacity>
 
                     </View>
                 </Swipeable>
@@ -132,35 +139,43 @@ export const Chat = ({ navigation, route }) => {
     }
     const OtherMessage = ({ item }) => {
         return (
-            <View style={{ width: myWidth(100), }}>
+            <View style={{
+                width: myWidth(100), paddingHorizontal: myWidth(2),
+                backgroundColor: item.msgId == focusId ? myColors.primaryL3 : 'transparent',
+                marginVertical: myHeight(0.7)
+            }}>
                 <Swipeable
                     onLeftActionRelease={() => handleSwipeRelease(item)}
                     leftButtonWidth={0} rightButtonWidth={0}
                     leftActionActivationDistance={myWidth(20)}
                     leftButtons={[<TouchableOpacity />]} >
-                    <View style={{ flexDirection: 'row', marginVertical: myHeight(0.7) }}>
-                        <View style={{
-                            maxWidth: myWidth(80),
-                            borderRadius: myWidth(2.5), borderBottomLeftRadius: 0,
-                            paddingStart: myWidth(1),
-                            paddingEnd: myWidth(1),
+                    <View style={{ flexDirection: 'row', }}>
+                        <View
+                            style={{
+                                maxWidth: myWidth(80),
+                                borderRadius: myWidth(2.5), borderBottomLeftRadius: 0,
+                                paddingStart: myWidth(1),
+                                paddingEnd: myWidth(1),
 
-                            paddingTop: myHeight(0.6),
-                            borderWidth: myHeight(0.1),
-                            borderColor: myColors.offColor,
-                            alignSelf: 'flex-start', backgroundColor: '#f1f1f1'
-                        }}>
+                                paddingTop: myHeight(0.6),
+                                borderWidth: myHeight(0.1),
+                                borderColor: myColors.offColor,
+                                alignSelf: 'flex-start', backgroundColor: '#f1f1f1'
+                            }}>
                             {
                                 item.reply ?
                                     <>
-                                        <ReplyCom reply={item.reply} type={1} />
+                                        <ReplyCom reply={item.reply} type={2} />
                                         <Spacer paddingT={myHeight(0.7)} />
 
                                     </>
                                     : null
                             }
-                            <View style={{
+                            <TouchableOpacity activeOpacity={0.5} style={{
                                 paddingStart: myWidth(1.5), paddingEnd: myWidth(1)
+                            }} onLongPress={() => {
+                                Clipboard.setString(item.message)
+                                ToastAndroid.show('Message Copied', ToastAndroid.SHORT)
                             }}>
 
                                 <Text style={[styles.textCommon, {
@@ -174,16 +189,97 @@ export const Chat = ({ navigation, route }) => {
                                     fontSize: myFontSize.small3,
                                     fontFamily: myFonts.bodyBold,
                                 }]}>{item.time}</Text>
-                            </View>
+                            </TouchableOpacity>
 
                             <Spacer paddingT={myHeight(0.3)} />
                         </View>
                     </View>
-                </Swipeable>
-            </View>
+                </Swipeable >
+            </View >
 
 
         )
+    }
+    const ReplyCom = ({ reply, type = 0 }) => {
+        const isMe = reply.senderId == profile.uid
+        return (
+            <TouchableOpacity activeOpacity={0.8}
+                onPress={() => {
+                    const inde = chatss.findIndex(it => it.msgId == reply.msgId)
+                    scrollToIndex(inde != 0 ? inde - 1 : inde)
+                    setFocusId(reply.msgId)
+                }} style={{
+                    width: type ? myWidth(78) : '100%',
+                    borderRadius: myWidth(2),
+                    overflow: 'hidden',
+                    borderStartWidth: myWidth(1),
+                    borderColor: isMe ? myColors.green : myColors.textL4,
+                    backgroundColor: myColors.primaryL6,
+                    paddingVertical: myHeight(0.4),
+                    paddingHorizontal: myWidth(1.5)
+                }}>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                    <Text style={[styles.textCommon, {
+                        flex: 1,
+                        fontSize: myFontSize.xxSmall,
+                        fontFamily: myFonts.heading,
+                        color: isMe ? myColors.green : myColors.textL4
+                    }]}>{isMe ? 'You' : user2.name}</Text>
+
+                    {
+                        type == 0 ?
+
+                            <TouchableOpacity activeOpacity={0.7}
+                                onPress={() => {
+                                    setReply(null)
+
+                                }} style={{
+                                    position: 'absolute',
+                                    zIndex: 10,
+                                    top: 0,
+                                    right: 0,
+                                    paddingHorizontal: myWidth(1),
+                                    paddingVertical: myHeight(0.5),
+                                }} >
+                                {
+
+
+                                    <Image style={{
+                                        height: myHeight(1.1),
+                                        width: myHeight(1.1),
+                                        resizeMode: 'contain',
+                                        tintColor: myColors.text,
+
+
+                                    }} source={require('../assets/account/close.png')} />
+
+                                }
+                            </TouchableOpacity>
+
+                            : null
+                    }
+                </View>
+                <Spacer paddingT={myHeight(0.4)} />
+
+                <Text numberOfLines={3} style={[styles.textCommon, {
+
+                    fontSize: myFontSize.small2,
+                    fontFamily: myFonts.bodyBold,
+                    color: myColors.textL4
+                }]}>{reply.message}</Text>
+                <Spacer paddingT={myHeight(0.4)} />
+
+            </TouchableOpacity>
+        )
+    }
+
+    function scrollToIndex(i) {
+        scrollRef?.current?.scrollToIndex({
+            animated: true,
+            index: i,
+        });
     }
     useEffect(() => {
         firestore().collection('users').doc(user2.uid).get().then((data) => {
@@ -206,12 +302,7 @@ export const Chat = ({ navigation, route }) => {
         //     index: 0,
         // });
     }
-    function scrollToIndex(i) {
-        scrollRef?.current?.scrollToIndex({
-            animated: false,
-            index: i,
-        });
-    }
+
     function handleScrollView(event) {
         const posY = event.nativeEvent.contentOffset.y
         // console.log(posY)
@@ -312,7 +403,9 @@ export const Chat = ({ navigation, route }) => {
     useEffect(() => {
 
         if (focusId) {
-
+            setTimeout(() => {
+                setFocusId(null)
+            }, 3000)
         }
     }, [focusId])
     function onSendMsg() {
@@ -407,74 +500,7 @@ export const Chat = ({ navigation, route }) => {
 
     }
 
-    const ReplyCom = ({ reply, type = 0 }) => {
-        return (
-            <TouchableOpacity activeOpacity={0.8} style={{
-                width: type ? myWidth(78) : '100%',
-                borderRadius: myWidth(2),
-                overflow: 'hidden',
-                borderStartWidth: myWidth(0.8),
-                borderColor: type == 1 ? myColors.primaryL2 : myColors.primaryT,
-                backgroundColor: myColors.primaryL6,
-                paddingVertical: myHeight(0.4),
-                paddingHorizontal: myWidth(1.5)
-            }}>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                    <Text style={[styles.textCommon, {
-                        flex: 1,
-                        fontSize: myFontSize.xxSmall,
-                        fontFamily: myFonts.heading,
-                        color: myColors.green
-                    }]}>{reply.senderId == profile.uid ? 'You' : user2.name}</Text>
-
-                    {
-                        type == 0 ?
-
-                            <TouchableOpacity activeOpacity={0.7}
-                                onPress={() => {
-                                    setReply(null)
-
-                                }} style={{
-                                    position: 'absolute',
-                                    zIndex: 10,
-                                    top: 0,
-                                    right: 0,
-                                    paddingHorizontal: myWidth(1),
-                                    paddingVertical: myHeight(0.5),
-                                }} >
-                                {
-
-
-                                    <Image style={{
-                                        height: myHeight(1.1),
-                                        width: myHeight(1.1),
-                                        resizeMode: 'contain',
-                                        tintColor: myColors.text,
-
-
-                                    }} source={require('../assets/account/close.png')} />
-
-                                }
-                            </TouchableOpacity>
-
-                            : null
-                    }
-                </View>
-                <Spacer paddingT={myHeight(0.4)} />
-
-                <Text numberOfLines={3} style={[styles.textCommon, {
-
-                    fontSize: myFontSize.small2,
-                    fontFamily: myFonts.bodyBold,
-                    color: myColors.textL4
-                }]}>{reply.message}</Text>
-                <Spacer paddingT={myHeight(0.4)} />
-
-            </TouchableOpacity>
-        )
-    }
     return (
         <>
             <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background, }}>
