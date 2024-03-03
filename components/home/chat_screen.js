@@ -405,7 +405,7 @@ export const Chat = ({ navigation, route }) => {
         if (focusId) {
             setTimeout(() => {
                 setFocusId(null)
-            }, 3000)
+            }, 2000)
         }
     }, [focusId])
     function onSendMsg() {
@@ -603,7 +603,7 @@ export const Chat = ({ navigation, route }) => {
                             onScrollEndDrag={() => {
                             }}
                             onScroll={handleScrollView}
-                            extraData={chatss}
+                            extraData={focusId}
                             data={chatss}
                             inverted
                             contentContainerStyle={{
