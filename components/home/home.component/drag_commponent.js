@@ -4,8 +4,9 @@ import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-
 import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { myWidth } from '../../common';
 
-export const SwipeableItem = ({ children, onClose }) => {
+export const SwipeableItem = ({ children, onClose, onRight, chat }) => {
     const translateX = useSharedValue(0);
+    const translateY = useSharedValue(0);
     const translateXReal = useSharedValue(0);
     const wid = myWidth(100);
     function onClosssse() {
@@ -17,16 +18,41 @@ export const SwipeableItem = ({ children, onClose }) => {
         onStart: (_, ctx) => {
 
             ctx.startX = translateX.value;
+            ctx.startY = translateY.value;            // console.log('onStart', translateX.value)
         },
         onActive: (event, ctx) => {
-            translateXReal.value = event.translationX
-            translateX.value = ctx.startX + event.translationX;
+            const deltaX = event.translationX;
+            const deltaY = event.translationY;
+
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                // Vertical swipe
+                translateY.value = ctx.startY + deltaY;
+            } else {
+                // Horizontal swipe
+                const traV = deltaX;
+                if (chat && traV < 0) {
+                    return;
+                }
+                if (chat && traV > wid / 3) {
+                    return;
+                }
+                translateX.value = ctx.startX + traV;
+            }
         },
         onEnd: () => {
             if (Math.abs(translateX.value) > (wid / 4.5)) {
                 translateX.value = withTiming(translateXReal.value < 0 ? wid * -1 : wid, { duration: 100 })
 
-                runOnJS(onClosssse)();
+                if (chat) {
+                    console.log('han')
+                    translateX.value = withTiming(0, { duration: 150 })
+                    runOnJS(onRight)(chat);
+
+                }
+                else {
+
+                    runOnJS(onClosssse)();
+                }
 
             } else {
                 // Snap back to original position
