@@ -467,8 +467,9 @@ export const Chat = ({ navigation, route }) => {
             database()
                 .ref(`/chats/${chatId}`).update(otherUpdates).then(() => { })
                 .catch((er) => { console.log('error on send message333', er) })
+            const navigate = { screen: 'Chat', params: { user2: { name: profile.name, uid: profile.uid } } }
 
-            sendPushNotification(profile.name, message, 2, [token])
+            sendPushNotification(profile.name, message, 2, [token], navigate)
         }
 
         const isNew = chatss.length == 0

@@ -1300,8 +1300,9 @@ export function getCurrentLocations() {
     }
   }, (err) => { console.log(err) });
 }
-export const SetErrorAlertToFunction = ({ Title, Body, Status }) => {
-  storeRedux.dispatch(setErrorAlert({ Title, Body, Status }))
+export const SetErrorAlertToFunction = ({ Title, Body, Status, Navigate, navigation }) => {
+
+  storeRedux.dispatch(setErrorAlert({ Title, Body, Status, Navigate, navigation }))
 
 }
 

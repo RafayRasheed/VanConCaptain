@@ -77,6 +77,28 @@ export const HomeScreen = ({ navigation }) => {
         return true
     }
 
+    useEffect(() => {
+        // Set up Firebase Cloud Messaging to handle incoming notifications
+        const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+            // Handle the incoming notification
+            handleNotification(remoteMessage);
+        });
+
+        return unsubscribe;
+    }, []);
+
+    const handleNotification = (notification) => {
+        console.log('notification', notification)
+        // Extract data from notification
+
+        // const { screenName } = notification.data;
+
+        // // Navigate to the appropriate screen
+        // if (screenName) {
+        //   navigation.navigate(screenName);
+        // }
+    };
+
     function sendNotificationToAll() {
         firestore().collection('users').get()
             .then((result) => {
@@ -187,7 +209,9 @@ export const HomeScreen = ({ navigation }) => {
             SetErrorAlertToFunction({
                 Title: remoteMessage.notification.title,
                 Body: remoteMessage.notification.body,
-                Status: remoteMessage.data.status
+                Status: remoteMessage.data.status,
+                Navigate: remoteMessage.data.navigate,
+                navigation: navigation,
             })
         });
 
