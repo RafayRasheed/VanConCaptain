@@ -5,7 +5,18 @@ const { storage } = require("../common")
 const saveLogin = 'login'
 const saveFirstTime = 'isFirstTime'
 const saveCart = 'saveCart'
+const lastNoti = 'lastNotificationId'
 
+export function setLastNotificationId(id) {
+    storage.set(lastNoti, id)
+}
+
+export function getLastNotificationId() {
+    if (containCommonStorage(lastNoti)) {
+
+        return (storage.getString(lastNoti))
+    }
+}
 export function firstTime() {
     storage.set(saveFirstTime, true)
 }
