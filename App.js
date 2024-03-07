@@ -13,6 +13,7 @@ import messaging from '@react-native-firebase/messaging';
 
 import { dataFullData, verificationCode } from './components/functions/functions';
 import { notificationListeners, requestUserPermission } from './components/RootNavigation';
+import { MyComponent } from './components/test';
 
 export default function App() {
   useEffect(() => {
@@ -80,7 +81,9 @@ export default function App() {
   const isAndroid = Platform.OS == 'android'
   // const OsVer = Platform.constants['Release']; Android Version like 9,10, 11
   const OsVer = Platform.Version; //API level like 27, 28, 22 
-
+  return (
+    <MyComponent />
+  )
   return (
     <>
       {OsVer >= 23 &&
