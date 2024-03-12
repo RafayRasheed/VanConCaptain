@@ -17,6 +17,7 @@ import { SwipeableItem } from './home.component/drag_commponent'
 import Swipeable from 'react-native-swipeable';
 import Collapsible from 'react-native-collapsible'
 import Clipboard from '@react-native-community/clipboard';
+import { ImageUri } from '../common/image_uri'
 
 
 
@@ -38,6 +39,7 @@ export const Chat = ({ navigation, route }) => {
     const chatId = user2.uid + profile.uid
     const [chatss, setChatss] = useState([])
     const [customer, setCustomer] = useState(null)
+    const [customerImage, setCustomerImage] = useState(user2.image)
     const [focusId, setFocusId] = useState(null)
 
     const textInputRef = useRef(null);
@@ -284,7 +286,10 @@ export const Chat = ({ navigation, route }) => {
     useEffect(() => {
         firestore().collection('users').doc(user2.uid).get().then((data) => {
             const captain = data.data()
+            console.log(captain)
+
             setCustomer(captain)
+            setCustomerImage(captain.image)
 
         }).catch((err) => { console.log('error on inside message', err) })
 
@@ -457,10 +462,10 @@ export const Chat = ({ navigation, route }) => {
             const otherUpdates = {
 
                 user: {
-                    uid: captain.uid, name: captain.name,
+                    uid: captain.uid, name: captain.name, image: customerImage
                 },
                 captain: {
-                    uid: profile.uid, name: profile.name,
+                    uid: profile.uid, name: profile.name, image: profile.image
                 }
             }
 
@@ -555,17 +560,24 @@ export const Chat = ({ navigation, route }) => {
                             height: myHeight(4.2), width: myHeight(4.2),
                             borderColor: myColors.offColor7, borderWidth: 1,
                             backgroundColor: colorC,
+                            overflow: 'hidden',
                             marginTop: myHeight(0.2), justifyContent: 'center', alignItems: 'center'
                         }}>
-                            <Image
-                                style={{
-                                    width: myHeight(2),
-                                    height: myHeight(2),
-                                    resizeMode: 'contain',
-                                    tintColor: myColors.background
-                                }}
-                                source={require('../assets/home_main/home/user.png')}
-                            />
+                            {
+                                customerImage ?
+
+                                    <ImageUri uri={customerImage} height={'100%'} width={'100%'} resizeMode='cover' />
+                                    :
+                                    <Image
+                                        style={{
+                                            width: myHeight(2),
+                                            height: myHeight(2),
+                                            resizeMode: 'contain',
+                                            tintColor: myColors.background
+                                        }}
+                                        source={require('../assets/home_main/home/user.png')}
+                                    />
+                            }
                         </View>
                         <Spacer paddingEnd={myWidth(2.4)} />
                         {/* Name & Last seen */}
@@ -581,7 +593,7 @@ export const Chat = ({ navigation, route }) => {
                         </View>
                     </View>
 
-
+                    <Spacer paddingT={myHeight(0.5)} />
                     {/* Divider */}
                     <View style={{
                         borderTopWidth: myHeight(0.08),

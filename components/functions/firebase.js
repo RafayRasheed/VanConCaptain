@@ -5,7 +5,7 @@ import messaging from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 import storeRedux from '../../redux/store_redux';
 import { setAreasLocation } from '../../redux/areas_reducer';
-import { dataFullData, verificationCode } from './functions';
+import { dataFullData, getProfileFromFirebase, verificationCode } from './functions';
 
 export const FirebaseUser = firestore().collection('drivers')
 export const FirebaseLocation = firestore().collection('locations')
@@ -81,6 +81,8 @@ export async function updateDeviceTokenToFireBase(uid) {
         .update({
             deviceToken
         }).then((data) => {
+            getProfileFromFirebase()
+
             console.log('Token Update To Firebase Succesfully')
         }).catch(err => {
             console.log('Internal error while Updating a Token', err)
