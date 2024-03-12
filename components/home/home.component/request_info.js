@@ -70,7 +70,11 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     //         console.log('Internal error while Updating a Restaurant', err)
                     //     });
 
-                    sendPushNotification('Request Accepted', `Your request is accepted by ${profile.name}`, 2, [token])
+
+                    const navigate = { screen: 'RIDES', params: { index: 0 } }
+
+
+                    sendPushNotification('Request Accepted', `Your request is accepted by ${profile.name}`, 2, [token], navigate)
                 }).catch((err) => { console.log(err) })
 
             })
@@ -95,8 +99,9 @@ export const RequestInfo = ({ item, navigation, code }) => {
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
+                    const navigate = { screen: 'RIDES', params: { index: 2 } }
 
-                    sendPushNotification('Request Rejected', `Your request is rejected by ${profile.name}`, 0, [token])
+                    sendPushNotification('Request Rejected', `Your request is rejected by ${profile.name}`, 0, [token], navigate)
 
 
                 }).catch((err) => { console.log(err) })
@@ -162,7 +167,9 @@ export const RequestInfo = ({ item, navigation, code }) => {
                     const seats = profile.availableSeats + item.seats
 
                     updateProfileToFirebase({ availableSeats: profile.vehicleSeats > seats ? seats : profile.availableSeats })
-                    sendPushNotification('Ride Ended', `Your ride is ended`, 2, [token])
+                    const navigate = { screen: 'RIDES', params: { index: 2 } }
+
+                    sendPushNotification('Ride Ended', `Your ride is ended`, 2, [token], navigate)
                 }).catch((err) => { console.log(err) })
             })
             .catch((err) => {

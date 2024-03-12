@@ -46,7 +46,9 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
             .then(() => {
                 console.log('To accept user successfully')
                 dispatch(setErrorAlert({ Title: 'Request Accepted Successfully', Body: null, Status: 2 }))
-                sendPushNotification('Ride Accepted', `Vanpool ride is accepted by ${profile.name}`, 2, [item.token])
+                const navigate = { screen: 'RIDES', params: { index: 0 } }
+
+                sendPushNotification('Ride Accepted', `Vanpool ride is accepted by ${profile.name}`, 2, [item.token], navigate)
                 setLoad(false)
 
 
@@ -71,7 +73,9 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
             .then(() => {
                 console.log('To accept user successfully')
                 dispatch(setErrorAlert({ Title: 'Request Rejected Successfully', Body: null, Status: 2 }))
-                sendPushNotification('Ride Rejected', `Vanpool ride is rejected by ${profile.name}`, 0, [item.token])
+                const navigate = { screen: 'RIDES', params: { index: 2 } }
+
+                sendPushNotification('Ride Rejected', `Vanpool ride is rejected by ${profile.name}`, 0, [item.token], navigate)
                 setLoad(false)
 
 
@@ -102,8 +106,9 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
+                    const navigate = { screen: 'RIDES', params: { index: 0 } }
 
-                    sendPushNotification('Vanpool Request Accepted', `Your vanpool request is accepted by ${profile.name}, awaiting for your response`, 2, [token])
+                    sendPushNotification('Vanpool Request Accepted', `Your vanpool request is accepted by ${profile.name}, awaiting for your response`, 2, [token], navigate)
                 }).catch((err) => { console.log(err) })
 
             })
@@ -126,8 +131,9 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
+                    const navigate = { screen: 'RIDES', params: { index: 0 } }
 
-                    sendPushNotification('Vanpool Request Rejected', `Your vanpool request is rejected by ${profile.name}`, 0, [token])
+                    sendPushNotification('Vanpool Request Rejected', `Your vanpool request is rejected by ${profile.name}`, 0, [token], navigate)
                 }).catch((err) => { console.log(err) })
 
                 console.log('To Unread successfully')
@@ -187,8 +193,9 @@ export const RequestInfo2 = ({ item, navigation, code }) => {
                 firestore().collection('users').doc(item.uid).get().then((data) => {
                     const captain = data.data()
                     const token = captain.deviceToken
+                    const navigate = { screen: 'RIDES', params: { index: 2 } }
 
-                    sendPushNotification('Vanpool Ride Is Ended', `Your vanpool ride is ended`, 2, [token])
+                    sendPushNotification('Vanpool Ride Is Ended', `Your vanpool ride is ended`, 2, [token], navigate)
                 }).catch((err) => { console.log(err) })
             })
             .catch((err) => {
