@@ -55,7 +55,7 @@ export const HomeScreen = ({ navigation }) => {
     const { online } = useSelector(state => state.online)
     const { current, history } = useSelector(state => state.location)
     const [isLoading, setIsLoading] = useState(true)
-    const [onlineReq, setOnlineReq] = useState(true)
+    const [onlineReq, setOnlineReq] = useState(false)
 
     const [availableSeats, setAvailableSeats] = useState(profile.availableSeats)
     const [nearbyRestaurant, setNearbyRestaurant] = useState([])
