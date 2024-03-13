@@ -140,6 +140,12 @@ export const HomeScreen = ({ navigation }) => {
             return false
         }
         dispatch(setOnline(status))
+        if (status) {
+
+        }
+        else {
+            updateOffline()
+        }
         return true
     }
 
@@ -199,12 +205,28 @@ export const HomeScreen = ({ navigation }) => {
                 console.log('Error on Get all Restaurant', er)
             })
     }
+    function updateOffline() {
+        const reff = `/online/${profile.city}/drivers/${profile.uid}`
 
+        database()
+            .ref(reff).remove().then(() => {
+                console.log('updateOffilne Successfullly')
+
+            }).catch((er) => {
+
+                console.log('Error updateOnline', er)
+            })
+    }
     function updateOnline() {
 
 
         const reff = `/online/${profile.city}/drivers/${profile.uid}`
         if (online) {
+
+            if (!current) {
+
+                return
+            }
             // const {latitude, longitude} = current
             // const from = history ? history : { latitude: 0, longitude: 0 }
             // const { distance } = getDistanceFromRes(from, current)
@@ -225,19 +247,13 @@ export const HomeScreen = ({ navigation }) => {
             }
             database()
                 .ref(reff).update(data).then(() => {
-                    console.log('updateOnline Successfullly')
+                    console.log('updateOnline Successfullly', current)
 
                 }).catch((er) => {
                     // Alert.alert(er.toString())
 
                     console.log('Error updateOnline', er)
                 })
-        } else {
-
-
-            database()
-                .ref(reff).remove()
-
         }
 
 
@@ -336,6 +352,15 @@ export const HomeScreen = ({ navigation }) => {
 
                 setIsLoading(false)
             }, 1200)
+            const reff = `/online/${profile.city}/drivers/${profile.uid}`
+            database().ref(reff).once("value", function (snapshot) {
+
+                setOnlineRedux(snapshot.exists())
+
+
+
+            });
+
             getAreasLocations(profile.city)
         }
 
