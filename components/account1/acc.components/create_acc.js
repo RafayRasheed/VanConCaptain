@@ -123,8 +123,8 @@ export const CreateAcc = ({
         const {body, code, message} = data;
 
         if (code == 1) {
-          const {token, code} = body;
-          goToVerification(token, code);
+          const {data, code} = body;
+          goToVerification({email}, code, data);
         } else {
           showError(message);
         }

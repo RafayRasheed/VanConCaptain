@@ -28,9 +28,12 @@ import {verificationCode} from '../functions/functions';
 import {useDispatch} from 'react-redux';
 import {setProfile} from '../../redux/profile_reducer';
 import {FirebaseUser, updateDeviceTokenToFireBase} from '../functions/firebase';
+import {sendEmailAPI} from '../common/api';
 
 export const Verification = ({navigation, route}) => {
   const {code, profile, reset} = route.params;
+  const paramToken = route.params.token;
+  const [token, setToken] = useState(paramToken);
   const lenCode = 6;
   const [focus, setFocus] = useState(0);
   const arrayVer = [];
@@ -59,6 +62,38 @@ export const Verification = ({navigation, route}) => {
         setMyCode(newCode);
         setIsLoading(false);
         setResend(true);
+      })
+      .catch(err => {
+        showError('Something wrong');
+        console.log('Internal error while sending an Email', err);
+      });
+  }
+  function resendEmailAPI() {
+    setIsLoading(true);
+    const newCode = verificationCode();
+
+    const postData = {...profile, data: token};
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Specify the content type as JSON
+      },
+      body: JSON.stringify(postData), // Convert the data to JSON string
+    };
+    fetch(sendEmailAPI, options)
+      .then(response => response.json())
+      .then(data => {
+        const {body, code, message} = data;
+        if (code == 1) {
+          const {token, code} = body;
+          setToken(token);
+          setMyCode(code);
+          setResend(true);
+        } else {
+          showError(message);
+        }
+        setIsLoading(false);
       })
       .catch(err => {
         showError('Something wrong');
