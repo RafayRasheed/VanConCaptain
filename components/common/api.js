@@ -11,3 +11,4 @@ export const sigupAPI = `${api}/drivers/signup`;
 export const sendEmailAPI = `${api}/drivers/sendEmail`;
 export const updateProfileAPI = `${api}/drivers/updateUser`;
 export const updateProfileImageAPI = `${api}/drivers/updateImage`;
+export const logoutAPI = `${api}/drivers/logout`;

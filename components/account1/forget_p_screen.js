@@ -67,7 +67,7 @@ export const ForgetPassword = ({navigation}) => {
       });
   }
   function goToVerification(profile, code, token) {
-    navigation.navigate('Verification', {code, profile, token, reset: true});
+    navigation.replace('Verification', {code, profile, token, reset: true});
   }
   function onSubmit() {
     if (verifyEmail()) {
@@ -92,7 +92,7 @@ export const ForgetPassword = ({navigation}) => {
 
           if (code == 1) {
             const {code, token} = body;
-            goToVerification({email}, code, token);
+            goToVerification(body.driver, code, token);
           } else {
             showError(message);
           }

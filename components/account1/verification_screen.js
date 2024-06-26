@@ -165,10 +165,9 @@ export const Verification = ({navigation, route}) => {
         // Work with the JSON data
         const {code, body, message} = data;
         setIsLoading(false);
-        console.log(data);
+
         if (code == 1) {
           const {driver, token} = body;
-          console.log({...driver, token});
           dispatch(setProfile({...driver, token}));
 
           navigation.replace('HomeBottomNavigator');

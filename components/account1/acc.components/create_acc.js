@@ -138,8 +138,8 @@ export const CreateAcc = ({
         console.error('Fetch error:', error);
       });
   }
-  function goToVerification(profile, code) {
-    navigate('Verification', {code, profile, reset: false});
+  function goToVerification(profile, code, token) {
+    navigate('Verification', {code, profile, reset: false, token});
 
     setTimeout(() => {
       onClose();
