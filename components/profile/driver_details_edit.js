@@ -461,7 +461,7 @@ export const DriverDetailEdit = ({navigation}) => {
         ready: true,
         isOnline,
       };
-      console.log('newUpdate', newProfile);
+      console.log('newUpdate', JSON.stringify(newProfile));
 
       if (!profile.ready) {
         newProfile = {
