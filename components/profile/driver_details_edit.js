@@ -47,7 +47,76 @@ import {setErrorAlert} from '../../redux/error_reducer';
 import {Search} from '../home/locations_screen';
 import {useFocusEffect} from '@react-navigation/native';
 import Animated, {BounceIn} from 'react-native-reanimated';
+import {addUpdateVehicle} from '../common/api';
 const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const teset = {
+  name: 'rafay',
+  email: 'rafayrasheed777.rr@gmail.com',
+  uid: '81741117-bafa-48eb-865e-24b4e4704e78',
+  city: 'Karachi',
+  data: {},
+  image:
+    'http://172.16.1.232:3000/images/drivers/driver-81741117-bafa-48eb-865e-24b4e4704e78-1719383017816-345837145.jpeg',
+  token:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI4MTc0MTExNy1iYWZhLTQ4ZWItODY1ZS0yNGI0ZTQ3MDRlNzgiLCJpYXQiOjE3MTkzOTc1NTB9.W__-fF-u9bi7P3VxNl8TgKOiwNBQ_LoNeGpe9TxImtA',
+  isUpdate: false,
+  description: 'Dqvwf dd f dq wf fq hnt d fw eg qf wf wf fw ',
+  packages: ['Weekly', 'Daily'],
+  vehicleImage: null,
+  vehicleName: 'S ecwx',
+  vehicleModal: '2010',
+  vehicleNum: 'S sxwxwxwc',
+  vehicleSeats: '5040',
+  availableSeats: '5040',
+  licence: '704040401818184',
+  contact: '50404048481',
+  dailyDays: ['Thu', 'Tue', 'Mon'],
+  routes: [
+    {id: 59, time: '5AM - 9AM', show: false, locations: [Array]},
+    {id: 912, time: '9AM - 12PM', show: false, locations: [Array]},
+  ],
+  allRoutes: [
+    {
+      longitude: 67.3034311,
+      id: '202402150623248000792313',
+      name: 'Bahria Town - Precinct 11',
+      latitude: 25.0214515,
+    },
+    {
+      longitude: 67.3034311,
+      id: '202402150623248000792313',
+      name: 'Bahria Town - Precinct 11',
+      latitude: 25.0214515,
+    },
+    {
+      longitude: 67.3107974,
+      id: '202402150623247800884583',
+      name: 'Bahria Town - Precinct 1',
+      latitude: 24.9930676,
+    },
+    {
+      longitude: 67.0693895,
+      id: '202402150623398460625909',
+      name: 'Bahadurabad',
+      latitude: 24.8824515,
+    },
+  ],
+  isOneRide: true,
+  oneRideDays: ['Wed', 'Thu', 'Tue', 'Mon'],
+  isInsideUni: true,
+  insideUniversities: ['NED University'],
+  departCharges: '84',
+  ac: true,
+  isWifi: false,
+  ready: true,
+  isOnline: true,
+  lastUpdate: '10-06-2024 2:28 PM',
+  date: '10-06-2024',
+  time: '2:28 PM',
+  id: '36cdbe3f-09ef-4d46-a8a5-8e9cad30936a',
+  deleted: false,
+  dateInt: 20240610092846150,
+};
 export const DriverDetailEdit = ({navigation}) => {
   const disptach = useDispatch();
   const TimeAndLoc = [
@@ -117,69 +186,73 @@ export const DriverDetailEdit = ({navigation}) => {
   ];
   // const [, set] = useState(true)
   const {profile} = useSelector(state => state.profile);
+  const {vehicles} = useSelector(state => state.vehicles);
+  const extractVehicle = vehicles.find(it => it.id == route.params.id);
+  const vehicle = extractVehicle ? extractVehicle : {};
 
   const [isLoading, setIsLoading] = useState(false);
 
   const [vehicleName, setVehicleName] = useState(
-    profile.vehicleName ? profile.vehicleName : null,
+    vehicle.vehicleName ? vehicle.vehicleName : null,
   );
   const [vehicleModal, setVehicleModal] = useState(
-    profile.vehicleModal ? profile.vehicleModal : null,
+    vehicle.vehicleModal ? vehicle.vehicleModal : null,
   );
-  const [description, SetDescription] = useState(profile.description);
+  const [description, SetDescription] = useState(vehicle.description);
   const [vehicleImage, setVehicleImage] = useState(
-    profile.vehicleImage ? profile.vehicleImage : null,
+    vehicle.vehicleImage ? vehicle.vehicleImage : null,
   );
   // const [vehicleImage, setVehicleImage] = useState(null);
-  const [vehicleNum, setVehicleNum] = useState(profile.vehicleNum);
-  const [vehicleSeats, setVehicleSeats] = useState(profile.vehicleSeats);
+  const [vehicleNum, setVehicleNum] = useState(vehicle.vehicleNum);
+  const [vehicleSeats, setVehicleSeats] = useState(vehicle.vehicleSeats);
+  const [name, setName] = useState(vehicle.name);
 
-  const [contact, setContact] = useState(profile.contact);
-  const [licence, setLicence] = useState(profile.licence);
+  const [contact, setContact] = useState(vehicle.contact);
+  const [licence, setLicence] = useState(vehicle.licence);
 
   const [packages, setPackages] = useState(
-    profile.packages ? [...profile.packages] : [],
+    vehicle.packages ? [...vehicle.packages] : [],
   );
   const [dailyDays, setDailyDays] = useState(
-    profile.dailyDays ? [...profile.dailyDays] : [],
+    vehicle.dailyDays ? [...vehicle.dailyDays] : [],
   );
   const [isOneRide, setOneRide] = useState(
-    profile.isOneRide ? profile.isOneRide : false,
+    vehicle.isOneRide ? vehicle.isOneRide : false,
   );
   const [oneRideDays, setOneRideDays] = useState(
-    profile.oneRideDays ? [...profile.oneRideDays] : [],
+    vehicle.oneRideDays ? [...vehicle.oneRideDays] : [],
   );
-  const [ac, setAc] = useState(profile.ac ? profile.ac : false);
-  const [isWifi, setIsWifi] = useState(profile.isWifi ? profile.isWifi : false);
+  const [ac, setAc] = useState(vehicle.ac ? vehicle.ac : false);
+  const [isWifi, setIsWifi] = useState(vehicle.isWifi ? vehicle.isWifi : false);
 
   const [isOnline, setIsOnline] = useState(
-    profile.isOnline ? profile.isOnline : false,
+    vehicle.isOnline ? vehicle.isOnline : false,
   );
 
   const [isInsideUni, setIsInsideUni] = useState(
-    profile.isInsideUni ? profile.isInsideUni : false,
+    vehicle.isInsideUni ? vehicle.isInsideUni : false,
   );
   const [insideShift, setInsideShift] = useState(
-    profile.insideShift ? profile.insideShift : ['Morning', 'Evening'],
+    vehicle.insideShift ? vehicle.insideShift : ['Morning', 'Evening'],
   );
   const [insideUniversities, setInsideUniversities] = useState(
-    profile.insideUniversities ? [...profile.insideUniversities] : [],
+    vehicle.insideUniversities ? [...vehicle.insideUniversities] : [],
   );
   const [allUnies, setAllUnies] = useState([]);
 
   const [departCharges, SetDepartCharges] = useState(
-    profile.departCharges ? profile.departCharges : null,
+    vehicle.departCharges ? vehicle.departCharges : null,
   );
   const [DeliveryFee, SetDeliveryFee] = useState(
-    profile.deliveryCharges ? profile.deliveryCharges.toString() : null,
+    vehicle.deliveryCharges ? vehicle.deliveryCharges.toString() : null,
   );
-  const [DeliveryTime, SetDeliveryTime] = useState(profile.delivery);
-  const [locLink, setLocLink] = useState(profile.locationLink);
+  const [DeliveryTime, SetDeliveryTime] = useState(vehicle.delivery);
+  const [locLink, setLocLink] = useState(vehicle.locationLink);
   const [MenuImages, setMenuImages] = useState(
-    profile.menu ? profile.menu : [],
+    vehicle.menu ? vehicle.menu : [],
   );
   const [timmings, setTimmings] = useState(
-    profile.timmings ? profile.timmings : temp,
+    vehicle.timmings ? vehicle.timmings : temp,
   );
 
   const [imageLoading, setImageLoading] = useState(null);
@@ -188,7 +261,7 @@ export const DriverDetailEdit = ({navigation}) => {
   const [change, setChange] = useState(null);
   const [showChangeModal, setShowChangeModal] = useState(false);
   const [selectedItem, setSelectedItems] = useState(
-    profile.routes ? getInitialRoutes() : [...TimeAndLoc],
+    vehicle.routes ? getInitialRoutes() : [...TimeAndLoc],
   );
   const [showLoc, setShowLoc] = useState(false);
   const [warning, setWarning] = useState(false);
@@ -220,11 +293,11 @@ export const DriverDetailEdit = ({navigation}) => {
   );
 
   function getInitialRoutes() {
-    if (profile.routes.length == TimeAndLoc.length) {
-      return [...profile.routes];
+    if (vehicle.routes.length == TimeAndLoc.length) {
+      return [...vehicle.routes];
     }
     const FullArr = TimeAndLoc;
-    profile.routes.map(it => {
+    vehicle.routes.map(it => {
       const index = TimeAndLoc.findIndex(it2 => it2.id == it.id);
       FullArr[index] = {...it};
     });
@@ -234,7 +307,7 @@ export const DriverDetailEdit = ({navigation}) => {
   useEffect(() => {
     firestore()
       .collection('universities')
-      .doc(profile.city)
+      .doc(vehicle.city)
       .get()
       .then(result => {
         if (result.exists) {
@@ -374,10 +447,10 @@ export const DriverDetailEdit = ({navigation}) => {
     return false;
   }
   function checkData() {
-    if (!vehicleImage) {
-      setErrorMsg('Please Upload Van Photo');
-      return false;
-    }
+    // if (!vehicleImage) {
+    //   setErrorMsg('Please Upload Van Photo');
+    //   return false;
+    // }
 
     if (!checkNameAndModal()) {
       return false;
@@ -430,12 +503,13 @@ export const DriverDetailEdit = ({navigation}) => {
     return {routes, allRoutes};
   }
   function onSave() {
-    console.log(checkData());
     if (checkData()) {
       setIsLoading(true);
       const {routes, allRoutes} = formatRoutes();
       let newProfile = {
-        ...profile,
+        ...vehicle,
+        uid: profile.uid,
+        isUpdate: vehicle.ready ? true : false,
         description,
         packages,
         vehicleImage,
@@ -443,8 +517,8 @@ export const DriverDetailEdit = ({navigation}) => {
         vehicleModal,
         vehicleNum,
         vehicleSeats,
-        availableSeats: profile.availableSeats
-          ? profile.availableSeats
+        availableSeats: vehicle.availableSeats
+          ? vehicle.availableSeats
           : vehicleSeats,
         licence,
         contact,
@@ -461,33 +535,67 @@ export const DriverDetailEdit = ({navigation}) => {
         ready: true,
         isOnline,
       };
-      console.log('newUpdate', JSON.stringify(newProfile));
 
-      if (!profile.ready) {
-        newProfile = {
-          ...newProfile,
-          rating: 0,
-          noOfRatings: 0,
-          reviews: [],
-          ratingTotal: 0,
-        };
-      }
+      console.log('newUpdate', JSON.stringify(newProfile));
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Specify the content type as JSON
+        },
+        body: JSON.stringify(newProfile), // Convert the data to JSON string
+      };
+
+      fetch(addUpdateVehicle, options)
+        .then(response => response.json())
+        .then(data => {
+          console.log('dattyia', data);
+          // Work with the JSON data
+          const {code, body, message} = data;
+
+          if (code == 1) {
+            const vehicleNew = data.body.vehicle;
+            disptach(
+              setErrorAlert({Title: 'Profile Updated Successfully', Status: 2}),
+            );
+            disptach(setProfile({...vehicle, ...vehicleNew}));
+            navigation.goBack();
+          } else {
+            setErrorMsg(message);
+          }
+          setIsLoading(false);
+        })
+        .catch(error => {
+          // Handle any errors that occurred during the fetch
+          setIsLoading(false);
+
+          console.error('Fetch error:', error);
+        });
+
+      // if (!vehicle.ready) {
+      //   newProfile = {
+      //     ...newProfile,
+      //     rating: 0,
+      //     noOfRatings: 0,
+      //     reviews: [],
+      //     ratingTotal: 0,
+      //   };
+      // }
 
       // setAddress(JSON.stringify(newProfile))
-      FirebaseUser.doc(profile.uid)
-        .update(newProfile)
-        .then(() => {
-          setIsLoading(false);
-          disptach(
-            setErrorAlert({Title: 'Profile Updated Successfully', Status: 2}),
-          );
-          disptach(setProfile(newProfile));
-          navigation.goBack();
-        })
-        .catch(err => {
-          setErrorMsg('Something wrong');
-          console.log('Internal error while Updating a Restaurant');
-        });
+      // FirebaseUser.doc(vehicle.uid)
+      //   .update(newProfile)
+      //   .then(() => {
+      //     setIsLoading(false);
+      //     disptach(
+      //       setErrorAlert({Title: 'Profile Updated Successfully', Status: 2}),
+      //     );
+      //     disptach(setProfile(newProfile));
+      //     navigation.goBack();
+      //   })
+      //   .catch(err => {
+      //     setErrorMsg('Something wrong');
+      //     console.log('Internal error while Updating a Restaurant');
+      //   });
     }
     //  else {
     //     setIsEditMode(true)
