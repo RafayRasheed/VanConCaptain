@@ -15,11 +15,28 @@ const vehiclesReducer = createSlice({
       state.vehicles = [];
     },
     UpdateVehicle(state, action) {
-      //   state.profile = action.payload;
+      const newVehicle = action.payload;
+      // const isExist = state.vehicles.findIndex(it=>it.id==newVehicle.id)
+      let isExist = false;
+      let updated = [];
+
+      state.vehicles.map(yy => {
+        if (yy.id == newVehicle.id) {
+          isExist = true;
+          updated.push(newVehicle);
+        } else {
+          updated.push(yy);
+        }
+      });
+      if (!isExist) {
+        updated = [newVehicle, ...updated];
+      }
+
+      state.vehicles = updated;
       //   setLogin(action.payload);
     },
     setVehicles(state, action) {
-      //   state.profile = action.payload;
+      state.vehicles = action.payload;
       //   setLogin(action.payload);
     },
   },

@@ -8,7 +8,14 @@ import {FirebaseLocation, FirebaseUser} from './firebase';
 import {setAreasLocation} from '../../redux/areas_reducer';
 import firestore from '@react-native-firebase/firestore';
 import {setProfile} from '../../redux/profile_reducer';
-import {allUsersAPI} from '../common/api';
+import {
+  allUsersAPI,
+  getDashboard,
+  getLocationsAPI,
+  getVehicles,
+} from '../common/api';
+import {setVehicles} from '../../redux/vehicles_reducer';
+import {Alert} from 'react-native';
 
 const karaAreas = [
   {
@@ -1344,6 +1351,60 @@ export function getProfileFromAPI() {
       console.error('Fetch error:', error);
     });
 }
+
+export function getDashboardData(setIsLoading) {
+  const {profile} = storeRedux.getState().profile;
+  function changeLoad(ss) {
+    if (setIsLoading) {
+      setIsLoading(ss);
+    }
+  }
+  changeLoad(true);
+  fetch(getDashboard + '/' + profile.uid + `?city=${profile.city}`)
+    .then(response => response.json())
+    .then(data => {
+      // Work with the JSON data
+      const {code, body, message} = data;
+      changeLoad(false);
+
+      if (code == 1) {
+        const {vehicles, locations} = body;
+        storeRedux.dispatch(setAreasLocation(locations));
+        storeRedux.dispatch(setVehicles(vehicles));
+      } else {
+        storeRedux.dispatch(setErrorAlert({Title: message, Status: 0}));
+      }
+    })
+    .catch(error => {
+      // Handle any errors that occurred during the fetch
+      changeLoad(false);
+
+      console.error('Fetch error:', error);
+    });
+}
+
+export function getVehiclesData() {
+  const {profile} = storeRedux.getState().profile;
+  fetch(getVehicles + '/' + profile.uid)
+    .then(response => response.json())
+    .then(data => {
+      // Work with the JSON data
+      const {code, body, message} = data;
+
+      if (code == 1) {
+        const {vehicles} = body;
+
+        storeRedux.dispatch(setVehicles(vehicles));
+      } else {
+        storeRedux.dispatch(setErrorAlert({Title: message, Status: 0}));
+      }
+    })
+    .catch(error => {
+      // Handle any errors that occurred during the fetch
+
+      console.error('Fetch error:', error);
+    });
+}
 export function updateProfileToFirebase(object) {
   const {profile} = storeRedux.getState().profile;
 
@@ -1363,7 +1424,26 @@ export function updateProfileToFirebase(object) {
 }
 export const getAreasLocations = () => {
   const {profile} = storeRedux.getState().profile;
+  fetch(getLocationsAPI + '/' + profile.city)
+    .then(response => response.json())
+    .then(data => {
+      // Work with the JSON data
+      const {code, body, message} = data;
 
+      if (code == 1) {
+        const {locations} = body;
+        storeRedux.dispatch(setAreasLocation(locations));
+        getCurrentLocations();
+      } else {
+        storeRedux.dispatch(setErrorAlert({Title: message, Status: 0}));
+      }
+    })
+    .catch(error => {
+      // Handle any errors that occurred during the fetch
+
+      console.error('Fetch error:', error);
+    });
+  return;
   FirebaseLocation.doc(profile.city)
     .get()
     .then(result => {
@@ -1373,6 +1453,7 @@ export const getAreasLocations = () => {
         for (const [key, value] of Object.entries(areas)) {
           AllAreas.push(value);
         }
+        console.log('areas', AllAreas);
 
         storeRedux.dispatch(
           setAreasLocation(

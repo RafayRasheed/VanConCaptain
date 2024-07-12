@@ -57,6 +57,7 @@ import {
   deccodeInfo,
   getAreasLocations,
   getCurrentLocations,
+  getDashboardData,
   getDistanceFromRes,
   getProfileFromAPI,
   getProfileFromFirebase,
@@ -83,6 +84,7 @@ import {CustomToggleButton} from './home.component/toggle';
 import {setOnline} from '../../redux/online_reducer';
 import storeRedux from '../../redux/store_redux';
 import {setErrorAlert} from '../../redux/error_reducer';
+import {FlashList} from '@shopify/flash-list';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -101,6 +103,7 @@ function Greeting() {
 export const HomeScreen = ({navigation}) => {
   const name = 'Someone';
   const {profile} = useSelector(state => state.profile);
+  const {vehicles} = useSelector(state => state.vehicles);
   const {online} = useSelector(state => state.online);
   const {current, history} = useSelector(state => state.location);
   const [isLoading, setIsLoading] = useState(true);
@@ -378,17 +381,16 @@ export const HomeScreen = ({navigation}) => {
   }, [profile.availableSeats]);
   useEffect(() => {
     if (profile.city) {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1200);
-      const reff = `/online/${profile.city}/drivers/${profile.uid}`;
-      database()
-        .ref(reff)
-        .once('value', function (snapshot) {
-          setOnlineRedux(snapshot.exists());
-        });
+      getDashboardData(setIsLoading);
 
-      getAreasLocations(profile.city);
+      // const reff = `/online/${profile.city}/drivers/${profile.uid}`;
+      // database()
+      //   .ref(reff)
+      //   .once('value', function (snapshot) {
+      //     setOnlineRedux(snapshot.exists());
+      //   });
+
+      // getAreasLocations(profile.city);
     }
 
     // updateDeviceTokenToFireBase(profile.uid)
@@ -640,9 +642,9 @@ export const HomeScreen = ({navigation}) => {
         <Spacer paddingT={myHeight(1.5)} />
 
         {/* Banner */}
-        <Banners />
+        {!isLoading && <Banners />}
 
-        {profile.ready ? (
+        {true ? (
           <>
             {profile.isOnline ? (
               <>
@@ -719,21 +721,69 @@ export const HomeScreen = ({navigation}) => {
             <Spacer paddingT={myHeight(2.5)} />
 
             <View style={{paddingHorizontal: myWidth(4)}}>
-              <Text style={styles.heading}>Your Services</Text>
-              <Spacer paddingT={myHeight(0.5)} />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={styles.heading}>Your Services</Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('DriverDetailEdit')}
+                  activeOpacity={0.8}
+                  style={{
+                    // width: myWidth(40),
+                    alignSelf: 'center',
+                    paddingHorizontal: myWidth(4),
+                    paddingVertical: myHeight(0.8),
+                    borderRadius: myHeight(0.8),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                    backgroundColor: myColors.background,
+                    borderWidth: myHeight(0.15),
+                    borderColor: myColors.primaryT,
+                  }}>
+                  <Text
+                    style={[
+                      styles.textCommon,
+                      {
+                        fontFamily: myFonts.heading,
+                        fontSize: myFontSize.xxSmall,
+                        color: myColors.primaryT,
+                      },
+                    ]}>
+                    Add Service
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <Spacer paddingT={myHeight(1.5)} />
 
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() =>
-                  navigation.navigate('DriverDetail', {driver: profile})
-                }>
-                <DriverInfoFull navigation={navigation} driver={profile} />
-              </TouchableOpacity>
+              <FlashList
+                data={vehicles}
+                keyExtractor={it => it.id}
+                scrollEnabled={false}
+                showsVerticalScrollIndicator={false}
+                estimatedItemSize={200}
+                renderItem={({item}) => {
+                  console.log(item);
+                  return (
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() =>
+                        navigation.navigate('DriverDetail', {id: item.id})
+                      }>
+                      <DriverInfoFull navigation={navigation} driver={item} />
+                    </TouchableOpacity>
+                  );
+                }}
+              />
 
-              <Spacer paddingT={myHeight(2.5)} />
               {/* <Text style={styles.heading}>Settings</Text>
                             <Spacer paddingT={myHeight(1)} /> */}
 
+              {/* 
+               <Spacer paddingT={myHeight(2.5)} />
               <View
                 style={{
                   paddingHorizontal: myWidth(3),
@@ -864,7 +914,7 @@ export const HomeScreen = ({navigation}) => {
                   </TouchableOpacity>
                 </View>
                 <Spacer paddingT={myHeight(2)} />
-              </View>
+              </View> */}
             </View>
           </>
         ) : (
@@ -912,6 +962,7 @@ export const HomeScreen = ({navigation}) => {
             </TouchableOpacity>
           </View>
         )}
+        <Spacer paddingT={myHeight(2.5)} />
 
         {/* <View style={{ width: '100%', alignItems: 'center' }}>
 

@@ -119,6 +119,7 @@ export const ProfileInfo = ({navigation}) => {
       type: photo.type,
       uri: photo.uri,
     });
+    console.log('klklkl', JSON.stringify(formData));
     formData.append('token', profile.token);
     const options = {
       method: 'POST',

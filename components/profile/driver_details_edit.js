@@ -47,12 +47,18 @@ import {setErrorAlert} from '../../redux/error_reducer';
 import {Search} from '../home/locations_screen';
 import {useFocusEffect} from '@react-navigation/native';
 import Animated, {BounceIn} from 'react-native-reanimated';
-import {addUpdateVehicle} from '../common/api';
+import {
+  activeInactiveVehicle,
+  addUpdateVehicle,
+  deleteVehicle,
+  updateVehicleImageAPI,
+} from '../common/api';
+import {setVehicles, UpdateVehicle} from '../../redux/vehicles_reducer';
 const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const teset = {
   name: 'rafay',
   email: 'rafayrasheed777.rr@gmail.com',
-  uid: '81741117-bafa-48eb-865e-24b4e4704e78',
+  uid: 'ed3cbbed-8aee-4e38-a57f-1e854f0306f7',
   city: 'Karachi',
   data: {},
   image:
@@ -117,7 +123,7 @@ const teset = {
   deleted: false,
   dateInt: 20240610092846150,
 };
-export const DriverDetailEdit = ({navigation}) => {
+export const DriverDetailEdit = ({navigation, route}) => {
   const disptach = useDispatch();
   const TimeAndLoc = [
     {id: 59, time: '5AM - 9AM', locations: [], show: false},
@@ -185,9 +191,12 @@ export const DriverDetailEdit = ({navigation}) => {
     },
   ];
   // const [, set] = useState(true)
+  const deleteText = 'Are you sure you want to delete?';
+  const deactivateText = 'Are you sure you want to deactivate?';
+  const activateText = 'Are you sure you want to deactivate?';
   const {profile} = useSelector(state => state.profile);
   const {vehicles} = useSelector(state => state.vehicles);
-  const extractVehicle = vehicles.find(it => it.id == route.params.id);
+  const extractVehicle = vehicles.find(it => it.id == route?.params?.id);
   const vehicle = extractVehicle ? extractVehicle : {};
 
   const [isLoading, setIsLoading] = useState(false);
@@ -205,7 +214,7 @@ export const DriverDetailEdit = ({navigation}) => {
   // const [vehicleImage, setVehicleImage] = useState(null);
   const [vehicleNum, setVehicleNum] = useState(vehicle.vehicleNum);
   const [vehicleSeats, setVehicleSeats] = useState(vehicle.vehicleSeats);
-  const [name, setName] = useState(vehicle.name);
+  const [name, setName] = useState(vehicle.name ? vehicle.name : profile.name);
 
   const [contact, setContact] = useState(vehicle.contact);
   const [licence, setLicence] = useState(vehicle.licence);
@@ -279,7 +288,7 @@ export const DriverDetailEdit = ({navigation}) => {
       setShowTimeModal(false);
       return true;
     }
-    setWarning(true);
+    setWarning('Are you sure you want to back?');
 
     return true;
   };
@@ -307,7 +316,7 @@ export const DriverDetailEdit = ({navigation}) => {
   useEffect(() => {
     firestore()
       .collection('universities')
-      .doc(vehicle.city)
+      .doc(profile.city)
       .get()
       .then(result => {
         if (result.exists) {
@@ -502,14 +511,96 @@ export const DriverDetailEdit = ({navigation}) => {
     });
     return {routes, allRoutes};
   }
+  function activeInactive() {
+    setIsLoading(true);
+    const data = {
+      token: profile.token,
+      active: vehicle.active ? false : true,
+      id: vehicle.id,
+      uid: vehicle.uid,
+    };
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Specify the content type as JSON
+      },
+      body: JSON.stringify(data), // Convert the data to JSON string
+    };
+
+    fetch(activeInactiveVehicle, options)
+      .then(response => response.json())
+      .then(data => {
+        // Work with the JSON data
+        const {code, body, message} = data;
+
+        if (code == 1) {
+          const vehicleNew = body.vehicle;
+          disptach(setErrorAlert({Title: message, Status: 2}));
+          disptach(UpdateVehicle(vehicleNew));
+          navigation.goBack();
+        } else {
+          //  console.error('Fetch error:', error);
+          setErrorMsg(message);
+        }
+        setIsLoading(false);
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the fetch
+        setIsLoading(false);
+
+        console.error('Fetch error:', error);
+      });
+  }
+  function deleteV() {
+    setIsLoading(true);
+    const data = {
+      token: profile.token,
+      id: vehicle.id,
+      uid: vehicle.uid,
+    };
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Specify the content type as JSON
+      },
+      body: JSON.stringify(data), // Convert the data to JSON string
+    };
+
+    fetch(deleteVehicle, options)
+      .then(response => response.json())
+      .then(data => {
+        // Work with the JSON data
+        const {code, body, message} = data;
+
+        if (code == 1) {
+          const vehicles = body.vehicles;
+          disptach(setErrorAlert({Title: message, Status: 2}));
+          disptach(setVehicles(vehicles));
+          navigation.goBack();
+        } else {
+          //  console.error('Fetch error:', error);
+          setErrorMsg(message);
+        }
+        setIsLoading(false);
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the fetch
+        setIsLoading(false);
+
+        console.error('Fetch error:', error);
+      });
+  }
   function onSave() {
     if (checkData()) {
       setIsLoading(true);
       const {routes, allRoutes} = formatRoutes();
       let newProfile = {
+        ...profile,
         ...vehicle,
         uid: profile.uid,
-        isUpdate: vehicle.ready ? true : false,
+        token: profile.token,
+        name,
+        isUpdate: vehicle.id ? true : false,
         description,
         packages,
         vehicleImage,
@@ -536,7 +627,7 @@ export const DriverDetailEdit = ({navigation}) => {
         isOnline,
       };
 
-      console.log('newUpdate', JSON.stringify(newProfile));
+      console.log('newUpdgate', newProfile);
       const options = {
         method: 'POST',
         headers: {
@@ -548,18 +639,16 @@ export const DriverDetailEdit = ({navigation}) => {
       fetch(addUpdateVehicle, options)
         .then(response => response.json())
         .then(data => {
-          console.log('dattyia', data);
           // Work with the JSON data
           const {code, body, message} = data;
 
           if (code == 1) {
-            const vehicleNew = data.body.vehicle;
-            disptach(
-              setErrorAlert({Title: 'Profile Updated Successfully', Status: 2}),
-            );
-            disptach(setProfile({...vehicle, ...vehicleNew}));
+            const vehicleNew = body.vehicle;
+            disptach(setErrorAlert({Title: message, Status: 2}));
+            disptach(UpdateVehicle(vehicleNew));
             navigation.goBack();
           } else {
+            //  console.error('Fetch error:', error);
             setErrorMsg(message);
           }
           setIsLoading(false);
@@ -645,7 +734,7 @@ export const DriverDetailEdit = ({navigation}) => {
         if (sizeKB <= 1) {
           setImageLoading('vehicle');
           // setVehicleImage(source);
-          uploadImage(source, 'vehicle');
+          uploadImage(asset, 'vehicle');
         } else {
           setErrorMsg(`Maximum Image Size is 1 MB`);
         }
@@ -713,7 +802,50 @@ export const DriverDetailEdit = ({navigation}) => {
     });
   }
 
-  const uploadImage = async (uri, name, i) => {
+  const uploadImage = async (photo, name, i) => {
+    const formData = new FormData();
+    formData.append('photo', {
+      name: photo.fileName,
+      type: photo.type,
+      uri: photo.uri,
+    });
+    formData.append('token', profile.token);
+    const options = {
+      method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      body: formData,
+    };
+
+    const url = updateVehicleImageAPI + '/' + profile.uid;
+    fetch(url, options)
+      .then(response => response.json())
+      .then(data => {
+        const {code, body, message} = data;
+        setImageLoading(null);
+        if (code == 1) {
+          const {vehicleImage} = body;
+
+          setVehicleImage(vehicleImage);
+
+          disptach(
+            setErrorAlert({
+              Title: 'Uploaded successfully',
+              Body: message,
+              Status: 2,
+            }),
+          );
+        } else {
+          setErrorMsg(message);
+        }
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the fetch
+        setImageLoading(null);
+        console.log(error);
+      });
+    return;
     const path = `images/drivers/${profile.uid}/${name}`;
     storage()
       .ref(path)
@@ -1389,12 +1521,43 @@ export const DriverDetailEdit = ({navigation}) => {
               style={[
                 styles.textCommon,
                 {
+                  flex: 1,
                   fontFamily: myFonts.heading,
                   fontSize: myFontSize.xBody2,
                 },
               ]}>
-              Driver Details
+              Details
             </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setWarning(deleteText);
+              }}
+              activeOpacity={0.8}
+              style={{
+                // width: myWidth(26),
+                alignSelf: 'center',
+                paddingHorizontal: myWidth(3),
+                paddingVertical: myHeight(1),
+                borderRadius: myHeight(1.4),
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+                backgroundColor: myColors.background,
+                // borderWidth: myHeight(0.15),
+                // borderColor: myColors.red,
+              }}>
+              <Text
+                style={[
+                  styles.textCommon,
+                  {
+                    fontFamily: myFonts.heading,
+                    fontSize: myFontSize.xBody,
+                    color: myColors.red,
+                  },
+                ]}>
+                Delete
+              </Text>
+            </TouchableOpacity>
           </View>
           <Spacer paddingT={myHeight(1.3)} />
 
@@ -1490,6 +1653,60 @@ export const DriverDetailEdit = ({navigation}) => {
           </TouchableOpacity>
 
           <Spacer paddingT={myHeight(2.7)} />
+          {vehicle.id && (
+            <>
+              <View style={{}}>
+                <Text style={styles.heading}>Current Status</Text>
+                <Spacer paddingT={myHeight(0.8)} />
+                <View style={{flexDirection: 'row'}}>
+                  <View style={styles.backItem}>
+                    <Text
+                      style={{
+                        fontSize: myFontSize.body,
+                        fontFamily: myFonts.heading,
+                        color:
+                          vehicle.status == 1 && vehicle.active
+                            ? myColors.primaryT
+                            : myColors.red,
+                        letterSpacing: myLetSpacing.common,
+                        includeFontPadding: false,
+                        padding: 0,
+                      }}>
+                      {vehicle.status == 1 && vehicle.active
+                        ? 'Active'
+                        : vehicle.status == 2
+                        ? 'Pending'
+                        : vehicle.status == 3
+                        ? 'Rejected'
+                        : 'Inactive'}
+                    </Text>
+                  </View>
+                </View>
+                {vehicle.errorMessage && (
+                  <>
+                    <Spacer paddingT={myHeight(1.5)} />
+
+                    <Text
+                      style={{
+                        fontSize: myFontSize.body,
+                        fontFamily: myFonts.bodyBold,
+                        color: myColors.textL4,
+                        letterSpacing: myLetSpacing.common,
+                        includeFontPadding: false,
+                        padding: 0,
+                      }}>
+                      Error:{' '}
+                      <Text style={{color: myColors.red}}>
+                        {vehicle.errorMessage}
+                      </Text>
+                    </Text>
+                  </>
+                )}
+              </View>
+              <Spacer paddingT={myHeight(2)} />
+            </>
+          )}
+
           {/* Vehicle Details */}
           <View>
             <Text style={styles.heading}>Van Info</Text>
@@ -1596,6 +1813,29 @@ export const DriverDetailEdit = ({navigation}) => {
           <View>
             <Text style={styles.heading}>Driver Info</Text>
             <Spacer paddingT={myHeight(1)} />
+            <View style={styles.inputCont}>
+              <TextInput
+                placeholder="Driver Name"
+                autoCorrect={false}
+                // maxLength={11}
+                // keyboardType="numeric"
+                placeholderTextColor={myColors.offColor}
+                selectionColor={myColors.primary}
+                cursorColor={myColors.primaryT}
+                value={name}
+                onChangeText={setName}
+                style={{
+                  padding: 0,
+                  backgroundColor: myColors.background,
+                  fontFamily: myFonts.bodyBold,
+                  fontSize: myFontSize.body,
+
+                  // textAlign: 'center'
+                }}
+              />
+            </View>
+            <Spacer paddingT={myHeight(2)} />
+
             <View style={styles.inputCont}>
               <TextInput
                 placeholder="Contact - e.g 03XXXXXXXXX"
@@ -2058,39 +2298,109 @@ export const DriverDetailEdit = ({navigation}) => {
         </KeyboardAwareScrollView>
 
         <View style={{backgroundColor: myColors.background}}>
-          <View style={{height: 1, backgroundColor: myColors.offColor}} />
+          <View
+            style={{height: myHeight(0.15), backgroundColor: myColors.divider}}
+          />
 
-          <Spacer paddingT={myHeight(3)} />
+          <Spacer paddingT={myHeight(2.5)} />
+          {vehicle.id && vehicle.status == 1 ? (
+            <>
+              <TouchableOpacity
+                onPress={() => activeInactive()}
+                activeOpacity={0.8}
+                style={{
+                  width: myWidth(92),
+                  alignSelf: 'center',
+                  paddingVertical: myHeight(1.1),
+                  borderRadius: myHeight(1.4),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  backgroundColor: myColors.background,
+                  borderWidth: myHeight(0.15),
+                  borderColor: vehicle.active ? myColors.red : myColors.green,
+                }}>
+                <Text
+                  style={[
+                    styles.textCommon,
+                    {
+                      fontFamily: myFonts.heading,
+                      fontSize: myFontSize.body3,
+                      color: vehicle.active ? myColors.red : myColors.green,
+                    },
+                  ]}>
+                  {vehicle.active ? 'Deactivate' : 'Activate'}
+                </Text>
+              </TouchableOpacity>
+              <Spacer paddingT={myHeight(1.5)} />
+            </>
+          ) : null}
+          <>
+            {/* <TouchableOpacity
+              onPress={() => {
+                setWarning(deleteText);
+              }}
+              activeOpacity={0.8}
+              style={{
+                width: myWidth(92),
+                alignSelf: 'center',
+                paddingVertical: myHeight(1.3),
+                borderRadius: myHeight(1.4),
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+                backgroundColor: myColors.background,
+                borderWidth: myHeight(0.15),
+                borderColor: myColors.red,
+              }}>
+              <Text
+                style={[
+                  styles.textCommon,
+                  {
+                    fontFamily: myFonts.heading,
+                    fontSize: myFontSize.body3,
+                    color: myColors.red,
+                  },
+                ]}>
+                Delete
+              </Text>
+            </TouchableOpacity>
+            <Spacer paddingT={myHeight(1.5)} /> */}
+          </>
+          {!vehicle.id || vehicle.active || true ? (
+            <>
+              <TouchableOpacity
+                onPress={onSave}
+                activeOpacity={0.8}
+                style={{
+                  width: myWidth(92),
+                  alignSelf: 'center',
+                  paddingVertical: myHeight(1.3),
+                  borderRadius: myHeight(1.4),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  backgroundColor: myColors.primaryT,
+                  borderWidth: myHeight(0.15),
+                  borderColor: myColors.primaryT,
+                }}>
+                <Text
+                  style={[
+                    styles.textCommon,
+                    {
+                      fontFamily: myFonts.heading,
+                      fontSize: myFontSize.body3,
+                      color: myColors.background,
+                    },
+                  ]}>
+                  Save
+                </Text>
+              </TouchableOpacity>
+              <Spacer paddingT={myHeight(1.5)} />
+            </>
+          ) : null}
 
-          <TouchableOpacity
-            onPress={onSave}
-            activeOpacity={0.8}
-            style={{
-              width: myWidth(92),
-              alignSelf: 'center',
-              paddingVertical: myHeight(1.3),
-              borderRadius: myHeight(1.4),
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'row',
-              backgroundColor: myColors.background,
-              borderWidth: myHeight(0.15),
-              borderColor: myColors.textL4,
-            }}>
-            <Text
-              style={[
-                styles.textCommon,
-                {
-                  fontFamily: myFonts.heading,
-                  fontSize: myFontSize.body3,
-                  color: myColors.text,
-                },
-              ]}>
-              Save
-            </Text>
-          </TouchableOpacity>
-
-          <Spacer paddingT={myHeight(3)} />
+          <Spacer paddingT={myHeight(1.5)} />
         </View>
         {showChangeModal && (
           <ChangeImageView
@@ -2150,7 +2460,8 @@ export const DriverDetailEdit = ({navigation}) => {
                 includeFontPadding: false,
                 padding: 0,
               }}>
-              Are you sure you want to back?{'\n'}
+              {warning}
+              {'\n'}
             </Text>
             <Spacer paddingT={myHeight(2)} />
             <View
@@ -2185,7 +2496,17 @@ export const DriverDetailEdit = ({navigation}) => {
               {/* Yes */}
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => navigation.goBack()}
+                onPress={() => {
+                  if (warning == deleteText) {
+                    deleteV();
+                    setWarning(false);
+
+                    return;
+                  }
+                  setWarning(false);
+
+                  navigation.goBack();
+                }}
                 style={{
                   width: '43%',
                   borderWidth: myHeight(0.09),

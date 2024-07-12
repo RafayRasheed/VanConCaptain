@@ -1,219 +1,267 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  ScrollView, StyleSheet, TouchableOpacity, Image,
-  View, Text, StatusBar,
-  Linking, Platform, ImageBackground, BackHandler, TextInput,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  View,
+  Text,
+  StatusBar,
+  Linking,
+  Platform,
+  ImageBackground,
+  BackHandler,
+  TextInput,
 } from 'react-native';
-import { Loader, MyError, Spacer, StatusBarHide, StatusbarH, errorTime, ios, myHeight, myWidth } from '../common';
-import { myColors } from '../../ultils/myColors';
-import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
-import { ItemInfo } from './home.component/item_info';
-import { useDispatch, useSelector } from 'react-redux';
-import { addFavoriteRest, removeFavoriteRest } from '../../redux/favorite_reducer';
-import { useFocusEffect } from '@react-navigation/native';
-import { ImageUri } from '../common/image_uri';
-import { dataFullData, deccodeInfo, getAllRestuarant } from '../functions/functions';
+import {
+  Loader,
+  MyError,
+  Spacer,
+  StatusBarHide,
+  StatusbarH,
+  errorTime,
+  ios,
+  myHeight,
+  myWidth,
+} from '../common';
+import {myColors} from '../../ultils/myColors';
+import {myFontSize, myFonts, myLetSpacing} from '../../ultils/myFonts';
+import {ItemInfo} from './home.component/item_info';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  addFavoriteRest,
+  removeFavoriteRest,
+} from '../../redux/favorite_reducer';
+import {useFocusEffect} from '@react-navigation/native';
+import {ImageUri} from '../common/image_uri';
+import {
+  dataFullData,
+  deccodeInfo,
+  getAllRestuarant,
+} from '../functions/functions';
 import Collapsible from 'react-native-collapsible';
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { FlashList } from '@shopify/flash-list';
-import { Stars } from './home.component/star';
+import Animated, {ZoomIn, ZoomOut} from 'react-native-reanimated';
+import {FlashList} from '@shopify/flash-list';
+import {Stars} from './home.component/star';
 import firestore from '@react-native-firebase/firestore';
-import { all } from 'axios';
-import { setErrorAlert } from '../../redux/error_reducer';
+import {all} from 'axios';
+import {setErrorAlert} from '../../redux/error_reducer';
 
-export const DriverDetail = ({ navigation, route }) => {
-  const backScreen = route.params.backScreen
-  const { profile } = useSelector(state => state.profile)
+export const DriverDetail = ({navigation, route}) => {
+  const backScreen = route.params.backScreen;
+  const {profile} = useSelector(state => state.profile);
+  const {vehicles} = useSelector(state => state.vehicles);
+  const [driver, setDriver] = useState(null);
 
-  const [driver, setDriver] = useState(profile);
   const [inside, setInside] = useState(false);
-  const [starI, setStarI] = useState(undefined)
-  const [review, setReview] = useState(null)
-  const [errorMsg, setErrorMsg] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [reviews, setReviews] = useState(driver.reviews ? driver.reviews : [])
-  const [myReview, setMyRewiew] = useState()
+  const [starI, setStarI] = useState(undefined);
+  const [review, setReview] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [myReview, setMyRewiew] = useState();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   //Back Functions
   useEffect(() => {
     if (errorMsg) {
       setTimeout(() => {
-        setIsLoading(false)
-        setErrorMsg(null)
-      }
-        , errorTime)
+        setIsLoading(false);
+        setErrorMsg(null);
+      }, errorTime);
     }
-  }, [errorMsg])
+  }, [errorMsg]);
 
-
-
+  // useEffect(() => {
+  //   setDriver(profile);
+  // }, [profile]);
   useEffect(() => {
-    setDriver(profile)
-  }, [profile])
+    const extractVehicle = vehicles.find(it => it.id == route?.params?.id);
+    setDriver(extractVehicle);
+  }, [vehicles]);
   const onBackPress = () => {
-
     if (backScreen) {
       // navigation.navigate(backScreen, route.params.params)
-      navigation.goBack()
-      return true
+      navigation.goBack();
+      return true;
     }
 
-    return false
+    return false;
   };
   useFocusEffect(
     React.useCallback(() => {
-
-      BackHandler.addEventListener(
-        'hardwareBackPress', onBackPress
-      );
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
       return () =>
-        BackHandler.removeEventListener(
-          'hardwareBackPress', onBackPress
-        );
-    }, [backScreen])
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [backScreen]),
   );
-
 
   function back() {
     if (backScreen) {
-      navigation.navigate(backScreen, route.params.params)
-      return
+      navigation.navigate(backScreen, route.params.params);
+      return;
     }
-    navigation.goBack()
+    navigation.goBack();
   }
-  const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-
-  const DaysShow = ({ list = [] }) => {
+  const DaysShow = ({list = []}) => {
     return (
-      <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
-        {
-          allDays.map((it, i) => {
-            const is = list.findIndex(li => li == it) != -1
+      <View
+        style={{
+          width: '100%',
+          flexWrap: 'wrap',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+        {allDays.map((it, i) => {
+          const is = list.findIndex(li => li == it) != -1;
 
-            return (
-
-              <>
-                <View key={i} style={[styles.backItem, {
-                  backgroundColor: is ? myColors.primaryT : myColors.divider, width: myWidth(11.82), paddingVertical: myHeight(0.6),
-                  paddingHorizontal: myWidth(0), justifyContent: 'center'
-                }]}>
-
-
-                  <Text numberOfLines={1}
-
-                    style={{
-                      fontSize: myFontSize.small3,
-                      fontFamily: myFonts.bodyBold,
-                      color: is ? myColors.background : myColors.text,
-                      letterSpacing: myLetSpacing.common,
-                      includeFontPadding: false,
-                      padding: 0,
-                    }}>{it}</Text>
-
-                </View>
-                {
-                  i != 6 &&
-                  <Spacer key={i} paddingEnd={myWidth(1.5)} />
-                }
-              </>
-
-            )
-          }
-          )
-        }
+          return (
+            <>
+              <View
+                key={i}
+                style={[
+                  styles.backItem,
+                  {
+                    backgroundColor: is ? myColors.primaryT : myColors.divider,
+                    width: myWidth(11.82),
+                    paddingVertical: myHeight(0.6),
+                    paddingHorizontal: myWidth(0),
+                    justifyContent: 'center',
+                  },
+                ]}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontSize: myFontSize.small3,
+                    fontFamily: myFonts.bodyBold,
+                    color: is ? myColors.background : myColors.text,
+                    letterSpacing: myLetSpacing.common,
+                    includeFontPadding: false,
+                    padding: 0,
+                  }}>
+                  {it}
+                </Text>
+              </View>
+              {i != 6 && <Spacer key={i} paddingEnd={myWidth(1.5)} />}
+            </>
+          );
+        })}
       </View>
-    )
+    );
+  };
+  function changeFav() {}
+  if (!driver) {
+    return null;
   }
-  function changeFav() {
-
-  }
-
-
   return (
-    <View style={{ flex: 1, backgroundColor: myColors.background }}>
+    <View style={{flex: 1, backgroundColor: myColors.background}}>
       <ScrollView showsVerticalScrollIndicator={false}>
-
         <View
           style={{
-            width: '100%', overflow: 'hidden', backgroundColor: myColors.text,
-            borderBottomStartRadius: myHeight(50), borderBottomEndRadius: myHeight(50), alignItems: 'center'
+            width: '100%',
+            overflow: 'hidden',
+            backgroundColor: myColors.text,
+            borderBottomStartRadius: myHeight(50),
+            borderBottomEndRadius: myHeight(50),
+            alignItems: 'center',
           }}>
           <Spacer paddingT={myHeight(2)} />
           <StatusbarH />
 
-          <View style={{ width: '100%', paddingHorizontal: myWidth(5), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-
-            <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7} style={{
-              backgroundColor: myColors.primaryT,
-              height: myHeight(4.2),
-              width: myHeight(4.2),
-              borderRadius: myHeight(3),
+          <View
+            style={{
+              width: '100%',
+              paddingHorizontal: myWidth(5),
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
-            }}  >
-              <Image style={
-                {
+              justifyContent: 'space-between',
+            }}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: myColors.primaryT,
+                height: myHeight(4.2),
+                width: myHeight(4.2),
+                borderRadius: myHeight(3),
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Image
+                style={{
                   height: myHeight(2),
                   width: myHeight(2),
-                  resizeMode: 'contain'
-                }
-              } source={require('../assets/startup/goL.png')} />
+                  resizeMode: 'contain',
+                }}
+                source={require('../assets/startup/goL.png')}
+              />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{
-                // backgroundColor: myColors.primaryL5,
-                // padding: myHeight(1.2),
-                // borderRadius: myHeight(5),
-
-              }}
+              style={
+                {
+                  // backgroundColor: myColors.primaryL5,
+                  // padding: myHeight(1.2),
+                  // borderRadius: myHeight(5),
+                }
+              }
               activeOpacity={0.8}
-              onPress={() => navigation.navigate('DriverDetailEdit',
-
-              )}>
-              <Image style={{
-                height: myHeight(3),
-                width: myHeight(3),
-                resizeMode: 'contain',
-                tintColor: myColors.background,
-
-              }}
-                source={require('../assets/home_main/home/edit2.png')} />
+              onPress={() =>
+                navigation.navigate('DriverDetailEdit', {id: driver.id})
+              }>
+              <Image
+                style={{
+                  height: myHeight(3),
+                  width: myHeight(3),
+                  resizeMode: 'contain',
+                  tintColor: myColors.background,
+                }}
+                source={require('../assets/home_main/home/edit2.png')}
+              />
             </TouchableOpacity>
           </View>
           {/* image */}
-          <View style={{
-            borderRadius: myWidth(100), overflow: 'hidden',
-            width: myHeight(13),
-            height: myHeight(13),
-            // backgroundColor: myColors.primaryL5, padding: myHeight(1.3),
-            // borderWidth: myWidth(0.1), borderColor: myColors.textL4, 
-          }}>
-            {
-              profile.image ?
-
-                <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={profile.image} />
-                :
-                <Image source={require('../assets/profile/profile.png')}
-                  style={{
-                    width: myHeight(13),
-                    height: myHeight(13),
-                    resizeMode: 'contain',
-                    // tintColor: myColors.primaryT
-                  }}
-                />
-            }
-
-
+          <View
+            style={{
+              borderRadius: myWidth(100),
+              overflow: 'hidden',
+              width: myHeight(13),
+              height: myHeight(13),
+              // backgroundColor: myColors.primaryL5, padding: myHeight(1.3),
+              // borderWidth: myWidth(0.1), borderColor: myColors.textL4,
+            }}>
+            {profile.image ? (
+              <ImageUri
+                width={'100%'}
+                height={'100%'}
+                resizeMode="cover"
+                uri={profile.image}
+              />
+            ) : (
+              <Image
+                source={require('../assets/profile/profile.png')}
+                style={{
+                  width: myHeight(13),
+                  height: myHeight(13),
+                  resizeMode: 'contain',
+                  // tintColor: myColors.primaryT
+                }}
+              />
+            )}
           </View>
 
           <Spacer paddingT={myHeight(1)} />
 
-          <Text style={{
-            color: myColors.background, fontSize: myFontSize.medium2, fontFamily: myFonts.heading, paddingHorizontal: myWidth(16),
-          }}>{profile.name}</Text>
+          <Text
+            style={{
+              color: myColors.background,
+              fontSize: myFontSize.medium2,
+              fontFamily: myFonts.heading,
+              paddingHorizontal: myWidth(16),
+            }}>
+            {driver.name}
+          </Text>
           <View
             style={{
               flexDirection: 'row',
@@ -273,25 +321,75 @@ export const DriverDetail = ({ navigation, route }) => {
             </TouchableOpacity> */}
           </View>
           <Spacer paddingT={myHeight(8)} />
-
         </View>
         <Spacer paddingT={myHeight(1)} />
 
         {/* Details */}
-        <View style={{ paddingHorizontal: myWidth(4) }}>
+        <View style={{paddingHorizontal: myWidth(4)}}>
+          {/* Status */}
+          <View style={{}}>
+            <Text style={styles.heading}>Current Status</Text>
+            <Spacer paddingT={myHeight(0.8)} />
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.backItem}>
+                <Text
+                  style={{
+                    fontSize: myFontSize.body,
+                    fontFamily: myFonts.heading,
+                    color:
+                      driver.status == 1 && driver.active
+                        ? myColors.primaryT
+                        : myColors.red,
+                    letterSpacing: myLetSpacing.common,
+                    includeFontPadding: false,
+                    padding: 0,
+                  }}>
+                  {driver.status == 1 && driver.active
+                    ? 'Active'
+                    : driver.status == 2
+                    ? 'Pending'
+                    : 'Inactive'}
+                </Text>
+              </View>
+            </View>
+
+            {driver.errorMessage && (
+              <>
+                <Spacer paddingT={myHeight(1.5)} />
+
+                <Text
+                  style={{
+                    fontSize: myFontSize.body,
+                    fontFamily: myFonts.bodyBold,
+                    color: myColors.textL4,
+                    letterSpacing: myLetSpacing.common,
+                    includeFontPadding: false,
+                    padding: 0,
+                  }}>
+                  Error:{' '}
+                  <Text style={{color: myColors.red}}>
+                    {driver.errorMessage}
+                  </Text>
+                </Text>
+              </>
+            )}
+          </View>
+          <Spacer paddingT={myHeight(3)} />
+
           {/* Van Info */}
           <View style={{}}>
-            <Text
-
-              style={styles.heading}>Van Info</Text>
+            <Text style={styles.heading}>Van Info</Text>
 
             <Spacer paddingT={myHeight(0.8)} />
-            <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
-
+            <View
+              style={{
+                width: '100%',
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
               <View style={styles.backItem}>
-
                 <Text
-
                   style={{
                     fontSize: myFontSize.body,
                     fontFamily: myFonts.bodyBold,
@@ -299,15 +397,14 @@ export const DriverDetail = ({ navigation, route }) => {
                     letterSpacing: myLetSpacing.common,
                     includeFontPadding: false,
                     padding: 0,
-                  }}>{driver.vehicleName}</Text>
-
+                  }}>
+                  {driver.vehicleName}
+                </Text>
               </View>
               <Spacer paddingEnd={myWidth(2.8)} />
 
               <View style={styles.backItem}>
-
                 <Text
-
                   style={{
                     fontSize: myFontSize.body,
                     fontFamily: myFonts.bodyBold,
@@ -315,15 +412,14 @@ export const DriverDetail = ({ navigation, route }) => {
                     letterSpacing: myLetSpacing.common,
                     includeFontPadding: false,
                     padding: 0,
-                  }}>{driver.vehicleModal}</Text>
-
+                  }}>
+                  {driver.vehicleModal}
+                </Text>
               </View>
               <Spacer paddingEnd={myWidth(2.8)} />
 
               <View style={styles.backItem}>
-
                 <Text
-
                   style={{
                     fontSize: myFontSize.body,
                     fontFamily: myFonts.bodyBold,
@@ -331,23 +427,19 @@ export const DriverDetail = ({ navigation, route }) => {
                     letterSpacing: myLetSpacing.common,
                     includeFontPadding: false,
                     padding: 0,
-                  }}>{driver.vehicleNum}</Text>
-
+                  }}>
+                  {driver.vehicleNum}
+                </Text>
               </View>
-
-
             </View>
           </View>
           <Spacer paddingT={myHeight(3)} />
 
           {/* Description */}
           <View>
-            <Text
-
-              style={styles.heading}>Description</Text>
+            <Text style={styles.heading}>Description</Text>
 
             <Text
-
               style={{
                 fontSize: myFontSize.body,
                 fontFamily: myFonts.body,
@@ -355,110 +447,123 @@ export const DriverDetail = ({ navigation, route }) => {
                 letterSpacing: myLetSpacing.common,
                 includeFontPadding: false,
                 padding: 0,
-              }}>{driver.description}</Text>
+              }}>
+              {driver.description}
+            </Text>
           </View>
           <Spacer paddingT={myHeight(2)} />
 
           {/* Photos */}
           <View>
-            <Text
-
-              style={styles.heading}>Photos</Text>
+            <Text style={styles.heading}>Photos</Text>
             <Spacer paddingT={myHeight(0.5)} />
 
-            <View style={{
-              width: '100%',
-              height: myHeight(28),
+            <View
+              style={{
+                width: '100%',
+                height: myHeight(28),
 
-              borderRadius: myWidth(4),
-              overflow: 'hidden',
-            }} >
-              <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={driver.vehicleImage} />
-
+                borderRadius: myWidth(4),
+                overflow: 'hidden',
+              }}>
+              <ImageUri
+                width={'100%'}
+                height={'100%'}
+                resizeMode="cover"
+                uri={driver.vehicleImage}
+              />
             </View>
-
           </View>
 
           <Spacer paddingT={myHeight(3.5)} />
 
           {/* Aminities */}
           <View style={{}}>
-            <Text
-
-              style={styles.heading}>Amenities</Text>
+            <Text style={styles.heading}>Amenities</Text>
 
             <Spacer paddingT={myHeight(0.8)} />
-            <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
-              {
-                driver.ac ?
-                  <>
-                    <View style={styles.backItem}>
-
-
-                      <Image style={{
-                        width: myHeight(2), height: myHeight(2),
-                        resizeMode: 'contain', marginTop: myHeight(0), tintColor: myColors.textL4
+            <View
+              style={{
+                width: '100%',
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              {driver.ac ? (
+                <>
+                  <View style={styles.backItem}>
+                    <Image
+                      style={{
+                        width: myHeight(2),
+                        height: myHeight(2),
+                        resizeMode: 'contain',
+                        marginTop: myHeight(0),
+                        tintColor: myColors.textL4,
                       }}
-                        source={require('../assets/home_main/home/ac2.png')} />
-                      <Spacer paddingEnd={myWidth(1.5)} />
+                      source={require('../assets/home_main/home/ac2.png')}
+                    />
+                    <Spacer paddingEnd={myWidth(1.5)} />
 
-                      <Text
+                    <Text
+                      style={{
+                        fontSize: myFontSize.body,
+                        fontFamily: myFonts.bodyBold,
+                        color: myColors.text,
+                        letterSpacing: myLetSpacing.common,
+                        includeFontPadding: false,
+                        padding: 0,
+                      }}>
+                      Air Conditioned
+                    </Text>
+                  </View>
+                  <Spacer paddingEnd={myWidth(2.8)} />
+                </>
+              ) : null}
 
-                        style={{
-                          fontSize: myFontSize.body,
-                          fontFamily: myFonts.bodyBold,
-                          color: myColors.text,
-                          letterSpacing: myLetSpacing.common,
-                          includeFontPadding: false,
-                          padding: 0,
-                        }}>Air Conditioned</Text>
-
-                    </View>
-                    <Spacer paddingEnd={myWidth(2.8)} />
-                  </>
-
-                  : null
-              }
-
-              {
-                driver.isWifi ?
-                  <>
-                    <View style={styles.backItem}>
-
-                      <Image style={{
-                        width: myHeight(2.3), height: myHeight(2.3),
-                        resizeMode: 'contain', marginTop: myHeight(0),
-                        tintColor: myColors.textL4
+              {driver.isWifi ? (
+                <>
+                  <View style={styles.backItem}>
+                    <Image
+                      style={{
+                        width: myHeight(2.3),
+                        height: myHeight(2.3),
+                        resizeMode: 'contain',
+                        marginTop: myHeight(0),
+                        tintColor: myColors.textL4,
                       }}
-                        source={require('../assets/home_main/home/wifi.png')} />
-                      <Spacer paddingEnd={myWidth(1.5)} />
-                      <Text
-
-                        style={{
-                          fontSize: myFontSize.body,
-                          fontFamily: myFonts.bodyBold,
-                          color: myColors.text,
-                          letterSpacing: myLetSpacing.common,
-                          includeFontPadding: false,
-                          padding: 0,
-                        }}>Wifi</Text>
-                    </View>
-                    <Spacer paddingEnd={myWidth(2.8)} />
-                  </>
-
-                  : null
-              }
+                      source={require('../assets/home_main/home/wifi.png')}
+                    />
+                    <Spacer paddingEnd={myWidth(1.5)} />
+                    <Text
+                      style={{
+                        fontSize: myFontSize.body,
+                        fontFamily: myFonts.bodyBold,
+                        color: myColors.text,
+                        letterSpacing: myLetSpacing.common,
+                        includeFontPadding: false,
+                        padding: 0,
+                      }}>
+                      Wifi
+                    </Text>
+                  </View>
+                  <Spacer paddingEnd={myWidth(2.8)} />
+                </>
+              ) : null}
 
               <View style={styles.backItem}>
-                <Image style={{
-                  width: myHeight(1.75), height: myHeight(1.75),
-                  resizeMode: 'contain', marginTop: -myHeight(0.2), tintColor: myColors.textL4
-                }}
-                  source={require('../assets/home_main/home/seatSF.png')} />
+                <Image
+                  style={{
+                    width: myHeight(1.75),
+                    height: myHeight(1.75),
+                    resizeMode: 'contain',
+                    marginTop: -myHeight(0.2),
+                    tintColor: myColors.textL4,
+                  }}
+                  source={require('../assets/home_main/home/seatSF.png')}
+                />
                 <Spacer paddingEnd={myWidth(1.8)} />
 
                 <Text
-
                   style={{
                     fontSize: myFontSize.body,
                     fontFamily: myFonts.bodyBold,
@@ -466,55 +571,61 @@ export const DriverDetail = ({ navigation, route }) => {
                     letterSpacing: myLetSpacing.common,
                     includeFontPadding: false,
                     padding: 0,
-                  }}>{driver.vehicleSeats}</Text>
+                  }}>
+                  {driver.vehicleSeats}
+                </Text>
               </View>
-
-
             </View>
           </View>
           <Spacer paddingT={myHeight(3.5)} />
 
           {/* Paid */}
           <View style={{}}>
-            <Text
-
-              style={styles.heading}>Paid Options</Text>
+            <Text style={styles.heading}>Paid Options</Text>
 
             <Spacer paddingT={myHeight(0.8)} />
-            <View style={{ width: '100%', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center' }}>
-              {
-                driver.packages.map((it, i) => (
-                  <>
-                    <View key={i} style={[styles.backItem, { paddingHorizontal: 0, width: myWidth(20), justifyContent: 'center', }]}>
-                      <Text numberOfLines={1}
-
-                        style={{
-
-                          fontSize: myFontSize.xxSmall,
-                          fontFamily: myFonts.bodyBold,
-                          color: myColors.text,
-                          letterSpacing: myLetSpacing.common,
-                          includeFontPadding: false,
-                          padding: 0,
-                        }}>{it}</Text>
-                    </View>
-                    <Spacer paddingEnd={myWidth(4)} />
-
-                  </>
-
-
-                ))
-              }
+            <View
+              style={{
+                width: '100%',
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              {driver.packages.map((it, i) => (
+                <>
+                  <View
+                    key={i}
+                    style={[
+                      styles.backItem,
+                      {
+                        paddingHorizontal: 0,
+                        width: myWidth(20),
+                        justifyContent: 'center',
+                      },
+                    ]}>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        fontSize: myFontSize.xxSmall,
+                        fontFamily: myFonts.bodyBold,
+                        color: myColors.text,
+                        letterSpacing: myLetSpacing.common,
+                        includeFontPadding: false,
+                        padding: 0,
+                      }}>
+                      {it}
+                    </Text>
+                  </View>
+                  <Spacer paddingEnd={myWidth(4)} />
+                </>
+              ))}
             </View>
           </View>
-
 
           <Spacer paddingT={myHeight(3.5)} />
           {/* Daily */}
           <View style={{}}>
-            <Text
-
-              style={styles.heading}>Availability</Text>
+            <Text style={styles.heading}>Availability</Text>
 
             <Spacer paddingT={myHeight(1)} />
             <DaysShow list={driver.dailyDays} />
@@ -523,198 +634,230 @@ export const DriverDetail = ({ navigation, route }) => {
           <Spacer paddingT={myHeight(3.5)} />
           {/* Event Book */}
           <View>
-            {
-              driver.isOneRide ?
-                <>
-                  <Text
+            {driver.isOneRide ? (
+              <>
+                <Text style={styles.heading}>Availability for Events</Text>
 
-                    style={styles.heading}>Availability for Events</Text>
-
-                  <Spacer paddingT={myHeight(1)} />
-                  <DaysShow list={driver.oneRideDays} />
-                  <Spacer paddingT={myHeight(2.5)} />
-
-                </>
-
-
-                : null
-            }
+                <Spacer paddingT={myHeight(1)} />
+                <DaysShow list={driver.oneRideDays} />
+                <Spacer paddingT={myHeight(2.5)} />
+              </>
+            ) : null}
           </View>
-
 
           {/* Inside Uni */}
           <View>
-            {
-              driver.isInsideUni ?
-                <>
+            {driver.isInsideUni ? (
+              <>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setInside(!inside)}
+                  style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={styles.heading}>
+                    Inside Universities Service
+                  </Text>
 
-
-                  <TouchableOpacity activeOpacity={0.7} onPress={() => setInside(!inside)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                    <Text
-
-                      style={styles.heading}>Inside Universities Service</Text>
-
-                    <View style={{ flex: 1 }} />
-                    <TouchableOpacity disabled style={{
-                    }}>
-
-                      <Image style={{
+                  <View style={{flex: 1}} />
+                  <TouchableOpacity disabled style={{}}>
+                    <Image
+                      style={{
                         height: myHeight(2.2),
                         width: myHeight(2.2),
                         resizeMode: 'contain',
                         marginTop: myHeight(0.4),
                         tintColor: myColors.offColor,
-                        transform: [{ rotate: !inside ? '90deg' : '270deg' }],
-
-                      }} source={require('../assets/home_main/home/go.png')} />
-                    </TouchableOpacity>
-
-
-
+                        transform: [{rotate: !inside ? '90deg' : '270deg'}],
+                      }}
+                      source={require('../assets/home_main/home/go.png')}
+                    />
                   </TouchableOpacity>
+                </TouchableOpacity>
 
-                  <Collapsible style={{ paddingHorizontal: myWidth(1) }} collapsed={!inside}>
-                    <Spacer paddingT={myHeight(0.5)} />
+                <Collapsible
+                  style={{paddingHorizontal: myWidth(1)}}
+                  collapsed={!inside}>
+                  <Spacer paddingT={myHeight(0.5)} />
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: myFontSize.body,
+                        fontFamily: myFonts.bodyBold,
+                        color: myColors.text,
+                        letterSpacing: myLetSpacing.common,
+                        includeFontPadding: false,
+                        padding: 0,
+                      }}>{`Estimate Charges: ${driver.departCharges} Rs`}</Text>
+                  </View>
+                  {driver.insideUniversities.map((it, j) => (
+                    <View
+                      key={j}
+                      style={{
+                        flexDirection: 'row',
+                        paddingVertical: myHeight(0.65),
+                      }}>
                       <Text
+                        style={[
+                          styles.textCommon,
+                          {
+                            width: myWidth(0.2) + myFontSize.body * 2,
+                            fontFamily: myFonts.bodyBold,
+                            fontSize: myFontSize.body,
+                          },
+                        ]}>
+                        {' '}
+                        {j + 1}.
+                      </Text>
+                      <TouchableOpacity
+                        disabled
+                        activeOpacity={0.75}
                         style={{
-
-                          fontSize: myFontSize.body,
-                          fontFamily: myFonts.bodyBold,
-                          color: myColors.text,
-                          letterSpacing: myLetSpacing.common,
-                          includeFontPadding: false,
-                          padding: 0,
-                        }}>{`Estimate Charges: ${driver.departCharges} Rs`}</Text>
-                    </View>
-                    {driver.insideUniversities.map((it, j) => (
-
-                      <View key={j} style={{ flexDirection: 'row', paddingVertical: myHeight(0.65) }}>
-                        <Text style={[styles.textCommon, {
-                          width: myWidth(0.2) + myFontSize.body * 2,
-                          fontFamily: myFonts.bodyBold,
-                          fontSize: myFontSize.body,
-                        }]}>  {j + 1}.</Text>
-                        <TouchableOpacity disabled activeOpacity={0.75} style={{
                           backgroundColor: myColors.background,
                           flex: 1,
                           paddingEnd: myWidth(2),
-
                         }}
-                          onPress={() => null}>
-                          <Text numberOfLines={2} style={[styles.textCommon, {
-                            // flex: 1,
-                            fontFamily: myFonts.bodyBold,
-                            fontSize: myFontSize.body,
-                          }]}>{it}</Text>
-                        </TouchableOpacity>
-                        <Spacer paddingEnd={myWidth(2)} />
+                        onPress={() => null}>
+                        <Text
+                          numberOfLines={2}
+                          style={[
+                            styles.textCommon,
+                            {
+                              // flex: 1,
+                              fontFamily: myFonts.bodyBold,
+                              fontSize: myFontSize.body,
+                            },
+                          ]}>
+                          {it}
+                        </Text>
+                      </TouchableOpacity>
+                      <Spacer paddingEnd={myWidth(2)} />
+                    </View>
+                  ))}
+                </Collapsible>
 
-                      </View>
-                    ))}
-                  </Collapsible>
-
-                  <Spacer paddingT={myHeight(1.4)} />
-                </>
-                : false
-            }
+                <Spacer paddingT={myHeight(1.4)} />
+              </>
+            ) : (
+              false
+            )}
           </View>
 
           {/* Reviews */}
-          {
-            reviews?.length ?
-              <View style={{}}>
-                <Text
+          {driver.reviews?.length ? (
+            <View style={{}}>
+              <Text style={styles.heading}>Reviews</Text>
 
-                  style={styles.heading}>Reviews</Text>
+              <Spacer paddingT={myHeight(1)} />
 
-                <Spacer paddingT={myHeight(1)} />
+              <FlashList
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+                data={driver.reviews}
+                contentContainerStyle={{flexGrow: 1}}
+                ItemSeparatorComponent={() => (
+                  <View
+                    style={{
+                      borderTopWidth: myHeight(0.08),
+                      borderColor: myColors.background,
+                      width: '100%',
+                    }}
+                  />
+                )}
+                estimatedItemSize={myHeight(10)}
+                renderItem={({item, index}) => {
+                  // const item = data
 
-                <FlashList
-                  showsVerticalScrollIndicator={false}
-                  scrollEnabled={false}
-                  data={reviews}
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        borderWidth: myHeight(0.1),
+                        marginBottom: myHeight(1),
+                        backgroundColor: myColors.background,
+                        elevation: 1,
+                        borderColor: myColors.divider,
+                        borderRadius: myWidth(2),
+                        paddingHorizontal: myWidth(2),
+                      }}>
+                      <Spacer paddingT={myHeight(0.8)} />
 
-                  contentContainerStyle={{ flexGrow: 1 }}
-                  ItemSeparatorComponent={() =>
-                    <View style={{ borderTopWidth: myHeight(0.08), borderColor: myColors.background, width: "100%" }} />
-                  }
-                  estimatedItemSize={myHeight(10)}
-                  renderItem={({ item, index }) => {
-                    // const item = data
+                      <View
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        {/* <Spacer paddingEnd={myWidth(2)} /> */}
+                        <Text
+                          style={[
+                            styles.textCommon,
+                            {
+                              flex: 1,
+                              fontSize: myFontSize.body3,
+                              fontFamily: myFonts.heading,
+                              paddingEnd: myWidth(3),
+                            },
+                          ]}>
+                          {item.name}
+                        </Text>
 
-                    return (
-                      <View key={index} style={{ borderWidth: myHeight(0.1), marginBottom: myHeight(1), backgroundColor: myColors.background, elevation: 1, borderColor: myColors.divider, borderRadius: myWidth(2), paddingHorizontal: myWidth(2) }}>
-                        <Spacer paddingT={myHeight(0.8)} />
-
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          {/* <Spacer paddingEnd={myWidth(2)} /> */}
-                          <Text style={[styles.textCommon, {
-                            flex: 1,
-                            fontSize: myFontSize.body3,
-                            fontFamily: myFonts.heading,
-                            paddingEnd: myWidth(3)
-                          }]}>{item.name}</Text>
-
-
-                          {item.rating &&
-                            <Stars num={item.rating} />
-                          }
-
-                        </View>
-                        <Spacer paddingT={myHeight(0.5)} />
-                        <Text style={[styles.textCommon, {
-                          fontSize: myFontSize.body,
-                          fontFamily: myFonts.body,
-                          paddingEnd: myWidth(3),
-                          color: myColors.textL4,
-
-                        }]}>{item.review}</Text>
-
-                        <Spacer paddingT={myHeight(1.5)} />
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                          <Text style={[styles.textCommon, {
-                            flex: 1,
-                            textAlign: 'right',
-                            fontSize: myFontSize.xSmall,
-                            fontFamily: myFonts.bodyBold,
-                            color: myColors.textL4,
-                          }]}><Text style={{ fontSize: myFontSize.small3, color: myColors.textL4, fontFamily: myFonts.body, }}>{item.edited ? 'Edited' : ''}</Text>  {item.date} </Text>
-
-                        </View>
-
-
-                        <Spacer paddingT={myHeight(0.7)} />
-
+                        {item.rating && <Stars num={item.rating} />}
                       </View>
-                    )
-                  }
-                  } />
+                      <Spacer paddingT={myHeight(0.5)} />
+                      <Text
+                        style={[
+                          styles.textCommon,
+                          {
+                            fontSize: myFontSize.body,
+                            fontFamily: myFonts.body,
+                            paddingEnd: myWidth(3),
+                            color: myColors.textL4,
+                          },
+                        ]}>
+                        {item.review}
+                      </Text>
 
-              </View>
-              :
-              null
-          }
+                      <Spacer paddingT={myHeight(1.5)} />
 
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                        }}>
+                        <Text
+                          style={[
+                            styles.textCommon,
+                            {
+                              flex: 1,
+                              textAlign: 'right',
+                              fontSize: myFontSize.xSmall,
+                              fontFamily: myFonts.bodyBold,
+                              color: myColors.textL4,
+                            },
+                          ]}>
+                          <Text
+                            style={{
+                              fontSize: myFontSize.small3,
+                              color: myColors.textL4,
+                              fontFamily: myFonts.body,
+                            }}>
+                            {item.edited ? 'Edited' : ''}
+                          </Text>{' '}
+                          {item.date}{' '}
+                        </Text>
+                      </View>
 
+                      <Spacer paddingT={myHeight(0.7)} />
+                    </View>
+                  );
+                }}
+              />
+            </View>
+          ) : null}
 
           <Spacer paddingT={myHeight(4)} />
-
-
         </View>
-
 
         {/* Content */}
 
         <Spacer paddingT={myHeight(1)} />
-
-
-
-
       </ScrollView>
 
       {/* <View>
@@ -768,10 +911,6 @@ es
 
       </View> */}
 
-
-
-
-
       {isLoading && <Loader />}
       {errorMsg && <MyError message={errorMsg} />}
     </View>
@@ -792,9 +931,14 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   backItem: {
-    paddingHorizontal: myWidth(5), paddingVertical: myHeight(0.75), borderRadius: myWidth(100),
-    backgroundColor: myColors.background, borderWidth: myHeight(0.1), borderColor: myColors.divider,
-    flexDirection: 'row', alignItems: 'center'
+    paddingHorizontal: myWidth(5),
+    paddingVertical: myHeight(0.75),
+    borderRadius: myWidth(100),
+    backgroundColor: myColors.background,
+    borderWidth: myHeight(0.1),
+    borderColor: myColors.divider,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   heading: {
     fontSize: myFontSize.body4,
@@ -809,5 +953,5 @@ const styles = StyleSheet.create({
     height: myHeight(4.2),
     marginEnd: myWidth(0.5),
     resizeMode: 'contain',
-  }
+  },
 });

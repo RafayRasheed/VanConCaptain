@@ -349,7 +349,7 @@ export const Profile = ({navigation}) => {
                     }]}>{profile.name}</Text>
                 </View> */}
 
-        <Spacer paddingT={myHeight(2.5)} />
+        <Spacer paddingT={myHeight(4.5)} />
 
         <ScrollView
           bounces={false}
@@ -369,7 +369,7 @@ export const Profile = ({navigation}) => {
           {/* <View style={{ borderTopWidth: myHeight(0.18), borderColor: myColors.dot, }} /> */}
 
           {/* Details */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => navigation.navigate('DriverDetailEdit')}
             style={{}}>
@@ -378,7 +378,7 @@ export const Profile = ({navigation}) => {
               iconSize={myHeight(2.6)}
               name={'Driver Details'}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* Divider */}
           {/* <View style={{ borderTopWidth: myHeight(0.18), borderColor: myColors.dot, }} /> */}
 
