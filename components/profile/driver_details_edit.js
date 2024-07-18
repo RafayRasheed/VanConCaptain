@@ -489,9 +489,9 @@ export const DriverDetailEdit = ({navigation, route}) => {
       setErrorMsg('Please Select At Least One Univesity');
       return false;
     }
-    if (isInsideUni && !checkDepartCharges()) {
-      return false;
-    }
+    // if (isInsideUni && !checkDepartCharges()) {
+    //   return false;
+    // }
     if (isOneRide && !oneRideDays.length) {
       setErrorMsg('Please Select One Time Ride Days');
       return false;
