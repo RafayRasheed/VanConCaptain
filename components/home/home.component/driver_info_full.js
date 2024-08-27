@@ -208,7 +208,6 @@ export const DriverInfoFull = ({driver, navigation}) => {
                 style={styles.imageStar}
                 source={require('../../assets/home_main/home/star.png')}
               />
-              {console.log(driver.rating)}
               <Spacer paddingEnd={myWidth(1.6)} />
               <Text style={styles.textRating}>
                 {driver.rating}{' '}

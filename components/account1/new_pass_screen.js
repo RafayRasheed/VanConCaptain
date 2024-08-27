@@ -17,7 +17,7 @@ import {
   myWidth,
   Spacer,
 } from '../common';
-import {myFontSize, myFonts} from '../../ultils/myFonts';
+import {myFontSize, myFonts, myLetSpacing} from '../../ultils/myFonts';
 import {myColors} from '../../ultils/myColors';
 import {deccodeInfo, encodeInfo} from '../functions/functions';
 import firestore from '@react-native-firebase/firestore';

@@ -85,6 +85,7 @@ import {setOnline} from '../../redux/online_reducer';
 import storeRedux from '../../redux/store_redux';
 import {setErrorAlert} from '../../redux/error_reducer';
 import {FlashList} from '@shopify/flash-list';
+import {socket, socketURL} from '../common/api';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -218,7 +219,33 @@ export const HomeScreen = ({navigation}) => {
     //   navigation.navigate(screenName);
     // }
   };
-
+  useEffect(() => {
+    // const socket = io(socketURL);
+    if (profile) {
+      socket.removeAllListeners();
+      console.log(profile);
+      socket.connect();
+      // Listen for incoming messages
+      socket.on('connect', msg => {
+        console.log('connect connect connect', msg);
+        updateUserIdToSocket();
+      });
+      socket.emit('getAllChats', {
+        userId: profile.uid,
+        type: 2,
+      });
+      socket.on('allChatsListener', data => {
+        console.log('allChatsListener', data);
+        dispatch(setTotalUnread(data.totalUnreadChats));
+        dispatch(setChats(data.allChats));
+      });
+      // Clean up on component unmount
+      return () => {
+        socket.disconnect();
+        console.log('disconnected disconnected disconnected');
+      };
+    }
+  }, []);
   function sendNotificationToAll() {
     firestore()
       .collection('users')
@@ -371,6 +398,13 @@ export const HomeScreen = ({navigation}) => {
   function onSaveAvailSeats() {
     updateProfileToFirebase({availableSeats});
   }
+  function updateUserIdToSocket() {
+    socket.emit('updateUserData', {
+      type: 2,
+      name: profile.name,
+      userId: profile.uid,
+    });
+  }
 
   useEffect(() => {
     if (profile) {
@@ -399,6 +433,7 @@ export const HomeScreen = ({navigation}) => {
 
   // Realtime
   useEffect(() => {
+    return;
     const onValueChange = database()
       .ref(`/chats`)
       .on('value', snapshot => {
@@ -465,6 +500,7 @@ export const HomeScreen = ({navigation}) => {
 
   // Realtime
   useEffect(() => {
+    return;
     const onValueChange = database()
       // .ref(`/requests/${profile.uid}`).orderByChild('dateInt')
       .ref(`/requests`)
@@ -766,7 +802,6 @@ export const HomeScreen = ({navigation}) => {
                 showsVerticalScrollIndicator={false}
                 estimatedItemSize={200}
                 renderItem={({item}) => {
-                  console.log(item);
                   return (
                     <TouchableOpacity
                       activeOpacity={0.8}
