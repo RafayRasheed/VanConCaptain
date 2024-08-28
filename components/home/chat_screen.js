@@ -61,6 +61,7 @@ export const Chat = ({navigation, route}) => {
   const [customer, setCustomer] = useState(null);
   const [customerImage, setCustomerImage] = useState(user2.userImage);
   const [focusId, setFocusId] = useState(null);
+  const [lastSeen, setLastSeen] = useState(null);
 
   const textInputRef = useRef(null);
 
@@ -77,6 +78,7 @@ export const Chat = ({navigation, route}) => {
       userId: user2.uid,
       driverId: profile.uid,
       vehicleId: user2.vid,
+      type: 2,
     });
     socket.emit('readAllMessages', {
       chatId,
@@ -85,14 +87,14 @@ export const Chat = ({navigation, route}) => {
       type: 2,
     });
     socket.on('userStatusUpdate', data => {
-      console.log('userStatusUpdate', data);
+      console.log('userStatusUpdate');
       if (data.id == user2.uid) {
         setLastSeen(data);
       }
     });
     socket.on('chatsCustomer', data => {
       setChatss(data.chats);
-      console.log('chatsCustomer', data.chats);
+      console.log('chatsCustomer');
     });
   }, []);
   // useEffect(() => {
@@ -319,10 +321,10 @@ export const Chat = ({navigation, route}) => {
                 flex: 1,
                 fontSize: myFontSize.xxSmall,
                 fontFamily: myFonts.heading,
-                color: isMe ? myColors.green : myColors.textL4,
+                color: isMe ? myColors.green : myColors.textL5,
               },
             ]}>
-            {isMe ? 'You' : user2.name}
+            {isMe ? 'You' : user2.userName}
           </Text>
 
           {type == 0 ? (
@@ -629,7 +631,7 @@ export const Chat = ({navigation, route}) => {
         console.log('error on send message', err);
       });
   }
-
+  let lastDate = 0;
   return (
     <>
       <SafeAreaView style={{flex: 1, backgroundColor: myColors.background}}>
@@ -691,8 +693,8 @@ export const Chat = ({navigation, route}) => {
             <View
               style={{
                 borderRadius: myHeight(100),
-                height: myHeight(4.2),
-                width: myHeight(4.2),
+                height: myHeight(5.5),
+                width: myHeight(5.5),
                 borderColor: myColors.offColor7,
                 borderWidth: 1,
                 backgroundColor: colorC,
@@ -711,8 +713,8 @@ export const Chat = ({navigation, route}) => {
               ) : (
                 <Image
                   style={{
-                    width: myHeight(2),
-                    height: myHeight(2),
+                    width: myHeight(2.6),
+                    height: myHeight(2.6),
                     resizeMode: 'contain',
                     tintColor: myColors.background,
                   }}
@@ -727,12 +729,27 @@ export const Chat = ({navigation, route}) => {
                 style={[
                   styles.textCommon,
                   {
-                    fontSize: myFontSize.xBody2,
+                    fontSize: myFontSize.body4,
                     fontFamily: myFonts.heading,
                   },
                 ]}>
-                {user2.name ? user2.name : 'Someone'}
+                {user2.userName ? user2.userName : 'Someone'}
               </Text>
+              <Collapsible duration={200} collapsed={lastSeen == null}>
+                <Text
+                  style={[
+                    styles.textCommon,
+                    {
+                      fontSize: myFontSize.xxSmall,
+                      fontFamily: myFonts.bodyBold,
+                      color: lastSeen?.isOnline
+                        ? myColors.primaryT
+                        : myColors.text2,
+                    },
+                  ]}>
+                  {lastSeen?.lastSeen}
+                </Text>
+              </Collapsible>
               {/* <Text style={[styles.textCommon, {
                             fontSize: myFontSize.body,
                             fontFamily: myFonts.body,
@@ -779,7 +796,9 @@ export const Chat = ({navigation, route}) => {
               }}
               keyExtractor={(item, index) => index.toString()}
               estimatedItemSize={200}
-              renderItem={({item}) => {
+              renderItem={({item, index}) => {
+                console.log(item, index);
+                lastDate = index;
                 if (typeof item == 'string') {
                   return (
                     <View
