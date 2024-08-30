@@ -71,21 +71,31 @@ export const Chat = ({navigation, route}) => {
 
     setReply(item);
   };
-  useEffect(() => {
-    socket.removeListener('chatsCustomer');
-    socket.removeListener('userStatusUpdate');
-    socket.emit('getChats', {
-      userId: user2.uid,
-      driverId: profile.uid,
-      vehicleId: user2.vid,
-      type: 2,
-    });
+  function socketToAllUnread() {
     socket.emit('readAllMessages', {
       chatId,
       userId: user2.uid,
       driverId: profile.uid,
       type: 2,
     });
+  }
+  function removeListeners() {
+    socket.removeListener('chatsCustomer');
+    socket.removeListener('userStatusUpdate');
+    socket.removeListener('onNewMessage');
+  }
+  useEffect(() => {
+    removeListeners();
+    socket.emit('getChats', {
+      userId: user2.uid,
+      driverId: profile.uid,
+      vehicleId: user2.vid,
+      type: 2,
+    });
+    if (user2.totalUnread) {
+      socketToAllUnread();
+    }
+
     socket.on('userStatusUpdate', data => {
       console.log('userStatusUpdate');
       if (data.id == user2.uid) {
@@ -93,9 +103,21 @@ export const Chat = ({navigation, route}) => {
       }
     });
     socket.on('chatsCustomer', data => {
-      setChatss(data.chats);
-      console.log('chatsCustomer');
+      if (data.chatId && (!chatId || chatId == data.chatId)) {
+        setChatId(data.chatId);
+        setChatss(data.chats);
+        console.log('chatsCustomer', data);
+      }
     });
+
+    socket.on('onNewMessage', data => {
+      console.log('onNewMessage', data);
+      socketToAllUnread();
+    });
+
+    return () => {
+      removeListeners();
+    };
   }, []);
   // useEffect(() => {
   //     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -724,7 +746,12 @@ export const Chat = ({navigation, route}) => {
             </View>
             <Spacer paddingEnd={myWidth(2.4)} />
             {/* Name & Last seen */}
-            <View>
+            <View
+              style={{
+                height: myHeight(5.5),
+                alignSelf: 'center',
+                // justifyContent: 'center',
+              }}>
               <Text
                 style={[
                   styles.textCommon,
@@ -797,8 +824,6 @@ export const Chat = ({navigation, route}) => {
               keyExtractor={(item, index) => index.toString()}
               estimatedItemSize={200}
               renderItem={({item, index}) => {
-                console.log(item, index);
-                lastDate = index;
                 if (typeof item == 'string') {
                   return (
                     <View

@@ -114,20 +114,6 @@ export const ChatList = ({navigation, route}) => {
               ]}>
               {'Messages'}
             </Text>
-            {totalUnread ? (
-              <Text
-                style={[
-                  styles.textCommon,
-                  {
-                    fontSize: myFontSize.body,
-                    fontFamily: myFonts.body,
-                    color: myColors.textL4,
-                  },
-                ]}>
-                {' '}
-                {`You have ${totalUnread} new messages`}
-              </Text>
-            ) : null}
           </View>
 
           <Spacer paddingT={myHeight(1)} />
@@ -246,36 +232,47 @@ export const ChatList = ({navigation, route}) => {
                         {
                           flex: 1,
                           fontSize: myFontSize.body2,
+                          color:
+                            item.lastMessage.senderId != profile.uid &&
+                            item.totalUnread
+                              ? myColors.text
+                              : myColors.textL4,
                           fontFamily:
-                            item.senderId != profile.uid && item.totalUnread
+                            item.lastMessage.senderId != profile.uid &&
+                            item.totalUnread
                               ? myFonts.bodyBold
                               : myFonts.body,
                         },
                       ]}>
-                      {item.senderId == profile.uid ? 'You: ' : ''}
+                      {item.lastMessage.senderId == profile.uid ? 'You: ' : ''}
                       {item.lastMessage.message}
                     </Text>
-                    {item.totalUnread ? (
-                      <Text
-                        numberOfLines={1}
-                        style={[
-                          styles.textCommon,
-                          {
-                            fontSize: myFontSize.small3,
-                            fontFamily: myFonts.body,
-                            color: myColors.background,
-                            // padding: myHeight(0.5),
-                            minWidth: RFValue(22),
-                            minHeight: RFValue(22),
-                            textAlign: 'center',
-                            textAlignVertical: 'center',
-                            borderRadius: 5000,
-                            backgroundColor: myColors.primaryT,
-                          },
-                        ]}>
-                        {item.totalUnread > 9 ? '9+' : item.totalUnread}
-                      </Text>
-                    ) : null}
+
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        styles.textCommon,
+                        {
+                          fontSize: myFontSize.small3,
+                          fontFamily: myFonts.body,
+                          color: myColors.background,
+                          // padding: myHeight(0.5),
+                          minWidth: RFValue(22),
+                          minHeight: RFValue(22),
+                          textAlign: 'center',
+                          textAlignVertical: 'center',
+                          borderRadius: 5000,
+                          backgroundColor: item.totalUnread
+                            ? myColors.primaryT
+                            : myColors.background,
+                        },
+                      ]}>
+                      {item.totalUnread
+                        ? item.totalUnread > 9
+                          ? '9+'
+                          : item.totalUnread
+                        : 0}
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
